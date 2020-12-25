@@ -555,6 +555,7 @@ namespace PUMAobj.ASN
                         //detail.Cube= str.TxtSubstring(1689,1698);
                         //detail.CubeUnit= str.TxtSubstring(1699,1718);
                         //details.Add(detail);
+
                     }
                 }
             }
