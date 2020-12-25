@@ -51,8 +51,8 @@ namespace PUMAobj.Downloader
                             //请求参数
                             request = new Request(DefRequest.startTime, DefRequest.endTime, DefRequest.page,
                                                                    DefRequest.pageSize);
-                            return (GetSKU(batchNumber, request));
-
+                            //return (GetSKU(batchNumber, request));
+                            break;
                         case "on_continuity": ///执行连续模式，获取起始日期和终止日期的时间差，用于配置
                             //计算配置参数中起始日期和终止日期的秒差
                             DateTime startTime = Convert.ToDateTime(DefRequest.startTime);
@@ -70,7 +70,7 @@ namespace PUMAobj.Downloader
                                                             DefRequest.page,
                                                             DefRequest.pageSize);
 
-                                istrue = (GetSKU(batchNumber, request));
+                                //istrue = (GetSKU(batchNumber, request));
                                 DefRequest.page = i;
                             };
                             return istrue;

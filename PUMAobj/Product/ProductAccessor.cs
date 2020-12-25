@@ -15,7 +15,7 @@ namespace PUMAobj.Product
         {
             List<ProductModel> productModels = new List<ProductModel>();
             externumber = "";
-            if (txtlists[0].TxtSubstring(1, 10) == "WMSSKU" && txtlists[0].TxtSubstring(11, 12) == "O")//PUMA出库单
+            if (txtlists[0].TxtSubstring(1, 10) == "WMSSKU" && txtlists[0].TxtSubstring(11, 12) == "O")//PUMA SKU
             {
                 int linenumber = 1;
                 for (int i = 0; i < txtlists.Count; i++)
@@ -52,7 +52,12 @@ namespace PUMAobj.Product
                             STDCUBE = txtlists[i].TxtSubstring(294, 309),
                             TARE = txtlists[i].TxtSubstring(310, 325),
                             CLASS = txtlists[i].TxtSubstring(326, 335),
-                            ACTIVE = txtlists[i].TxtSubstring(336, 345)
+                            ACTIVE = txtlists[i].TxtSubstring(336, 345),
+                            Style = txtlists[i].TxtSubstring(3053,3072),
+                            Color = txtlists[i].TxtSubstring(3073,3082),
+                            Size =  txtlists[i].TxtSubstring(3083, 3087),
+
+
                         });
                     }
                 }
@@ -77,7 +82,7 @@ namespace PUMAobj.Product
                 {
                     StringBuilder sbBack = new StringBuilder();
                     StringBuilder sbProduct = new StringBuilder();
-                    sbBack.Append(" insert into ");
+                    sbBack.Append(" insert into StorerID ");
 
                 }
             }

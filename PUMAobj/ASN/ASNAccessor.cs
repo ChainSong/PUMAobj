@@ -288,25 +288,25 @@ namespace PUMAobj.ASN
             if (inboundASNHDs.Count > 0)
             {
                 //筛选已经插入数据库的SKU信息
-                StringBuilder sbCheck = new StringBuilder();
-                sbCheck.Append(" select ExternReceiptNumber from WMS_ASN where ExternReceiptNumber in (");
-                sbCheck.Append(string.Join(",", inboundASNHDs.Select(a => "'" + a.ExternPOKey + "'")));
-                var sbCheckData = this.ScanDataTable(sbCheck.ToString());
-                foreach (DataRow item in sbCheckData.Rows)
-                {
-                    if (inboundASNHDs.Where(a => a.ExternPOKey == item["ExternReceiptNumber"].ToString()).Count() > 0)
-                    {
-                        inboundASNHDs.RemoveAll(a => a.ExternPOKey == item["ExternReceiptNumber"].ToString());
-                    }
-                }
+                //StringBuilder sbCheck = new StringBuilder();
+                //sbCheck.Append(" select ExternReceiptNumber from WMS_ASN where ExternReceiptNumber in (");
+                //sbCheck.Append(string.Join(",", inboundASNHDs.Select(a => "'" + a.ExternPOKey + "'")));
+                //var sbCheckData = this.ScanDataTable(sbCheck.ToString());
+                //foreach (DataRow item in sbCheckData.Rows)
+                //{
+                //    if (inboundASNHDs.Where(a => a.ExternPOKey == item["ExternReceiptNumber"].ToString()).Count() > 0)
+                //    {
+                //        inboundASNHDs.RemoveAll(a => a.ExternPOKey == item["ExternReceiptNumber"].ToString());
+                //    }
+                //}
 
-                if (inboundASNHDs.Count > 0)
-                {
-                    StringBuilder sbBack = new StringBuilder();
-                    StringBuilder sbProduct = new StringBuilder();
-                    sbBack.Append(" insert into ");
+                //if (inboundASNHDs.Count > 0)
+                //{
+                //    StringBuilder sbBack = new StringBuilder();
+                //    StringBuilder sbProduct = new StringBuilder();
+                //    sbBack.Append(" insert into ");
 
-                }
+                //}
             }
 
 
