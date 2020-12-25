@@ -2,6 +2,7 @@
 using Microsoft.Practices.EnterpriseLibrary.Data;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Data;
 using System.Data.Common;
 using System.Data.SqlClient;
@@ -15,8 +16,8 @@ namespace PUMAobj.SqlHelper
     public class BaseAccessor
     {
         //protected static readonly string SMSSqlConnection = ConfigurationManager.ConnectionStrings["SMS"].ConnectionString.ToString();
-        //玫琳凯DMS数据库
-        //protected static readonly string DMSSqlConnection = ConfigurationManager.ConnectionStrings["DMS"].ConnectionString.ToString();
+        //PUMA_WMS数据库
+        protected static readonly string DMSSqlConnection = ConfigurationManager.ConnectionStrings["PUMA_WMS"].ConnectionString.ToString();
 
         public static Database _dataBase;
 

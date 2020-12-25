@@ -106,8 +106,5 @@ namespace PUMAobj.Common
         {
             return str.PadLeft(len, charstr);
         }
-
-
-
     }
 }

@@ -1,8 +1,10 @@
 ﻿using PUMAobj.Common;
+using PUMAobj.Model;
 using PUMAobj.SqlHelper;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -161,7 +163,6 @@ namespace PUMAobj.ASN
 
             return "";
         }
-
 
 
 
@@ -436,7 +437,216 @@ namespace PUMAobj.ASN
 
 
 
+        public string ASNReadTXT()
+        {
+            string dir = AppDomain.CurrentDomain.BaseDirectory;
+            dir = Path.GetFullPath("..");
+            dir= Path.GetFullPath("../..");
+            string filepath = dir + "/DownFile/WMSASN_202010090917430000000049490757.txt";     //文件路径
 
+            TxtTable txtTable = new TxtTable();//文件表头标识
+            List<InboundASNHDModel> header = new List<InboundASNHDModel>();//asn 主订单信息
+            List<InboundASNDTModel> details = new List<InboundASNDTModel>();//asn 订单详细信息
+            List<string> thdata = new List<string>();
+            if (System.IO.File.Exists(filepath))
+            {
+                int index = 0;
+                foreach (string str in System.IO.File.ReadAllLines(filepath, Encoding.Default))
+                {
+                    if (index == 0)
+                    {
+                        txtTable.TableID = str.TxtSubstring(1, 10);
+                        txtTable.InterfaceType = str.TxtSubstring(11, 12);
+                        txtTable.CreateDateTime = str.TxtSubstring(13, 26);
+                        txtTable.ClientID = str.TxtSubstring(27, 46);
+                        txtTable.ClientCountry = str.TxtSubstring(47, 51);
+                        txtTable.InterfaceName = str.TxtSubstring(52, 81);
+                        txtTable.Reserved = str.TxtSubstring(82, 101);
+                        index++;
+                    }else {
+                        if (str.Length < 71)
+                        {
+                            continue;
+                        }
+                        ASNDetail detail = new ASNDetail();
+                        detail.HeaderFlag = str.TxtSubstring(1, 5);
+                        detail.InterfaceActionFlag= str.TxtSubstring(6,6);
+                        //detail.ReceiptKey= str.TxtSubstring(7,16);
+                        detail.ExternReceiptKey= str.TxtSubstring(17,36);
+                        //detail.ReceiptGroup= str.TxtSubstring(37,56);
+                        detail.StorerKey= str.TxtSubstring(57,71);
+                        //detail.ReceiptDate= str.TxtSubstring(72,85);
+                        //detail.POKey= str.TxtSubstring(86,103);
+                        //detail.CarrierKey= str.TxtSubstring(104,118);
+                        //detail.CarrierName= str.TxtSubstring(119,148);
+                        //detail.CarrierAddress1= str.TxtSubstring(149,193);
+                        //detail.CarrierAddress2= str.TxtSubstring(194,238);
+                        //detail.CarrierCity= str.TxtSubstring(239,283);
+                        //detail.CarrierState= str.TxtSubstring(284,285);
+                        //detail.CarrierZip= str.TxtSubstring(286,295);
+                        //detail.CarrierReference= str.TxtSubstring(296,313);
+                        //detail.WarehouseReference= str.TxtSubstring(314,331);
+                        //detail.OriginCountry= str.TxtSubstring(332,361);
+                        //detail.DestinationCountry= str.TxtSubstring(362,391);
+                        //detail.VehicleNumber= str.TxtSubstring(392,409);
+                        //detail.VehicleDate= str.TxtSubstring(410,427);
+                        //detail.PlaceOfLoading= str.TxtSubstring(428,445);
+                        //detail.PlaceOfDischarge= str.TxtSubstring(446,463);
+                        //detail.PlaceofDelivery= str.TxtSubstring(464,481);
+                        //detail.IncoTerms= str.TxtSubstring(482,491);
+                        //detail.TermsNote= str.TxtSubstring(492,509);
+                        //detail.ContainerKey= str.TxtSubstring(510,527);
+                        //detail.Signatory= str.TxtSubstring(528,545);
+                        //detail.PlaceofIssue= str.TxtSubstring(546,563);
+                        //detail.OpenQty= str.TxtSubstring(564,573);
+                        //detail.Status= str.TxtSubstring(574,583);
+                        //detail.Notes= str.TxtSubstring(584,798);
+                        //detail.EffectiveDate= str.TxtSubstring(799,812);
+                        //detail.ContainerType= str.TxtSubstring(813,832);
+                        //detail.ContainerQty= str.TxtSubstring(833,842);
+                        //detail.BilledContainerQty= str.TxtSubstring(843,852);
+                        //detail.RECType= str.TxtSubstring(853,862);
+                        //detail.ASNStatus= str.TxtSubstring(863,872);
+                        //detail.ASNReason= str.TxtSubstring(873,882);
+                        //detail.Facility= str.TxtSubstring(883,887);
+                        //detail.Reserved= str.TxtSubstring(888,897);
+                        //detail.MBOLKey= str.TxtSubstring(898,907);
+                        //detail.Appointment_No= str.TxtSubstring(908,917);
+                        //detail.LoadKey= str.TxtSubstring(918,927);
+                        //detail.xDockFlag= str.TxtSubstring(928,928);
+                        //detail.UserDefine01= str.TxtSubstring(929,958);
+                        //detail.PROCESSTYPE= str.TxtSubstring(959,959);
+                        //detail.UserDefine02= str.TxtSubstring(960,989);
+                        //detail.UserDefine03= str.TxtSubstring(990,1019);
+                        //detail.UserDefine04= str.TxtSubstring(1020,1049);
+                        //detail.UserDefine05= str.TxtSubstring(1050,1079);
+                        //detail.UserDefine06= str.TxtSubstring(1080,1093);
+                        //detail.UserDefine07= str.TxtSubstring(1094,1107);
+                        //detail.UserDefine08= str.TxtSubstring(1108,1137);
+                        //detail.UserDefine09= str.TxtSubstring(1138,1167);
+                        //detail.UserDefine10= str.TxtSubstring(1168,1197);
+                        //detail.DOCTYPE= str.TxtSubstring(1198,1198);
+                        //detail.RoutingTool= str.TxtSubstring(1199,1228);
+                        //detail.CTNTYPE1= str.TxtSubstring(1229,1258);
+                        //detail.CTNQTY1= str.TxtSubstring(1259,1268);
+                        //detail.CTNTYPE2= str.TxtSubstring(1269,1298);
+                        //detail.CTNQTY2= str.TxtSubstring(1299,1308);
+                        //detail.CTNTYPE3= str.TxtSubstring(1309,1338);
+                        //detail.CTNQTY3= str.TxtSubstring(1339,1348);
+                        //detail.CTNTYPE4= str.TxtSubstring(1349,1378);
+                        //detail.CTNQTY4= str.TxtSubstring(1379,1388);
+                        //detail.CTNTYPE5= str.TxtSubstring(1389,1418);
+                        //detail.CTNQTY5= str.TxtSubstring(1419,1428);
+                        //detail.CTNTYPE6= str.TxtSubstring(1429,1458);
+                        //detail.CTNQTY6= str.TxtSubstring(1459,1468);
+                        //detail.CTNTYPE7= str.TxtSubstring(1469,1498);
+                        //detail.CTNQTY7= str.TxtSubstring(1499,1508);
+                        //detail.CTNTYPE8= str.TxtSubstring(1509,1538);
+                        //detail.CTNQTY8= str.TxtSubstring(1539,1548);
+                        //detail.CTNTYPE9= str.TxtSubstring(1549,1578);
+                        //detail.CTNQTY9= str.TxtSubstring(1579,1588);
+                        //detail.CTNTYPE10= str.TxtSubstring(1589,1618);
+                        //detail.CTNQTY10= str.TxtSubstring(1619,1628);
+                        //detail.NoOfBulkCtn= str.TxtSubstring(1629,1638);
+                        //detail.NoOfMiniPacks= str.TxtSubstring(1639,1648);
+                        //detail.NoOfPallet= str.TxtSubstring(1649,1658);
+                        //detail.Weight= str.TxtSubstring(1659,1668);
+                        //detail.WeightUnit= str.TxtSubstring(1669,1688);
+                        //detail.Cube= str.TxtSubstring(1689,1698);
+                        //detail.CubeUnit= str.TxtSubstring(1699,1718);
+                        //details.Add(detail);
+                    }
+                }
+            }
+            return "";
+        }
+    }
 
+    public class ASNDetail {
+        public string HeaderFlag { get; set; }
+        public string InterfaceActionFlag { get; set; }
+        public string ReceiptKey { get; set; }
+        public string ExternReceiptKey { get; set; }
+        public string ReceiptGroup { get; set; }
+        public string StorerKey { get; set; }
+        public string ReceiptDate { get; set; }
+        public string POKey { get; set; }
+        public string CarrierKey { get; set; }
+        public string CarrierName { get; set; }
+        public string CarrierAddress1 { get; set; }
+        public string CarrierAddress2 { get; set; }
+        public string CarrierCity { get; set; }
+        public string CarrierState { get; set; }
+        public string CarrierZip { get; set; }
+        public string CarrierReference { get; set; }
+        public string WarehouseReference { get; set; }
+        public string OriginCountry { get; set; }
+        public string DestinationCountry { get; set; }
+        public string VehicleNumber { get; set; }
+        public string VehicleDate { get; set; }
+        public string PlaceOfLoading { get; set; }
+        public string PlaceOfDischarge { get; set; }
+        public string PlaceofDelivery { get; set; }
+        public string IncoTerms { get; set; }
+        public string TermsNote { get; set; }
+        public string ContainerKey { get; set; }
+        public string Signatory { get; set; }
+        public string PlaceofIssue { get; set; }
+        public string OpenQty { get; set; }
+        public string Status { get; set; }
+        public string Notes { get; set; }
+        public string EffectiveDate { get; set; }
+        public string ContainerType { get; set; }
+        public string ContainerQty { get; set; }
+        public string BilledContainerQty { get; set; }
+        public string RECType { get; set; }
+        public string ASNStatus { get; set; }
+        public string ASNReason { get; set; }
+        public string Facility { get; set; }
+        public string Reserved { get; set; }
+        public string MBOLKey { get; set; }
+        public string Appointment_No { get; set; }
+        public string LoadKey { get; set; }
+        public string xDockFlag { get; set; }
+        public string UserDefine01 { get; set; }
+        public string PROCESSTYPE { get; set; }
+        public string UserDefine02 { get; set; }
+        public string UserDefine03 { get; set; }
+        public string UserDefine04 { get; set; }
+        public string UserDefine05 { get; set; }
+        public string UserDefine06 { get; set; }
+        public string UserDefine07 { get; set; }
+        public string UserDefine08 { get; set; }
+        public string UserDefine09 { get; set; }
+        public string UserDefine10 { get; set; }
+        public string DOCTYPE { get; set; }
+        public string RoutingTool { get; set; }
+        public string CTNTYPE1 { get; set; }
+        public string CTNQTY1 { get; set; }
+        public string CTNTYPE2 { get; set; }
+        public string CTNQTY2 { get; set; }
+        public string CTNTYPE3 { get; set; }
+        public string CTNQTY3 { get; set; }
+        public string CTNTYPE4 { get; set; }
+        public string CTNQTY4 { get; set; }
+        public string CTNTYPE5 { get; set; }
+        public string CTNQTY5 { get; set; }
+        public string CTNTYPE6 { get; set; }
+        public string CTNQTY6 { get; set; }
+        public string CTNTYPE7 { get; set; }
+        public string CTNQTY7 { get; set; }
+        public string CTNTYPE8 { get; set; }
+        public string CTNQTY8 { get; set; }
+        public string CTNTYPE9 { get; set; }
+        public string CTNQTY9 { get; set; }
+        public string CTNTYPE10 { get; set; }
+        public string CTNQTY10 { get; set; }
+        public string NoOfBulkCtn { get; set; }
+        public string NoOfMiniPacks { get; set; }
+        public string NoOfPallet { get; set; }
+        public string Weight { get; set; }
+        public string WeightUnit { get; set; }
+        public string Cube { get; set; }
+        public string CubeUnit { get; set; }
     }
 }

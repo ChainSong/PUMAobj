@@ -72,6 +72,7 @@
     <Compile Include="ASN\InboundASNHDModel.cs" />
     <Compile Include="ASN\InboundORDDTModel.cs" />
     <Compile Include="ASN\InboundORDHDModel.cs" />
+    <Compile Include="Common\FtpHelper.cs" />
     <Compile Include="Common\SFTPConstants.cs" />
     <Compile Include="Common\TextHelper.cs" />
     <Compile Include="Log\LogHelper.cs" />
@@ -80,6 +81,7 @@
     <Compile Include="Downloader\Download.cs" />
     <Compile Include="Downloader\DownloadObserver.cs" />
     <Compile Include="MessageContracts\DefConfigurationSectionRequest.cs" />
+    <Compile Include="Model\TxtTable.cs" />
     <Compile Include="Product\ProductAccessor.cs" />
     <Compile Include="Product\ProductModel.cs" />
     <Compile Include="SqlHelper\BaseAccessor.cs" />
@@ -95,6 +97,8 @@
     <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="DownFile\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

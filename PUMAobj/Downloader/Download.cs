@@ -71,7 +71,8 @@ namespace PUMAobj.Downloader
                                                             DefRequest.pageSize);
 
                                 //istrue = (GetSKU(batchNumber, request));
-                                DefRequest.page = i;
+                                //DefRequest.page = i;
+                                break;
                             };
                             return istrue;
                         default:
