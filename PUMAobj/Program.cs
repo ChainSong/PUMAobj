@@ -41,7 +41,11 @@ namespace PUMAobj
             //LogHelper.WriteLog(typeof(string), "--结束上传接口对接--", LogHelper.LogLevel.INFO);
 
             ASNAccessor aSN = new ASNAccessor();
-            aSN.ASNReadTXT();
+            //aSN.GetInbound_ASNHD();
+
+            //aSN.GetInbound_ORDHD();
+
+            aSN.Create_RECHD_TXT2(null,null);
         }
     }
 }

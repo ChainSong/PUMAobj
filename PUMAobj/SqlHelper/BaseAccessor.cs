@@ -17,7 +17,7 @@ namespace PUMAobj.SqlHelper
     {
         //protected static readonly string SMSSqlConnection = ConfigurationManager.ConnectionStrings["SMS"].ConnectionString.ToString();
         //PUMA_WMS数据库
-        protected static readonly string DMSSqlConnection = ConfigurationManager.ConnectionStrings["PUMA_WMS"].ConnectionString.ToString();
+        protected static readonly string DMSSqlConnection = ConfigurationManager.ConnectionStrings["WMS_PUMA"].ConnectionString.ToString();
 
         public static Database _dataBase;
 
@@ -528,6 +528,38 @@ namespace PUMAobj.SqlHelper
                 //cmd.CommandText = Sql;
                 cmd.CommandTimeout = 1800;
                 i = cmd.ExecuteNonQuery();
+                transaction.Commit();
+                return i;
+            }
+            catch (Exception ex)
+            {
+                transaction.Rollback();
+                //SysLogWriter.Error("ScanExecuteNonQuery 数据库连接" + ex.ToString());
+                return i;
+                //throw;               
+            }
+            finally
+            {
+                conn.Close();
+            }
+        }
+
+        public int ScanExecuteNonQueryRID(string Sql)
+        {
+            int i = 0;
+            SqlConnection conn = new SqlConnection(BaseAccessor._dataBase.ConnectionString);
+            SqlTransaction transaction;
+            conn.Open();
+            transaction = conn.BeginTransaction();
+            try
+            {
+                SqlCommand cmd = new SqlCommand(Sql, conn);
+                cmd.Transaction = transaction;
+                cmd.CommandType = CommandType.Text;
+                //cmd.CommandText = Sql;
+                cmd.CommandTimeout = 1800;
+                //i = cmd.ExecuteNonQuery();
+                i = Convert.ToInt32(cmd.ExecuteScalar());
                 transaction.Commit();
                 return i;
             }
