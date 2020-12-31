@@ -18,17 +18,17 @@ namespace PUMAobj
         static void Main(string[] args)
         {
 
-            //var defparams =
-            //   (Dictionary<string, DefConfigurationSectionRequest>)ConfigurationManager.GetSection("RunningParam");
-            ////RunCLS.RunAbutment(defparams);
+            var defparams =
+               (Dictionary<string, DefConfigurationSectionRequest>)ConfigurationManager.GetSection("RunningParam");
+            //RunCLS.RunAbutment(defparams);
 
-            //DownloadInterface downloadInterface = new DownloadInterface();
+            DownloadInterface downloadInterface = new DownloadInterface();
 
-            //Download download = new Download(downloadInterface, defparams,
-            //                                 DateTime.Now.ToString("yyyyMMddHHmmss") + "Test");
-            //LogHelper.WriteLog(typeof(string), "--开始下载接口对接--", LogHelper.LogLevel.INFO);
-            //downloadInterface.StartDownload();
-            //LogHelper.WriteLog(typeof(string), "--结束下载接口对接--", LogHelper.LogLevel.INFO);
+            Download download = new Download(downloadInterface, defparams,
+                                             DateTime.Now.ToString("yyyyMMddHHmmss") + "Test");
+            LogHelper.WriteLog(typeof(string), "--开始下载接口对接--", LogHelper.LogLevel.INFO);
+            downloadInterface.StartDownload();
+            LogHelper.WriteLog(typeof(string), "--结束下载接口对接--", LogHelper.LogLevel.INFO);
 
 
             //DownloadInterface uploadInterface = new DownloadInterface();

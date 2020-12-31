@@ -28,6 +28,8 @@ namespace PUMAobj.Product
         public string TARE { get; set; }
         public string CLASS { get; set; }
         public string ACTIVE { get; set; }
+        public string SKUGROUP { get; set; }
+        
         public string Style { get; set; }
         public string Color { get; set; }
         public string Size { get; set; }

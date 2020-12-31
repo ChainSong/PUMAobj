@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace PUMAobj.Log
 {
-    public class LogHelper
+    public   class LogHelper
     {
         public enum LogLevel { FATAL = 1, Error = 2, Warn = 3, INFO = 4 }
 
