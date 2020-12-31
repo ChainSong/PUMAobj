@@ -72,6 +72,7 @@
     <Compile Include="ASN\InboundASNHDModel.cs" />
     <Compile Include="ASN\InboundORDDTModel.cs" />
     <Compile Include="ASN\InboundORDHDModel.cs" />
+    <Compile Include="Common\EntityPropertyExtensionAttribute.cs" />
     <Compile Include="Common\FtpHelper.cs" />
     <Compile Include="Common\SFTPConstants.cs" />
     <Compile Include="Common\TextHelper.cs" />
@@ -81,7 +82,16 @@
     <Compile Include="Downloader\Download.cs" />
     <Compile Include="Downloader\DownloadObserver.cs" />
     <Compile Include="MessageContracts\DefConfigurationSectionRequest.cs" />
+    <Compile Include="Model\Inbound_ASNDT.cs" />
+    <Compile Include="Model\Inbound_ASNHD.cs" />
+    <Compile Include="Model\Inbound_ORDDT.cs" />
+    <Compile Include="Model\Inbound_ORDHD.cs" />
     <Compile Include="Model\TxtTable.cs" />
+    <Compile Include="Model\WMS\AddASNandASNDetailRequest.cs" />
+    <Compile Include="Model\WMS\ASNH.cs" />
+    <Compile Include="Model\WMS\ASNDetail.cs" />
+    <Compile Include="Model\WMS\WMSASNDetailToDb.cs" />
+    <Compile Include="Model\WMS\WMSASNToDb.cs" />
     <Compile Include="Product\ProductAccessor.cs" />
     <Compile Include="Product\ProductModel.cs" />
     <Compile Include="SqlHelper\BaseAccessor.cs" />
@@ -99,6 +109,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="DownFile\" />
+    <Folder Include="UploadFile\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -106,5 +106,84 @@ namespace PUMAobj.Common
         {
             return str.PadLeft(len, charstr);
         }
+
+        /// <summary>
+        /// 将字符转换为 时间
+        /// </summary>
+        /// <param name="str"></param>
+        /// <returns></returns>
+        public static DateTime? TxtConvertTime(this string str)
+        {
+            DateTime? time=null;
+            try
+            {
+                time = Convert.ToDateTime(str);
+                return time;
+            }
+            catch (Exception)
+            {
+                return null;
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// 将字符转换成  数字
+        /// </summary>
+        /// <param name="str"></param>
+        /// <returns></returns>
+        public static int TxtConvertInt(this string str) {
+            int num = 0;
+            try
+            {
+                num = Convert.ToInt32(str);
+                return num;
+            }
+            catch (Exception)
+            {
+                return 0;
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// 将字符转换成  float
+        /// </summary>
+        /// <param name="str"></param>
+        /// <returns></returns>
+        public static float TxtConvertFloat(this string str)
+        {
+            float num = 0;
+            try
+            {
+                num = Convert.ToSingle(str);
+                return num;
+            }
+            catch (Exception)
+            {
+                return 0;
+                throw;
+            }
+        }
+
+        
+        /// <summary>
+        /// 字符超出最大长度要截取 ，字符小于最大长度要补空格
+        /// </summary>
+        /// <param name="str"></param>
+        /// <param name="max"></param>
+        /// <returns></returns>
+        public static string TxtStrPush(this string str,int max)
+        {
+            string S ="";
+            if (str.Length >= max)
+            {
+                S = str.Substring(0, max);
+            }
+            else if (str.Length < max) {
+                S += str.PadRight(max, ' ');
+            }
+            return S;
+        }
     }
 }
