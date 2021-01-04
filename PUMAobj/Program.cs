@@ -45,7 +45,10 @@ namespace PUMAobj
 
             //aSN.GetInbound_ORDHD();
 
-            aSN.Create_RECHD_TXT2(null,null);
+            //aSN.Create_RECHD_TXT1(null, null);
+
+            string msg = "";
+            string txtaddress=aSN.Create_RECHD_TXT2(null, null,out msg);
         }
     }
 }

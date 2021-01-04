@@ -181,7 +181,7 @@ namespace PUMAobj.Common
                 S = str.Substring(0, max);
             }
             else if (str.Length < max) {
-                S += str.PadRight(max, ' ');
+                S += str.PadRight(max,' ');
             }
             return S;
         }

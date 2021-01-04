@@ -1487,7 +1487,8 @@ namespace PUMAobj.ASN
                             DataTable data1_dt = this.ExecuteDataTableBySqlString(sql1_dt);
                             if (data1_hd.Rows.Count > 0 && data1_dt.Rows.Count > 0)
                             {
-                                string isresult = Create_RECHD_TXT1(data1_hd, data1_dt);
+                                string istrue = "";//是否创建成功
+                                string txtaddress = Create_RECHD_TXT1(data1_hd, data1_dt,out istrue);
                             }
                         }
                         else if (ReceiptCount.Rows[i]["ReceiptType"].ToString() == "转仓入库")
@@ -1498,7 +1499,8 @@ namespace PUMAobj.ASN
                             DataTable data2_dt = this.ExecuteDataTableBySqlString(sql2_dt);
                             if (data2_hd.Rows.Count > 0 && data2_dt.Rows.Count > 0)
                             {
-                                string isresult = Create_RECHD_TXT2(data2_hd, data2_dt);
+                                string istrue = "";//是否创建成功
+                                string txtaddress = Create_RECHD_TXT2(data2_hd, data2_dt,out istrue);
 
                             }
                         }
@@ -1518,9 +1520,9 @@ namespace PUMAobj.ASN
         /// <param name="hd">订单头部</param>
         /// <param name="dt">订单详细</param>
         /// <returns></returns>
-        public string Create_RECHD_TXT1(DataTable hd, DataTable dt)
+        public string Create_RECHD_TXT1(DataTable hd, DataTable dt,out string msg)
         {
-            string msg = string.Empty;
+            string txtaddress = string.Empty;
             try
             {
                 string sql1_hd = "SELECT Top 1 * FROM Inbound_ASNHD WHERE ExternReceiptKey='3400559973' AND ISReturn='0'";
@@ -1537,6 +1539,7 @@ namespace PUMAobj.ASN
                     Directory.CreateDirectory(filepath);
                 }
                 filepath += "/WMSREC_" + DateTime.Now.ToString("yyyyMMddhhmmss") + ".txt";
+                txtaddress = filepath;
 
                 FileStream file = new FileStream(filepath, FileMode.Create, FileAccess.Write);//创建写入文件 
                 StreamWriter writer = new StreamWriter(file);
@@ -1658,9 +1661,9 @@ namespace PUMAobj.ASN
             catch (Exception ex)
             {
                 msg = ex.Message;
-                LogHelper.WriteLog(typeof(string), "Create_RECHD_TXT执行错误:" + msg, LogHelper.LogLevel.Error);
+                LogHelper.WriteLog(typeof(string), "Create_RECHD_TXT1执行错误:" + msg, LogHelper.LogLevel.Error);
             }
-            return msg;
+            return txtaddress;
         }
 
         /// <summary>
@@ -1669,9 +1672,9 @@ namespace PUMAobj.ASN
         /// <param name="hd"></param>
         /// <param name="dt"></param>
         /// <returns></returns>
-        public string Create_RECHD_TXT2(DataTable hd, DataTable dt)
+        public string Create_RECHD_TXT2(DataTable hd, DataTable dt,out string msg)
         {
-            string msg = string.Empty;
+            string txtaddress = string.Empty;
             try
             {
                 string sql1_hd = "SELECT Top 1 * FROM Inbound_ORDHD WHERE ExternOrderKey='3800388045' AND ISReturn='0'";
@@ -1688,7 +1691,7 @@ namespace PUMAobj.ASN
                     Directory.CreateDirectory(filepath);
                 }
                 filepath += "/WMSREC_" + DateTime.Now.ToString("yyyyMMddhhmmss") + ".txt";
-
+                txtaddress = filepath;
                 FileStream file = new FileStream(filepath, FileMode.Create, FileAccess.Write);//创建写入文件 
                 StreamWriter writer = new StreamWriter(file);
                 writer.WriteLine("WMSREC    O "+DateTime.Now.ToString("yyyyMMddhhmmss")+ "PUMA                CN   Receipt Outbound");
@@ -1698,7 +1701,7 @@ namespace PUMAobj.ASN
                 header += hd.Rows[0]["ExternOrderKey"].ToString().TxtStrPush(20);
                 header += hd.Rows[0]["OrderGroup"].ToString().TxtStrPush(20);
                 header += hd.Rows[0]["StorerKey"].ToString().TxtStrPush(15);
-                header += DateTime.Now.ToString("yyyyMMddhhmmss");
+                header += DateTime.Now.ToString("yyyyMMddhhmmss").TxtStrPush(14);
                 header += hd.Rows[0]["ConsigneeKey"].ToString().TxtStrPush(15);
                 header += hd.Rows[0]["C_Company"].ToString().TxtStrPush(30);
                 header += hd.Rows[0]["C_Address1"].ToString().TxtStrPush(45);
@@ -1706,34 +1709,34 @@ namespace PUMAobj.ASN
                 header += hd.Rows[0]["C_City"].ToString().TxtStrPush(45);
                 header += hd.Rows[0]["C_State"].ToString().TxtStrPush(2);
                 header += hd.Rows[0]["C_Zip"].ToString().TxtStrPush(10);
-                header += hd.Rows[0]["CarrierReference"].ToString().TxtStrPush(18);
-                header += hd.Rows[0]["WarehouseReference"].ToString().TxtStrPush(18);
-                header += hd.Rows[0]["OriginCountry"].ToString().TxtStrPush(30);
-                header += hd.Rows[0]["DestinationCountry"].ToString().TxtStrPush(30);
-                header += hd.Rows[0]["VehicleNumber"].ToString().TxtStrPush(18);
-                header += hd.Rows[0]["VehicleDate"].ToString().TxtStrPush(18);
-                header += hd.Rows[0]["PlaceOfLoading"].ToString().TxtStrPush(18);
-                header += hd.Rows[0]["PlaceOfDischarge"].ToString().TxtStrPush(18);
-                header += hd.Rows[0]["PlaceofDelivery"].ToString().TxtStrPush(18);
-                header += hd.Rows[0]["IncoTerms"].ToString().TxtStrPush(10);
-                header += hd.Rows[0]["TermsNote"].ToString().TxtStrPush(18);
-                header += hd.Rows[0]["ContainerKey"].ToString().TxtStrPush(18);
-                header += hd.Rows[0]["Signatory"].ToString().TxtStrPush(18);
-                header += hd.Rows[0]["PlaceofIssue"].ToString().TxtStrPush(18);
+                header += "".ToString().TxtStrPush(18);
+                header += "".ToString().TxtStrPush(18);
+                header += hd.Rows[0]["CountryOfOrigin"].ToString().TxtStrPush(30);
+                header += hd.Rows[0]["CountryDestination"].ToString().TxtStrPush(30);
+                header += "".ToString().TxtStrPush(18);
+                header += "".ToString().TxtStrPush(18);
+                header += "".ToString().TxtStrPush(18);
+                header += "".ToString().TxtStrPush(18);
+                header += "".ToString().TxtStrPush(18);
+                header += hd.Rows[0]["IncoTerm"].ToString().TxtStrPush(10);
+                header += "".ToString().TxtStrPush(18);
+                header += "".ToString().TxtStrPush(18);
+                header += "".ToString().TxtStrPush(18);
+                header += "".ToString().TxtStrPush(18);
                 header += hd.Rows[0]["Notes"].ToString().TxtStrPush(125);
                 header += Convert.ToDateTime(hd.Rows[0]["EffectiveDate"]).ToString("yyyyMMddhhmmss").TxtStrPush(14);
                 header += hd.Rows[0]["ContainerType"].ToString().TxtStrPush(20);
                 header += hd.Rows[0]["ContainerQty"].ToString().TxtStrPush(10);
                 header += hd.Rows[0]["BilledContainerQty"].ToString().TxtStrPush(10);
-                header += hd.Rows[0]["RECType"].ToString().TxtStrPush(10);
-                header += hd.Rows[0]["ASNStatus"].ToString().TxtStrPush(10);
-                header += hd.Rows[0]["ASNReason"].ToString().TxtStrPush(10);
+                header += hd.Rows[0]["Type"].ToString().TxtStrPush(10);
+                header += "".ToString().TxtStrPush(10);
+                header += "".ToString().TxtStrPush(10);
                 header += hd.Rows[0]["Facility"].ToString().TxtStrPush(5);
                 header += hd.Rows[0]["Reserved"].ToString().TxtStrPush(10);
-                header += hd.Rows[0]["Appointment_No"].ToString().TxtStrPush(10);
-                header += hd.Rows[0]["xDockFlag"].ToString().TxtStrPush(1);
+                header += "".ToString().TxtStrPush(10);
+                header += "".ToString().TxtStrPush(1);
                 header += hd.Rows[0]["UserDefine01"].ToString().TxtStrPush(30);
-                header += hd.Rows[0]["PROCESSTYPE"].ToString().TxtStrPush(1);
+                header += "".ToString().TxtStrPush(1);
                 header += hd.Rows[0]["UserDefine02"].ToString().TxtStrPush(30);
                 header += hd.Rows[0]["UserDefine03"].ToString().TxtStrPush(30);
                 header += hd.Rows[0]["UserDefine04"].ToString().TxtStrPush(30);
@@ -1743,50 +1746,50 @@ namespace PUMAobj.ASN
                 header += hd.Rows[0]["UserDefine08"].ToString().TxtStrPush(30);
                 header += hd.Rows[0]["UserDefine09"].ToString().TxtStrPush(30);
                 header += hd.Rows[0]["UserDefine10"].ToString().TxtStrPush(30);
-                header += hd.Rows[0]["DOCTYPE"].ToString().TxtStrPush(1);
+                header += "".ToString().TxtStrPush(1);
                 writer.WriteLine(header);
 
                 for (int i = 0; i < dt.Rows.Count; i++)
                 {
                     string dtstr = "RECDTA";
                     dtstr += "A";
-                    dtstr += dt.Rows[i]["ExternReceiptKey"].ToString().TxtStrPush(20);
+                    dtstr += dt.Rows[i]["ExternOrderKey"].ToString().TxtStrPush(20);
                     dtstr += dt.Rows[i]["ExternLineNo"].ToString().TxtStrPush(20);
                     dtstr += dt.Rows[i]["StorerKey"].ToString().TxtStrPush(15);
                     dtstr += dt.Rows[i]["Sku"].ToString().TxtStrPush(20);
                     dtstr += dt.Rows[i]["TId"].ToString().TxtStrPush(18);
-                    dtstr += dt.Rows[i]["QtyExpected"].ToString().TxtStrPush(10);
-                    dtstr += dt.Rows[i]["QtyReceived"].ToString().TxtStrPush(10);
+                    dtstr += dt.Rows[i]["OpenQty"].ToString().TxtStrPush(10);
+                    dtstr += dt.Rows[i]["OpenQty"].ToString().TxtStrPush(10);
                     dtstr += dt.Rows[i]["UOM"].ToString().TxtStrPush(10);
-                    dtstr += dt.Rows[i]["VesselKey"].ToString().TxtStrPush(18);
-                    dtstr += dt.Rows[i]["VoyageKey"].ToString().TxtStrPush(18);
-                    dtstr += dt.Rows[i]["XdockKey"].ToString().TxtStrPush(18);
-                    dtstr += dt.Rows[i]["ContainerKey"].ToString().TxtStrPush(18);
-                    dtstr += dt.Rows[i]["ConditionCode"].ToString().TxtStrPush(10);
+                    dtstr += "".ToString().TxtStrPush(18);
+                    dtstr += "".ToString().TxtStrPush(18);
+                    dtstr += "".ToString().TxtStrPush(18);
+                    dtstr += "".ToString().TxtStrPush(18);
+                    dtstr += "".ToString().TxtStrPush(10);
                     dtstr += dt.Rows[i]["Lottable01"].ToString().TxtStrPush(18);
                     dtstr += dt.Rows[i]["Lottable02"].ToString().TxtStrPush(18);
                     dtstr += dt.Rows[i]["Lottable03"].ToString().TxtStrPush(18);
                     dtstr += Convert.ToDateTime(dt.Rows[i]["Lottable04"]).ToString().TxtStrPush(14);
                     dtstr += Convert.ToDateTime(dt.Rows[i]["Lottable05"]).ToString("yyyyMMddhhmmss").TxtStrPush(14);
-                    dtstr += dt.Rows[i]["CaseCnt"].ToString().TxtStrPush(10);
-                    dtstr += dt.Rows[i]["InnerPack"].ToString().TxtStrPush(10);
-                    dtstr += dt.Rows[i]["Pallet"].ToString().TxtStrPush(10);
-                    dtstr += dt.Rows[i]["Cube"].ToString().TxtStrPush(16);
-                    dtstr += dt.Rows[i]["GrossWgt"].ToString().TxtStrPush(16);
-                    dtstr += dt.Rows[i]["NetWgt"].ToString().TxtStrPush(16);
-                    dtstr += dt.Rows[i]["SubReasonCode"].ToString().TxtStrPush(10);
-                    dtstr += dt.Rows[i]["ExternPoKey"].ToString().TxtStrPush(20);
+                    dtstr += "".ToString().TxtStrPush(10);
+                    dtstr += "".ToString().TxtStrPush(10);
+                    dtstr += "".ToString().TxtStrPush(10);
+                    dtstr += "".ToString().TxtStrPush(16);
+                    dtstr += "".ToString().TxtStrPush(16);
+                    dtstr += "".ToString().TxtStrPush(16);
+                    dtstr += "".ToString().TxtStrPush(10);
+                    dtstr += dt.ToString().TxtStrPush(20);
                     dtstr += dt.Rows[i]["UserDefine01"].ToString().TxtStrPush(30);
                     dtstr += dt.Rows[i]["UserDefine02"].ToString().TxtStrPush(30);
                     dtstr += dt.Rows[i]["UserDefine03"].ToString().TxtStrPush(30);
                     dtstr += dt.Rows[i]["UserDefine04"].ToString().TxtStrPush(30);
                     dtstr += dt.Rows[i]["UserDefine05"].ToString().TxtStrPush(30);
-                    dtstr += Convert.ToDateTime(dt.Rows[i]["UserDefine06"]).ToString().TxtStrPush(14);
-                    dtstr += Convert.ToDateTime(dt.Rows[i]["UserDefine07"]).ToString().TxtStrPush(14);
+                    dtstr += "".ToString().TxtStrPush(14);
+                    dtstr += "".ToString().TxtStrPush(14);
                     dtstr += dt.Rows[i]["UserDefine08"].ToString().TxtStrPush(30);
                     dtstr += dt.Rows[i]["UserDefine09"].ToString().TxtStrPush(30);
-                    dtstr += dt.Rows[i]["UserDefine10"].ToString().TxtStrPush(30);
-                    dtstr += dt.Rows[i]["ALTSKU"].ToString().TxtStrPush(20);
+                    dtstr += "".ToString().TxtStrPush(30);
+                    dtstr += "".ToString().TxtStrPush(20);
                     dtstr += "".ToString().TxtStrPush(10);
                     dtstr += "".ToString().TxtStrPush(10);
                     dtstr += "".ToString().TxtStrPush(10);
@@ -1809,9 +1812,9 @@ namespace PUMAobj.ASN
             catch (Exception ex)
             {
                 msg = ex.Message;
-                LogHelper.WriteLog(typeof(string), "Create_RECHD_TXT执行错误:" + msg, LogHelper.LogLevel.Error);
+                LogHelper.WriteLog(typeof(string), "Create_RECHD_TXT2执行错误:" + msg, LogHelper.LogLevel.Error);
             }
-            return msg;
+            return txtaddress;
         }
 
     }
