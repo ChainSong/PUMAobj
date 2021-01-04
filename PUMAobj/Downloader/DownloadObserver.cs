@@ -16,12 +16,21 @@ namespace PUMAobj.Downloader
         {
             //childModel.SubEvent += new ModelBase.SubEventHandler(GetBaoZunSKU);
             childModel.SubEvent += new ModelBase.SubEventHandler(Get);
+            childModel.SubEvent += new ModelBase.SubEventHandler(Business);
 
         }
         //下载商品信息
         //public abstract bool GetBaoZunSKU();
-        ////下载销售出库单
+        /// <summary>
+        /// 单据下载
+        /// </summary>
+        /// <returns></returns>
         public abstract bool Get();
+        /// <summary>
+        /// 业务处理
+        /// </summary>
+        /// <returns></returns>
+        public abstract bool Business();
 
     }
 }

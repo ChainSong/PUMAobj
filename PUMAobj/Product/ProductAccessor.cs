@@ -18,7 +18,7 @@ namespace PUMAobj.Product
             try
             {
                 List<ProductModel> productModels = new List<ProductModel>();
-                if (txtlists[0].TxtSubstring(1, 10) == "WMSSKU" && txtlists[0].TxtSubstring(11, 12) == "O")//PUMA SKU
+                if (txtlists[0].TxtSubstring(1, 10) == "WMSSKU" && txtlists[0].TxtSubstring(11, 12) == "I")//PUMA SKU
                 {
                     int linenumber = 1;
                     for (int i = 0; i < txtlists.Count; i++)

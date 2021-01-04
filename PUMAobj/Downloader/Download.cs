@@ -29,79 +29,101 @@ namespace PUMAobj.Downloader
             _paramList = param;
             this.batchNumber = batchNumber;
         }
+        //public override bool Get()
+        //{
+        //    try
+        //    {
+        //        //获取配置参数
+        //        DefConfigurationSectionRequest DefRequest =
+        //             this._paramList.SingleOrDefault(
+        //                o => o.Key == "SKURequest").Value;
+        //        Request request = null;
+        //        if (DefRequest != null)
+        //        {
+        //            LogHelper.WriteLog(typeof(string), batchNumber + ":<<读取商品", LogHelper.LogLevel.INFO);
+        //            switch (DefRequest.runningMode)
+        //            {
+        //                case "off":
+        //                    LogHelper.WriteLog(typeof(string), batchNumber + ":读取商品接口为关闭模式", LogHelper.LogLevel.Warn);
+        //                    break;
+        //                case "on_once": //执行单次模式，按照配置表提供的参数执行
+
+        //                    //请求参数
+        //                    request = new Request(DefRequest.startTime, DefRequest.endTime, DefRequest.page,
+        //                                                           DefRequest.pageSize);
+        //                    //return (GetSKU(batchNumber, request));
+        //                    break;
+        //                case "on_continuity": ///执行连续模式，获取起始日期和终止日期的时间差，用于配置
+        //                    //计算配置参数中起始日期和终止日期的秒差
+        //                    DateTime startTime = Convert.ToDateTime(DefRequest.startTime);
+        //                    DateTime endTime = Convert.ToDateTime(DefRequest.endTime);
+        //                    TimeSpan ts = endTime.Subtract(startTime);
+        //                    bool istrue = true;
+        //                    for (int i = 1; i < DefRequest.pageMax; i++)
+        //                    {
+
+        //                        ///请求参数
+        //                        request = new Request(DateTime.Now.AddSeconds(-ts.TotalSeconds).ToString(
+        //                                                        "yyyy-MM-dd HH:mm:ss"),
+        //                                                    DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"),
+
+        //                                                    DefRequest.page,
+        //                                                    DefRequest.pageSize);
+
+        //                        //istrue = (GetSKU(batchNumber, request));
+        //                        //DefRequest.page = i;
+        //                        break;
+        //                    };
+        //                    return istrue;
+        //                default:
+        //                    LogHelper.WriteLog(typeof(string), batchNumber + ":读取商品接口不存在的模式", LogHelper.LogLevel.Error);
+        //                    break;
+        //            }
+        //            return true;
+        //        }
+        //        else
+        //        {
+        //            LogHelper.WriteLog(typeof(string), batchNumber + ":请求参数为空，无法继续",
+        //                               LogHelper.LogLevel.Error);
+        //            return false;
+        //        }
+        //    }
+        //    catch
+        //        (Exception
+        //            ex)
+        //    {
+        //        LogHelper.WriteLog(ex.GetType(), batchNumber + ":" + ex.Message, LogHelper.LogLevel.Error);
+        //        return false;
+        //    }
+        //    finally
+        //    {
+        //        LogHelper.WriteLog(typeof(string), batchNumber + ">>结束读取商品", LogHelper.LogLevel.INFO);
+        //    }
+        //}
+
         public override bool Get()
         {
+            return true;
             try
             {
-                //获取配置参数
-                DefConfigurationSectionRequest DefRequest =
-                     this._paramList.SingleOrDefault(
-                        o => o.Key == "SKURequest").Value;
-                Request request = null;
-                if (DefRequest != null)
+                //连接FTP 将文件下载到本地
+                //FtpHelper ftpHelper = new FtpHelper("","","");
+                //先获取文件中的列表
+                string[] fileNames = FtpHelper.GetFtpFileList("");
+                foreach (var item in fileNames)
                 {
-                    LogHelper.WriteLog(typeof(string), batchNumber + ":<<读取商品", LogHelper.LogLevel.INFO);
-                    switch (DefRequest.runningMode)
-                    {
-                        case "off":
-                            LogHelper.WriteLog(typeof(string), batchNumber + ":读取商品接口为关闭模式", LogHelper.LogLevel.Warn);
-                            break;
-                        case "on_once": //执行单次模式，按照配置表提供的参数执行
-
-                            //请求参数
-                            request = new Request(DefRequest.startTime, DefRequest.endTime, DefRequest.page,
-                                                                   DefRequest.pageSize);
-                            //return (GetSKU(batchNumber, request));
-                            break;
-                        case "on_continuity": ///执行连续模式，获取起始日期和终止日期的时间差，用于配置
-                            //计算配置参数中起始日期和终止日期的秒差
-                            DateTime startTime = Convert.ToDateTime(DefRequest.startTime);
-                            DateTime endTime = Convert.ToDateTime(DefRequest.endTime);
-                            TimeSpan ts = endTime.Subtract(startTime);
-                            bool istrue = true;
-                            for (int i = 1; i < DefRequest.pageMax; i++)
-                            {
-
-                                ///请求参数
-                                request = new Request(DateTime.Now.AddSeconds(-ts.TotalSeconds).ToString(
-                                                                "yyyy-MM-dd HH:mm:ss"),
-                                                            DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"),
-
-                                                            DefRequest.page,
-                                                            DefRequest.pageSize);
-
-                                //istrue = (GetSKU(batchNumber, request));
-                                //DefRequest.page = i;
-                                break;
-                            };
-                            return istrue;
-                        default:
-                            LogHelper.WriteLog(typeof(string), batchNumber + ":读取商品接口不存在的模式", LogHelper.LogLevel.Error);
-                            break;
-                    }
-                    return true;
-                }
-                else
-                {
-                    LogHelper.WriteLog(typeof(string), batchNumber + ":请求参数为空，无法继续",
-                                       LogHelper.LogLevel.Error);
-                    return false;
-                }
+                    FtpHelper.Download("", "", item);
+                } 
             }
-            catch
-                (Exception
-                    ex)
+            catch (Exception)
             {
-                LogHelper.WriteLog(ex.GetType(), batchNumber + ":" + ex.Message, LogHelper.LogLevel.Error);
-                return false;
+
+                //throw;
             }
-            finally
-            {
-                LogHelper.WriteLog(typeof(string), batchNumber + ">>结束读取商品", LogHelper.LogLevel.INFO);
-            }
+            return true;
         }
 
-        public  bool Get(string batchNumber, Request request)
+        public override bool Business()
         {
             try
             {
@@ -129,7 +151,7 @@ namespace PUMAobj.Downloader
                                 //可以处理多个接口文件
                                 switch (txtlists[0].ToString().Substring(0, 9).Trim())
                                 {
-                                    case "WMSSKU"://PUMA推给我们的出库单
+                                    case "WMSSKU"://PUMA推给我们的
                                         log.Type = "WMSSKU";
                                         result = new ProductAccessor().AddProduct(txtlists, out externumber);
                                         break;
@@ -198,14 +220,12 @@ namespace PUMAobj.Downloader
                         {
                             //FileCommon.MoveToCover(log.SourceFileName, log.ToFileName);
                         }
-                        //new LogOperationService().AddNikeReturnSFTPLog(log);
                     }
                 }
             }
             catch (Exception)
             {
-
-                throw;
+                //throw;
             }
             return true;
         }

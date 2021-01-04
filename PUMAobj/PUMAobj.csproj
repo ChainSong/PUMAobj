@@ -78,6 +78,7 @@
     <Compile Include="Common\TextHelper.cs" />
     <Compile Include="Log\LogHelper.cs" />
     <Compile Include="Log\LogModel.cs" />
+    <Compile Include="MessageContracts\DefConfigurationSectionHandler.cs" />
     <Compile Include="MessageContracts\Request.cs" />
     <Compile Include="Downloader\Download.cs" />
     <Compile Include="Downloader\DownloadObserver.cs" />

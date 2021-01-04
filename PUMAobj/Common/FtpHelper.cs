@@ -7,15 +7,23 @@ using System.Web;
 using System.Text;
 using System.Threading.Tasks;
 using PUMAobj.Log;
+using System.Configuration;
 
 namespace PUMAobj.Common
 {
-   public class FtpHelper
+    public class FtpHelper
     {
         private static string FTPCONSTR = "";//FTP的服务器地址
         private static string FTPUSERNAME = "";//FTP服务器的用户名
         private static string FTPPASSWORD = "";//FTP服务器的密码
         private static FtpWebRequest objReqFtp = null; //FTP連接
+
+        public FtpHelper()
+        {
+            FTPCONSTR = ConfigurationManager.AppSettings["sftpip"].ToString();
+            FTPUSERNAME = ConfigurationManager.AppSettings["sftpuser"].ToString();
+            FTPPASSWORD = ConfigurationManager.AppSettings["sftppwd"].ToString();
+        }
 
         #region FTP连接
         /// <summary>
@@ -101,7 +109,7 @@ namespace PUMAobj.Common
                 }
                 catch (Exception ex)
                 {
-                    LogHelper.WriteLog(typeof(string),"获取所有文件名出错:"+ ex.Message, LogHelper.LogLevel.Error);
+                    LogHelper.WriteLog(typeof(string), "获取所有文件名出错:" + ex.Message, LogHelper.LogLevel.Error);
                     return null;
                 }
             }
