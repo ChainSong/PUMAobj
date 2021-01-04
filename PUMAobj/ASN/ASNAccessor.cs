@@ -1489,6 +1489,12 @@ namespace PUMAobj.ASN
                             {
                                 string istrue = "";//是否创建成功
                                 string txtaddress = Create_RECHD_TXT1(data1_hd, data1_dt,out istrue);
+
+                                if (istrue == "200")//创建成功 更新状态
+                                {
+                                    string upstr = "UPDATE Inbound_ASNHD SET ISReturn=1,ReturnDate=GETDATE() WHERE id='"+ ReceiptCount.Rows[i]["ID"] .ToString()+ "'";
+                                    int upid = this.ScanExecuteNonQueryRID(upstr);
+                                }
                             }
                         }
                         else if (ReceiptCount.Rows[i]["ReceiptType"].ToString() == "转仓入库")
@@ -1502,6 +1508,11 @@ namespace PUMAobj.ASN
                                 string istrue = "";//是否创建成功
                                 string txtaddress = Create_RECHD_TXT2(data2_hd, data2_dt,out istrue);
 
+                                if (istrue == "200")//创建成功 更新状态
+                                {
+                                    string upstr = "UPDATE Inbound_ORDHD SET ISReturn=1,ReturnDate=GETDATE() WHERE id='" + ReceiptCount.Rows[i]["ID"].ToString() + "'";
+                                    int upid = this.ScanExecuteNonQueryRID(upstr);
+                                }
                             }
                         }
                     }
@@ -1669,8 +1680,8 @@ namespace PUMAobj.ASN
         /// <summary>
         /// 生成入库反馈文件  转仓
         /// </summary>
-        /// <param name="hd"></param>
-        /// <param name="dt"></param>
+        /// <param name="hd">订单头部</param>
+        /// <param name="dt">订单详细</param>
         /// <returns></returns>
         public string Create_RECHD_TXT2(DataTable hd, DataTable dt,out string msg)
         {
@@ -1815,6 +1826,82 @@ namespace PUMAobj.ASN
                 LogHelper.WriteLog(typeof(string), "Create_RECHD_TXT2执行错误:" + msg, LogHelper.LogLevel.Error);
             }
             return txtaddress;
+        }
+
+
+        /// <summary>
+        /// 库存调整 反馈
+        /// </summary>
+        /// <returns></returns>
+        public string WMSAdjustment()
+        {
+            string msg = string.Empty;
+            try
+            {
+                string sql_h = "SELECT * FROM [dbo].[WMS_Adjustment] WHERE AdjustmentType IN('库存调整单','库存品级调整单') AND (INT2 IS NULL OR INT2=0)";
+                DataTable AdjustmentCount = this.ExecuteDataTableBySqlString(sql_h);
+                if (AdjustmentCount.Rows.Count > 0)
+                {
+                    for (int i = 0; i < AdjustmentCount.Rows.Count; i++)
+                    {
+                        DataTable hd = new DataTable();
+                        hd.Rows.Add(AdjustmentCount.Rows[i]);
+                        string sql_d = "SELECT * FROM [WMS_AdjustmentDetail] WHERE AID='"+ AdjustmentCount.Rows[i]["AID"] + "'";
+                        DataTable de = this.ExecuteDataTableBySqlString(sql_d);
+                        string isresult = "";
+                        string txtaddress=TxtAdjustment(hd, de, out isresult);
+
+                        if (isresult == "200")
+                        {
+                            string upstr = "UPDATE [WMS_Adjustment] SET Int2=1 WHERE ID='"+ AdjustmentCount.Rows[i]["ID"] + "'";
+                            int upid = this.ScanExecuteNonQueryRID(upstr);
+                        }
+                    }
+                }
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+            return msg;
+        }
+
+        public string TxtAdjustment(DataTable hd,DataTable dt,out string msg)
+        {
+            string TxtAddress = string.Empty;
+            try
+            {
+                string dir = AppDomain.CurrentDomain.BaseDirectory;
+                dir = Path.GetFullPath("..");
+                dir = Path.GetFullPath("../..");
+                string filepath = dir + "/UploadFile";     //文件路径
+                if (Directory.Exists(filepath) == false)//如果不存在就创建file文件夹
+                {
+                    Directory.CreateDirectory(filepath);
+                }
+                if (hd.Rows[0]["AdjustmentType"].ToString() == "库存调整单")
+                {
+                    filepath += "/WMSITR_" + DateTime.Now.ToString("yyyyMMddhhmmss") + "001_ADJ.txt";
+                }
+                else {
+                    filepath += "/WMSITR_" + DateTime.Now.ToString("yyyyMMddhhmmss") + "001_IQC.txt";
+                }
+                TxtAddress = filepath;
+                FileStream file = new FileStream(filepath, FileMode.Create, FileAccess.Write);//创建写入文件 
+                StreamWriter writer = new StreamWriter(file);
+                writer.WriteLine("WMSITR    O " + DateTime.Now.ToString("yyyyMMddhhmmss") + "PUMA                CN   Inventory Transaction Outbound");
+                string header = "RECHD";
+
+
+                msg = "200";
+            }
+            catch (Exception ex)
+            {
+                msg = ex.Message;
+                LogHelper.WriteLog(typeof(string), "WMSAdjustment执行错误:" + msg, LogHelper.LogLevel.Error);
+            }
+            return TxtAddress;
         }
 
     }
