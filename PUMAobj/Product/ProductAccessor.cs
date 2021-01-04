@@ -60,8 +60,6 @@ namespace PUMAobj.Product
                                 Style = txtlists[i].TxtSubstring(3053, 3072),
                                 Color = txtlists[i].TxtSubstring(3073, 3082),
                                 Size = txtlists[i].TxtSubstring(3083, 3087),
-
-
                             });
                         }
                     }
