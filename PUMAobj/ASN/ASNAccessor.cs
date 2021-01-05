@@ -443,7 +443,7 @@ namespace PUMAobj.ASN
         /// 预入库ASN  来自于门店退货  经销商退货
         /// </summary>
         /// <returns></returns>
-        public string GetInbound_ASNHD(List<string> txtlists, out string externumber)
+        public string GetInbound_ASNHD()
         {
             string msg = string.Empty;
             try
@@ -902,7 +902,7 @@ namespace PUMAobj.ASN
         }
 
         /// <summary>
-        /// 来自于 转仓
+        /// 入库订单
         /// </summary>
         /// <returns></returns>
         public string GetInbound_ORDHD()
@@ -1138,283 +1138,18 @@ namespace PUMAobj.ASN
                     }
                 }
 
-                //ans 需要更新(如果asn能够查到数据并且，数据的状态为1就可以更新)
+                //订单数据 
                 for (int i = 0; i < header.Count(); i++)
                 {
-                    string questr = "SELECT * FROM [dbo].[WMS_ASN] WHERE ExternReceiptNumber='" + header[i].ExternOrderKey + "'";
-                    DataTable SuccessCount = this.ExecuteDataTableBySqlString(questr);
-                    if (SuccessCount.Rows.Count <= 0 || SuccessCount.Rows[0]["Status"].ToString() == "1")
-                    {
-                        string sql_1 = "DELETE Inbound_ORDHD WHERE ExternOrderKey='" + header[i].ExternOrderKey + "';";
-                               sql_1+= "DELETE Inbound_ORDDT WHERE ExternOrderKey='" + header[i].ExternOrderKey + "';INSERT INTO Inbound_ORDHD VALUES('" + header[i].HeaderFlag + "'";
-                        sql_1 += ",'" + header[i].InterfaceActionFlag + "'";
-                        sql_1 += ",'" + header[i].OrderKey + "'";
-                        sql_1 += ",'" + header[i].StorerKey + "'";
-                        sql_1 += ",'" + header[i].ExternOrderKey + "'";
-                        sql_1 += ",'" + header[i].Reserved + "'";
-                        sql_1 += ",'" + header[i].OrderDate + "'";
-                        sql_1 += ",'" + header[i].DeliveryDate + "'";
-                        sql_1 += ",'" + header[i].Priority + "'";
-                        sql_1 += ",'" + header[i].ConsigneeKey + "'";
-                        sql_1 += ",'" + header[i].C_contact1 + "'";
-                        sql_1 += ",'" + header[i].C_Contact2 + "'";
-                        sql_1 += ",'" + header[i].C_Company + "'";
-                        sql_1 += ",'" + header[i].C_Address1 + "'";
-                        sql_1 += ",'" + header[i].C_Address2 + "'";
-                        sql_1 += ",'" + header[i].C_Address3 + "'";
-                        sql_1 += ",'" + header[i].C_Address4 + "'";
-                        sql_1 += ",'" + header[i].C_City + "'";
-                        sql_1 += ",'" + header[i].C_State + "'";
-                        sql_1 += ",'" + header[i].C_Zip + "'";
-                        sql_1 += ",'" + header[i].C_Country + "'";
-                        sql_1 += ",'" + header[i].C_ISOCntryCode + "'";
-                        sql_1 += ",'" + header[i].C_Phone1 + "'";
-                        sql_1 += ",'" + header[i].C_Phone2 + "'";
-                        sql_1 += ",'" + header[i].C_Fax1 + "'";
-                        sql_1 += ",'" + header[i].C_Fax2 + "'";
-                        sql_1 += ",'" + header[i].C_vat + "'";
-                        sql_1 += ",'" + header[i].BuyerPO + "'";
-                        sql_1 += ",'" + header[i].BillToKey + "'";
-                        sql_1 += ",'" + header[i].B_contact1 + "'";
-                        sql_1 += ",'" + header[i].B_Contact2 + "'";
-                        sql_1 += ",'" + header[i].B_Company + "'";
-                        sql_1 += ",'" + header[i].B_Address1 + "'";
-                        sql_1 += ",'" + header[i].B_Address2 + "'";
-                        sql_1 += ",'" + header[i].B_Address3 + "'";
-                        sql_1 += ",'" + header[i].B_Address4 + "'";
-                        sql_1 += ",'" + header[i].B_City + "'";
-                        sql_1 += ",'" + header[i].B_State + "'";
-                        sql_1 += ",'" + header[i].B_Zip + "'";
-                        sql_1 += ",'" + header[i].B_Country + "'";
-                        sql_1 += ",'" + header[i].B_ISOCntryCode + "'";
-                        sql_1 += ",'" + header[i].B_Phone1 + "'";
-                        sql_1 += ",'" + header[i].B_Phone2 + "'";
-                        sql_1 += ",'" + header[i].B_Fax1 + "'";
-                        sql_1 += ",'" + header[i].B_Fax2 + "'";
-                        sql_1 += ",'" + header[i].B_Vat + "'";
-                        sql_1 += ",'" + header[i].IncoTerm + "'";
-                        sql_1 += ",'" + header[i].PmtTerm + "'";
-                        sql_1 += ",'" + header[i].OpenQty + "'";
-                        sql_1 += ",'" + header[i].Status + "'";
-                        sql_1 += ",'" + header[i].DischargePlace + "'";
-                        sql_1 += ",'" + header[i].DeliveryPlace + "'";
-                        sql_1 += ",'" + header[i].IntermodalVehicle + "'";
-                        sql_1 += ",'" + header[i].CountryOfOrigin + "'";
-                        sql_1 += ",'" + header[i].CountryDestination + "'";
-                        sql_1 += ",'" + header[i].UpdateSource + "'";
-                        sql_1 += ",'" + header[i].Type + "'";
-                        sql_1 += ",'" + header[i].OrderGroup + "'";
-                        sql_1 += ",'" + header[i].Door + "'";
-                        sql_1 += ",'" + header[i].Route + "'";
-                        sql_1 += ",'" + header[i].Stop + "'";
-                        sql_1 += ",'" + header[i].Notes + "'";
-                        sql_1 += ",'" + header[i].EffectiveDate + "'";
-                        sql_1 += ",'" + header[i].ContainerType + "'";
-                        sql_1 += ",'" + header[i].ContainerQty + "'";
-                        sql_1 += ",'" + header[i].BilledContainerQty + "'";
-                        sql_1 += ",'" + header[i].SOStatus + "'";
-                        sql_1 += ",'" + header[i].MBOLKey + "'";
-                        sql_1 += ",'" + header[i].InvoiceNo + "'";
-                        sql_1 += ",'" + header[i].InvoiceAmount + "'";
-                        sql_1 += ",'" + header[i].Salesman + "'";
-                        sql_1 += ",'" + header[i].GrossWeight + "'";
-                        sql_1 += ",'" + header[i].WgtUnit + "'";
-                        sql_1 += ",'" + header[i].Capacity + "'";
-                        sql_1 += ",'" + header[i].CubeUnit + "'";
-                        sql_1 += ",'" + header[i].PrintFlag + "'";
-                        sql_1 += ",'" + header[i].LoadKey + "'";
-                        sql_1 += ",'" + header[i].Rdd + "'";
-                        sql_1 += ",'" + header[i].Notes2 + "'";
-                        sql_1 += ",'" + header[i].SequenceNo + "'";
-                        sql_1 += ",'" + header[i].Rds + "'";
-                        sql_1 += ",'" + header[i].SectionKey + "'";
-                        sql_1 += ",'" + header[i].Facility + "'";
-                        sql_1 += ",'" + header[i].PrintDocDate + "'";
-                        sql_1 += ",'" + header[i].LabelPrice + "'";
-                        sql_1 += ",'" + header[i].POKey + "'";
-                        sql_1 += ",'" + header[i].ExternPOKey + "'";
-                        sql_1 += ",'" + header[i].XDockFlag + "'";
-                        sql_1 += ",'" + header[i].UserDefine01 + "'";
-                        sql_1 += ",'" + header[i].UserDefine02 + "'";
-                        sql_1 += ",'" + header[i].UserDefine03 + "'";
-                        sql_1 += ",'" + header[i].UserDefine04 + "'";
-                        sql_1 += ",'" + header[i].UserDefine05 + "'";
-                        sql_1 += ",'" + header[i].UserDefine06 + "'";
-                        sql_1 += ",'" + header[i].UserDefine07 + "'";
-                        sql_1 += ",'" + header[i].UserDefine08 + "'";
-                        sql_1 += ",'" + header[i].UserDefine09 + "'";
-                        sql_1 += ",'" + header[i].UserDefine10 + "'";
-                        sql_1 += ",'" + header[i].Issued + "'";
-                        sql_1 += ",'" + header[i].DeliveryNote + "'";
-                        sql_1 += ",'" + header[i].PODCust + "'";
-                        sql_1 += ",'" + header[i].PODArrive + "'";
-                        sql_1 += ",'" + header[i].PODReject + "'";
-                        sql_1 += ",'" + header[i].PODUser + "'";
-                        sql_1 += ",'" + header[i].xdockpokey + "'";
-                        sql_1 += ",'" + header[i].SpecialHandling + "'";
-                        sql_1 += ",'" + header[i].RoutingTool + "'";
-                        sql_1 += ",'" + header[i].MarkforKey + "'";
-                        sql_1 += ",'" + header[i].M_Contact1 + "'";
-                        sql_1 += ",'" + header[i].M_Contact2 + "'";
-                        sql_1 += ",'" + header[i].M_Company + "'";
-                        sql_1 += ",'" + header[i].M_Address1 + "'";
-                        sql_1 += ",'" + header[i].M_Address2 + "'";
-                        sql_1 += ",'" + header[i].M_Address3 + "'";
-                        sql_1 += ",'" + header[i].M_Address4 + "'";
-                        sql_1 += ",'" + header[i].M_City + "'";
-                        sql_1 += ",'" + header[i].M_State + "'";
-                        sql_1 += ",'" + header[i].M_Zip + "'";
-                        sql_1 += ",'" + header[i].M_Country + "'";
-                        sql_1 += ",'" + header[i].M_ISOCntryCode + "'";
-                        sql_1 += ",'" + header[i].M_Phone1 + "'";
-                        sql_1 += ",'" + header[i].M_Phone2 + "'";
-                        sql_1 += ",'" + header[i].M_Fax1 + "'";
-                        sql_1 += ",'" + header[i].M_Fax2 + "'";
-                        sql_1 += ",'" + header[i].M_vat + "'";
-                        sql_1 += ",'" + header[i].C_State_Long + "'";
-
-                        sql_1 += ",'0'";
-                        sql_1 += ",Null";
-                        sql_1 += ",'" + DateTime.Now + "'";
-                        sql_1 += ",Null";
-                        sql_1 += ") SELECT @@IDENTITY AS Inbound_ORDHD;";
-                        int id_1 = this.ScanExecuteNonQueryRID(sql_1);
-                        if (id_1 > 0)
-                        {
-                            List<ASNH> aSNHs = new List<ASNH>();
-                            aSNHs.Add(new ASNH
-                            {
-                                ExternReceiptNumber = header[i].ExternOrderKey,
-                                CustomerID = 108,
-                                CustomerName = "PUMA_SH",
-                                WarehouseID = 3,
-                                WarehouseName = "PUMA上海仓",
-                                ExpectDate = DateTime.Now.AddDays(3),
-                                Status = 1,
-                                ASNType = "转仓入库",
-                                Creator = "API",
-                                CreateTime = DateTime.Now,
-                                str3 = "PUMA",
-                            });
-                            request.asn = aSNHs;
-                            List<ASNDetail> aSNDetails = new List<ASNDetail>();
-                            for (int m = 0; m < details.Count(); m++)
-                            {
-                                ASNDetail detail = new ASNDetail();
-                                if (header[i].ExternOrderKey == details[m].ExternOrderKey)
-                                {
-                                    detail.ExternReceiptNumber = header[i].ExternOrderKey;
-                                    detail.CustomerID = 108;
-                                    detail.CustomerName = "PUMA_SH";
-                                    detail.LineNumber = details[m].ExternLineNo;
-                                    detail.SKU = details[m].Sku;
-                                    detail.QtyExpected = details[m].OpenQty;
-                                    detail.QtyReceived = 0.000;
-                                    detail.QtyDiff = 0.000;
-                                    detail.GoodsName = details[m].Sku;
-                                    detail.Creator = "API";
-                                    detail.CreateTime = DateTime.Now;
-                                    aSNDetails.Add(detail);
-
-                                    string sql_2 = "INSERT INTO Inbound_ORDDT VALUES('" + id_1 + "'";
-                                    sql_2 += ",'" + details[m].HeaderFlag + "'";
-                                    sql_2 += ",'" + details[m].InterfaceActionFlag + "'";
-                                    sql_2 += ",'" + details[m].OrderLineNumber + "'";
-                                    sql_2 += ",'" + details[m].OrderDetailSysId + "'";
-                                    sql_2 += ",'" + details[m].ExternOrderKey + "'";
-                                    sql_2 += ",'" + details[m].ExternLineNo + "'";
-                                    sql_2 += ",'" + details[m].Sku + "'";
-                                    sql_2 += ",'" + details[m].StorerKey + "'";
-                                    sql_2 += ",'" + details[m].ManufacturerSku + "'";
-                                    sql_2 += ",'" + details[m].RetailSku + "'";
-                                    sql_2 += ",'" + details[m].AltSku + "'";
-                                    sql_2 += ",'" + details[m].OriginalQty + "'";
-                                    sql_2 += ",'" + details[m].OpenQty + "'";
-                                    sql_2 += ",'" + details[m].ShippedQty + "'";
-                                    sql_2 += ",'" + details[m].AdjustedQty + "'";
-                                    sql_2 += ",'" + details[m].QtyPreAllocated + "'";
-                                    sql_2 += ",'" + details[m].QtyAllocated + "'";
-                                    sql_2 += ",'" + details[m].QtyPicked + "'";
-                                    sql_2 += ",'" + details[m].UOM + "'";
-                                    sql_2 += ",'" + details[m].PackKey + "'";
-                                    sql_2 += ",'" + details[m].PickCode + "'";
-                                    sql_2 += ",'" + details[m].CartonGroup + "'";
-                                    sql_2 += ",'" + details[m].Lot + "'";
-                                    sql_2 += ",'" + details[m].ID + "'";
-                                    sql_2 += ",'" + details[m].Facility + "'";
-                                    sql_2 += ",'" + details[m].Status + "'";
-                                    sql_2 += ",'" + details[m].UnitPrice + "'";
-                                    sql_2 += ",'" + details[m].Tax01 + "'";
-                                    sql_2 += ",'" + details[m].Tax02 + "'";
-                                    sql_2 += ",'" + details[m].ExtendedPrice + "'";
-                                    sql_2 += ",'" + details[m].Reserved + "'";
-                                    sql_2 += ",'" + details[m].UpdateSource + "'";
-                                    sql_2 += ",'" + details[m].Lottable01 + "'";
-                                    sql_2 += ",'" + details[m].Lottable02 + "'";
-                                    sql_2 += ",'" + details[m].Lottable03 + "'";
-                                    sql_2 += ",'" + details[m].Lottable04 + "'";
-                                    sql_2 += ",'" + details[m].Lottable05 + "'";
-                                    sql_2 += ",'" + details[m].EffectiveDate + "'";
-                                    sql_2 += ",'" + details[m].TariffKey + "'";
-                                    sql_2 += ",'" + details[m].FreeGoodQty + "'";
-                                    sql_2 += ",'" + details[m].GrossWeight + "'";
-                                    sql_2 += ",'" + details[m].WgtUnit + "'";
-                                    sql_2 += ",'" + details[m].Capacity + "'";
-                                    sql_2 += ",'" + details[m].CubeUnit + "'";
-                                    sql_2 += ",'" + details[m].LoadKey + "'";
-                                    sql_2 += ",'" + details[m].MBOLKey + "'";
-                                    sql_2 += ",'" + details[m].QtyToProcess + "'";
-                                    sql_2 += ",'" + details[m].MinShelfLife + "'";
-                                    sql_2 += ",'" + details[m].UserDefine01 + "'";
-                                    sql_2 += ",'" + details[m].UserDefine02 + "'";
-                                    sql_2 += ",'" + details[m].UserDefine03 + "'";
-                                    sql_2 += ",'" + details[m].UserDefine04 + "'";
-                                    sql_2 += ",'" + details[m].UserDefine05 + "'";
-                                    sql_2 += ",'" + details[m].UserDefine06 + "'";
-                                    sql_2 += ",'" + details[m].UserDefine07 + "'";
-                                    sql_2 += ",'" + details[m].UserDefine08 + "'";
-                                    sql_2 += ",'" + details[m].UserDefine09 + "'";
-                                    sql_2 += ",'" + details[m].POkey + "'";
-                                    sql_2 += ",'" + details[m].ExternPOKey + "'";
-                                    sql_2 += ",'" + details[m].OrgExternLineNo + "'";
-
-                                    sql_2 += ",'" + DateTime.Now + "'";
-                                    sql_2 += ",Null";
-                                    sql_2 += ") SELECT @@IDENTITY AS Inbound_ORDDT;";
-
-                                    int id_2 = this.ScanExecuteNonQueryRID(sql_2);
-                                    if (id_2 < 0)
-                                    {
-                                        LogHelper.WriteLog(typeof(string), "Inbound_ORDDT数据写入错误:" + sql_2, LogHelper.LogLevel.Error);
-                                        msg = "Inbound_ORDDT数据写入错误";
-                                        return msg;
-                                    }
-                                }
-                            }
-                            request.asnDetails = aSNDetails;
-                            int isresult;
-                            AddasnAndasnDetail(request, out isresult);
-                            if (isresult != 200)
-                            {
-                                LogHelper.WriteLog(typeof(string), "ASN入库单写入WMS失败:" + header[i].HeaderFlag, LogHelper.LogLevel.Error);
-                                msg = "ASN入库单写入WMS失败";
-                                return msg;
-                            }
-                        }
-                        else
-                        {
-                            LogHelper.WriteLog(typeof(string), "Inbound_ORDHD数据写入错误:" + sql_1, LogHelper.LogLevel.Error);
-                            msg = "Inbound_ORDHD数据写入错误";
-                            return msg;
-                        }
-                    }
+                    
+                 
                 }
                 msg = "200";
             }
             catch (Exception ex)
             {
                 msg = ex.Message;
-                LogHelper.WriteLog(typeof(string), "ASN接口错误:" + ex.Message, LogHelper.LogLevel.Error);
+                LogHelper.WriteLog(typeof(string), "GetInbound_ORDHD入库订单接口错误:" + ex.Message, LogHelper.LogLevel.Error);
             }
 
             return msg;
@@ -2083,6 +1818,8 @@ namespace PUMAobj.ASN
             }
             return TxtAddress;
         }
+
+
 
 
     }

@@ -34,7 +34,7 @@ namespace PUMAobj
             //DownloadInterface uploadInterface = new DownloadInterface();
 
 
-            ASNAccessor aSN = new ASNAccessor();
+            //ASNAccessor aSN = new ASNAccessor();
             //aSN.GetInbound_ASNHD();
             //Upload upload = new Upload(uploadInterface, defparams,
             //                           DateTime.Now.ToString("yyyyMMddHHmmss") + "Test");
