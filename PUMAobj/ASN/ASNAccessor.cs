@@ -639,14 +639,15 @@ namespace PUMAobj.ASN
                     }
                 }
 
-                //ans 不需要更新 根据ExternReceiptKey字段过滤掉
+                //ans 需要更新(如果asn能够查到数据并且，数据的状态为1就可以更新)
                 for (int i = 0; i < header.Count(); i++)
                 {
-                    string questr = "SELECT * FROM Inbound_ASNHD WHERE ExternReceiptKey = '" + header[i].ExternReceiptKey + "'";
+                    string questr = "SELECT * FROM [dbo].[WMS_ASN] WHERE ExternReceiptNumber='" + header[i].ExternReceiptKey + "'";
                     DataTable SuccessCount = this.ExecuteDataTableBySqlString(questr);
-                    if (SuccessCount.Rows.Count <= 0)
+                    if (SuccessCount.Rows.Count <= 0 || SuccessCount.Rows[0]["Status"].ToString() == "1")
                     {
-                        string sql_1 = "INSERT INTO Inbound_ASNHD VALUES('" + header[i].HeaderFlag + "'";
+                        //先删除 在新增
+                        string sql_1 = "DELETE Inbound_ASNHD WHERE ExternReceiptKey='" + header[i].ExternReceiptKey + "';INSERT INTO Inbound_ASNHD VALUES('" + header[i].HeaderFlag + "'";
                         sql_1 += ",'" + header[i].InterfaceActionFlag + "'";
                         sql_1 += ",'" + header[i].ReceiptKey + "'";
                         sql_1 += ",'" + header[i].ExternReceiptKey + "'";
@@ -747,13 +748,14 @@ namespace PUMAobj.ASN
                             {
                                 ASNType = "门店入库";
                             }
-                            else {
+                            else
+                            {
                                 ASNType = "经销商入库";
                             }
                             List<ASNH> aSNHs = new List<ASNH>();
                             aSNHs.Add(new ASNH
                             {
-                                ExternReceiptNumber= header[i].ExternReceiptKey,
+                                ExternReceiptNumber = header[i].ExternReceiptKey,
                                 CustomerID = 108,
                                 CustomerName = "PUMA_SH",
                                 WarehouseID = 3,
@@ -785,7 +787,8 @@ namespace PUMAobj.ASN
                                     detail.CreateTime = DateTime.Now;
                                     aSNDetails.Add(detail);
 
-                                    string sql_2 = "INSERT INTO Inbound_ASNDT VALUES('" + id_1 + "'";
+                                    //删除原数据  更新新数据
+                                    string sql_2 = "DELETE Inbound_ASNDT WHERE ExternReceiptKey='" + details[m].ExternReceiptKey + "';INSERT INTO Inbound_ASNDT VALUES('" + id_1 + "'";
                                     sql_2 += ",'" + details[m].HeaderFlag + "'";
                                     sql_2 += ",'" + details[m].InterfaceActionFlag + "'";
                                     sql_2 += ",'" + details[m].ReceiptKey + "'";
@@ -866,19 +869,24 @@ namespace PUMAobj.ASN
                             }
                             request.asnDetails = aSNDetails;
                             int isresult;
-                            AddasnAndasnDetail(request,out isresult);
-                            if (isresult!=200)
+                            AddasnAndasnDetail(request, out isresult);
+                            if (isresult != 200)
                             {
                                 LogHelper.WriteLog(typeof(string), "ASN入库单写入WMS失败:" + header[i].HeaderFlag, LogHelper.LogLevel.Error);
                                 msg = "ASN入库单写入WMS失败";
                                 return msg;
                             }
                         }
-                        else {
+                        else
+                        {
                             LogHelper.WriteLog(typeof(string), "Inbound_ASNHD数据写入错误:" + sql_1, LogHelper.LogLevel.Error);
                             msg = "Inbound_ASNHD数据写入错误";
                             return msg;
                         }
+                    }
+                    else {
+
+
                     }
                 }
                 msg = "200";
@@ -1129,14 +1137,14 @@ namespace PUMAobj.ASN
                     }
                 }
 
-                //ans 不需要更新 根据ExternReceiptKey字段过滤掉
+                //ans 需要更新(如果asn能够查到数据并且，数据的状态为1就可以更新)
                 for (int i = 0; i < header.Count(); i++)
                 {
-                    string questr = "SELECT * FROM Inbound_ORDHD WHERE ExternOrderKey = '" + header[i].ExternOrderKey + "'";
+                    string questr = "SELECT * FROM [dbo].[WMS_ASN] WHERE ExternReceiptNumber='" + header[i].ExternOrderKey + "'";
                     DataTable SuccessCount = this.ExecuteDataTableBySqlString(questr);
-                    if (SuccessCount.Rows.Count <= 0)
+                    if (SuccessCount.Rows.Count <= 0 || SuccessCount.Rows[0]["Status"].ToString() == "1")
                     {
-                        string sql_1 = "INSERT INTO Inbound_ORDHD VALUES('" + header[i].HeaderFlag + "'";
+                        string sql_1 = "DELETE Inbound_ORDHD WHERE ExternOrderKey='" + header[i].ExternOrderKey + "';INSERT INTO Inbound_ORDHD VALUES('" + header[i].HeaderFlag + "'";
                         sql_1 += ",'" + header[i].InterfaceActionFlag + "'";
                         sql_1 += ",'" + header[i].OrderKey + "'";
                         sql_1 += ",'" + header[i].StorerKey + "'";
@@ -1306,7 +1314,7 @@ namespace PUMAobj.ASN
                                     detail.CreateTime = DateTime.Now;
                                     aSNDetails.Add(detail);
 
-                                    string sql_2 = "INSERT INTO Inbound_ORDDT VALUES('" + id_1 + "'";
+                                    string sql_2 = "DELETE Inbound_ORDDT WHERE ExternOrderKey='" + details[m].ExternOrderKey + "';INSERT INTO Inbound_ORDDT VALUES('" + id_1 + "'";
                                     sql_2 += ",'" + details[m].HeaderFlag + "'";
                                     sql_2 += ",'" + details[m].InterfaceActionFlag + "'";
                                     sql_2 += ",'" + details[m].OrderLineNumber + "'";
