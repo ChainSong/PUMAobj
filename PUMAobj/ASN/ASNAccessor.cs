@@ -1877,6 +1877,13 @@ namespace PUMAobj.ASN
             return msg;
         }
 
+        /// <summary>
+        /// 生成库存调整文件
+        /// </summary>
+        /// <param name="hd"></param>
+        /// <param name="dt"></param>
+        /// <param name="msg"></param>
+        /// <returns></returns>
         public string TxtAdjustment(DataTable hd,DataTable dt,out string msg)
         {
             string TxtAddress = string.Empty;
@@ -1901,9 +1908,82 @@ namespace PUMAobj.ASN
                 FileStream file = new FileStream(filepath, FileMode.Create, FileAccess.Write);//创建写入文件 
                 StreamWriter writer = new StreamWriter(file);
                 writer.WriteLine("WMSITR    O " + DateTime.Now.ToString("yyyyMMddhhmmss") + "PUMA                CN   Inventory Transaction Outbound");
-                string header = "RECHD";
+                string header = "ITRHDA";
+                header += hd.Rows[0]["ITRNKey"].ToString().TxtStrPush(10);
+                header += hd.Rows[0]["ITRType"].ToString().TxtStrPush(3);
+                header += hd.Rows[0]["WMSDocKey"].ToString().TxtStrPush(10);
+                header += hd.Rows[0]["StorerKey"].ToString().TxtStrPush(15);
+                header += hd.Rows[0]["Facility"].ToString().TxtStrPush(5);
+                header += hd.Rows[0]["Reserved-IQC.ToFacility"].ToString().TxtStrPush(10);
+                header += hd.Rows[0]["EffectiveDate"].ToString().TxtStrPush(14);
+                header += hd.Rows[0]["CustomerRefNo"].ToString().TxtStrPush(10);
+                header += hd.Rows[0]["OtherRefNo"].ToString().TxtStrPush(10);
+                header += hd.Rows[0]["DocType"].ToString().TxtStrPush(3);
+                header += hd.Rows[0]["ReasonCode"].ToString().TxtStrPush(10);
+                header += hd.Rows[0]["Remarks"].ToString().TxtStrPush(200);
+                header += hd.Rows[0]["UserDefine01"].ToString().TxtStrPush(20);
+                header += hd.Rows[0]["UserDefine02"].ToString().TxtStrPush(20);
+                header += hd.Rows[0]["UserDefine03"].ToString().TxtStrPush(20);
+                header += hd.Rows[0]["UserDefine04"].ToString().TxtStrPush(20);
+                header += hd.Rows[0]["UserDefine05"].ToString().TxtStrPush(20);
+                header += hd.Rows[0]["UserDefine06"].ToString().TxtStrPush(14);
+                header += hd.Rows[0]["UserDefine07"].ToString().TxtStrPush(14);
+                header += hd.Rows[0]["UserDefine08"].ToString().TxtStrPush(10);
+                header += hd.Rows[0]["UserDefine09"].ToString().TxtStrPush(10);
+                header += hd.Rows[0]["UserDefine10"].ToString().TxtStrPush(10);
 
+                writer.WriteLine(header);
+                for (int i = 0; i < dt.Rows.Count; i++)
+                {
+                    string dtstr = "ITRDTA";
+                    dtstr += dt.Rows[i]["ITRNKey"].ToString().TxtStrPush(10);
+                    dtstr += dt.Rows[i]["ITRNLineNo"].ToString().TxtStrPush(3);
+                    dtstr += dt.Rows[i]["ITRType"].ToString().TxtStrPush(3);
+                    dtstr += dt.Rows[i]["WMSDocKey"].ToString().TxtStrPush(10);
+                    dtstr += dt.Rows[i]["WMSDocLineNo"].ToString().TxtStrPush(5);
+                    dtstr += dt.Rows[i]["StorerKey"].ToString().TxtStrPush(15);
+                    dtstr += dt.Rows[i]["Sku"].ToString().TxtStrPush(20);
+                    dtstr += dt.Rows[i]["HostWHCode"].ToString().TxtStrPush(10);
+                    dtstr += dt.Rows[i]["Loc"].ToString().TxtStrPush(10);
+                    dtstr += dt.Rows[i]["ID"].ToString().TxtStrPush(18);
+                    dtstr += dt.Rows[i]["Sign"].ToString().TxtStrPush(5);
+                    dtstr += dt.Rows[i]["Qty"].ToString().TxtStrPush(10);
+                    dtstr += dt.Rows[i]["UOM"].ToString().TxtStrPush(10);
+                    dtstr += dt.Rows[i]["Lottable01"].ToString().TxtStrPush(18);
+                    dtstr += dt.Rows[i]["Lottable02"].ToString().TxtStrPush(18);
+                    dtstr += dt.Rows[i]["Lottable03"].ToString().TxtStrPush(18);
+                    dtstr += dt.Rows[i]["Lottable04"].ToString().TxtStrPush(14);
+                    dtstr += dt.Rows[i]["Lottable05"].ToString().TxtStrPush(14);
+                    dtstr += dt.Rows[i]["EffectiveDate"].ToString().TxtStrPush(14);
+                    dtstr += dt.Rows[i]["ReasonCode"].ToString().TxtStrPush(10);
+                    dtstr += dt.Rows[i]["UserDefine01"].ToString().TxtStrPush(20);
+                    dtstr += dt.Rows[i]["UserDefine02"].ToString().TxtStrPush(20);
+                    dtstr += dt.Rows[i]["UserDefine03"].ToString().TxtStrPush(20);
+                    dtstr += dt.Rows[i]["UserDefine04"].ToString().TxtStrPush(20);
+                    dtstr += dt.Rows[i]["UserDefine05"].ToString().TxtStrPush(20);
+                    dtstr += dt.Rows[i]["UserDefine06"].ToString().TxtStrPush(14);
+                    dtstr += dt.Rows[i]["UserDefine07"].ToString().TxtStrPush(14);
+                    dtstr += dt.Rows[i]["UserDefine08"].ToString().TxtStrPush(10);
+                    dtstr += dt.Rows[i]["UserDefine09"].ToString().TxtStrPush(10);
+                    dtstr += dt.Rows[i]["UserDefine10"].ToString().TxtStrPush(10);
+                    dtstr += dt.Rows[i]["EditWho"].ToString().TxtStrPush(18);
+                    dtstr += dt.Rows[i]["EditDate"].ToString().TxtStrPush(14);
+                    dtstr += dt.Rows[i]["BUSR5"].ToString().TxtStrPush(30);
+                    dtstr += dt.Rows[i]["Class"].ToString().TxtStrPush(10);
+                    dtstr += dt.Rows[i]["itemclass"].ToString().TxtStrPush(10);
+                    dtstr += dt.Rows[i]["SKUGroup"].ToString().TxtStrPush(10);
+                    dtstr += dt.Rows[i]["Style"].ToString().TxtStrPush(20);
+                    dtstr += dt.Rows[i]["Color"].ToString().TxtStrPush(10);
+                    dtstr += dt.Rows[i]["Size"].ToString().TxtStrPush(5);
+                    dtstr += dt.Rows[i]["Measurement"].ToString().TxtStrPush(5);
+                    writer.WriteLine(dtstr);
+                }
 
+                string fotstr = "ITRTR" + (dt.Rows.Count + 1).ToString().PadLeft(10, '0');
+                writer.WriteLine(fotstr);
+
+                writer.Close();
+                file.Close();
                 msg = "200";
             }
             catch (Exception ex)
