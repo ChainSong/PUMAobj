@@ -1869,10 +1869,10 @@ namespace PUMAobj.ASN
                     }
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-
-                throw;
+                msg = ex.Message;
+                LogHelper.WriteLog(typeof(string), "WMSAdjustment执行错误:" + msg, LogHelper.LogLevel.Error);
             }
             return msg;
         }
@@ -1993,6 +1993,97 @@ namespace PUMAobj.ASN
             }
             return TxtAddress;
         }
+
+
+        /// <summary>
+        /// 生成库存快照 并且生成txt
+        /// </summary>
+        /// <returns></returns>
+        public string WMSInventory()
+        {
+            string msg = string.Empty;
+            try
+            {
+
+            }
+            catch (Exception ex)
+            {
+                msg = ex.Message;
+                LogHelper.WriteLog(typeof(string), "TxtWMSInventory执行错误:" + msg, LogHelper.LogLevel.Error);
+            }
+            return msg;
+        }
+
+        /// <summary>
+        /// 生成库存快照txt文件
+        /// </summary>
+        /// <param name="hd"></param>
+        /// <param name="msg"></param>
+        public string TxtWMSInventory(DataTable hd,out string msg)
+        {
+            string TxtAddress = string.Empty;
+            try
+            {
+                string dir = AppDomain.CurrentDomain.BaseDirectory;
+                dir = Path.GetFullPath("..");
+                dir = Path.GetFullPath("../..");
+                string filepath = dir + "/UploadFile";     //文件路径
+                if (Directory.Exists(filepath) == false)//如果不存在就创建file文件夹
+                {
+                    Directory.CreateDirectory(filepath);
+                }
+                filepath += "/WMSSOH_"+DateTime.Now.ToString("yyyyMMddhhmmss")+".txt";
+                TxtAddress = filepath;
+                FileStream file = new FileStream(filepath, FileMode.Create, FileAccess.Write);//创建写入文件 
+                StreamWriter writer = new StreamWriter(file);
+                writer.WriteLine("WMSSOHO "+DateTime.Now.ToString("yyyyMMddhhmmss")+ "PUMA                CN   SOH Outbound");
+                for (int i = 0; i < hd.Rows.Count; i++)
+                {
+                    string content = "SOHDTA";
+                    content += hd.Rows[i]["SNAPSHOTDATE"].ToString().TxtStrPush(14);
+                    content += hd.Rows[i]["StorerKey"].ToString().TxtStrPush(15);
+                    content += hd.Rows[i]["Facility"].ToString().TxtStrPush(5);
+                    content += hd.Rows[i]["HostWhCode"].ToString().TxtStrPush(10);
+                    content += hd.Rows[i]["SKU"].ToString().TxtStrPush(20);
+                    content += hd.Rows[i]["ID"].ToString().TxtStrPush(18);
+                    content += hd.Rows[i]["Lottable01"].ToString().TxtStrPush(18);
+                    content += hd.Rows[i]["Lottable02"].ToString().TxtStrPush(18);
+                    content += hd.Rows[i]["Lottable03"].ToString().TxtStrPush(18);
+                    content += hd.Rows[i]["Lottable04"].ToString().TxtStrPush(14);
+                    content += hd.Rows[i]["Lottable05"].ToString().TxtStrPush(14);
+                    content += hd.Rows[i]["PackUOM3"].ToString().TxtStrPush(10);
+                    content += hd.Rows[i]["TOTALSOH"].ToString().TxtStrPush(10);
+                    content += hd.Rows[i]["AVAILSOH"].ToString().TxtStrPush(10);
+                    content += hd.Rows[i]["QtyAllocPicked = QtyAllocated + QtyPicked"].ToString().TxtStrPush(10);
+                    content += hd.Rows[i]["QtyonHold"].ToString().TxtStrPush(10);
+                    content += hd.Rows[i]["QtyDamage"].ToString().TxtStrPush(10);
+                    content += hd.Rows[i]["UserDefine01"].ToString().TxtStrPush(30);
+                    content += hd.Rows[i]["UserDefine02"].ToString().TxtStrPush(30);
+                    content += hd.Rows[i]["UserDefine03"].ToString().TxtStrPush(30);
+                    content += hd.Rows[i]["UserDefine04"].ToString().TxtStrPush(30);
+                    content += hd.Rows[i]["UserDefine05"].ToString().TxtStrPush(30);
+                    content += hd.Rows[i]["ALTSKU"].ToString().TxtStrPush(20);
+                    content += hd.Rows[i]["Style"].ToString().TxtStrPush(20);
+                    content += hd.Rows[i]["Color"].ToString().TxtStrPush(10);
+                    content += hd.Rows[i]["Size"].ToString().TxtStrPush(5);
+                    content += hd.Rows[i]["Measurement"].ToString().TxtStrPush(5);
+                    writer.WriteLine(content);
+                }
+                string fotstr = "SOHTR" + (hd.Rows.Count + 1).ToString().PadLeft(10, '0');
+                writer.WriteLine(fotstr);
+
+                writer.Close();
+                file.Close();
+                msg = "200";
+            }
+            catch (Exception ex)
+            {
+                msg = ex.Message;
+                LogHelper.WriteLog(typeof(string), "TxtWMSInventory执行错误:" + msg, LogHelper.LogLevel.Error);
+            }
+            return TxtAddress;
+        }
+
 
     }
 }
