@@ -43,12 +43,12 @@ namespace PUMAobj
             ASNAccessor aSN = new ASNAccessor();
             //aSN.GetInbound_ASNHD();
 
-            //aSN.GetInbound_ORDHD();
+            aSN.GetInbound_ORDHD();
 
             //aSN.Create_RECHD_TXT1(null, null);
 
-            string msg = "";
-            string txtaddress=aSN.Create_RECHD_TXT2(null, null,out msg);
+            //string msg = "";
+            //string txtaddress=aSN.Create_RECHD_TXT2(null, null,out msg);
         }
     }
 }

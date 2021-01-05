@@ -647,7 +647,8 @@ namespace PUMAobj.ASN
                     if (SuccessCount.Rows.Count <= 0 || SuccessCount.Rows[0]["Status"].ToString() == "1")
                     {
                         //先删除 在新增
-                        string sql_1 = "DELETE Inbound_ASNHD WHERE ExternReceiptKey='" + header[i].ExternReceiptKey + "';INSERT INTO Inbound_ASNHD VALUES('" + header[i].HeaderFlag + "'";
+                        string sql_1 = "DELETE Inbound_ASNHD WHERE ExternReceiptKey='" + header[i].ExternReceiptKey + "';";
+                               sql_1+= "DELETE Inbound_ASNDT WHERE ExternReceiptKey='" + header[i].ExternReceiptKey + "';INSERT INTO Inbound_ASNHD VALUES('" + header[i].HeaderFlag + "'";
                         sql_1 += ",'" + header[i].InterfaceActionFlag + "'";
                         sql_1 += ",'" + header[i].ReceiptKey + "'";
                         sql_1 += ",'" + header[i].ExternReceiptKey + "'";
@@ -788,7 +789,7 @@ namespace PUMAobj.ASN
                                     aSNDetails.Add(detail);
 
                                     //删除原数据  更新新数据
-                                    string sql_2 = "DELETE Inbound_ASNDT WHERE ExternReceiptKey='" + details[m].ExternReceiptKey + "';INSERT INTO Inbound_ASNDT VALUES('" + id_1 + "'";
+                                    string sql_2 = "INSERT INTO Inbound_ASNDT VALUES('" + id_1 + "'";
                                     sql_2 += ",'" + details[m].HeaderFlag + "'";
                                     sql_2 += ",'" + details[m].InterfaceActionFlag + "'";
                                     sql_2 += ",'" + details[m].ReceiptKey + "'";
@@ -1144,7 +1145,8 @@ namespace PUMAobj.ASN
                     DataTable SuccessCount = this.ExecuteDataTableBySqlString(questr);
                     if (SuccessCount.Rows.Count <= 0 || SuccessCount.Rows[0]["Status"].ToString() == "1")
                     {
-                        string sql_1 = "DELETE Inbound_ORDHD WHERE ExternOrderKey='" + header[i].ExternOrderKey + "';INSERT INTO Inbound_ORDHD VALUES('" + header[i].HeaderFlag + "'";
+                        string sql_1 = "DELETE Inbound_ORDHD WHERE ExternOrderKey='" + header[i].ExternOrderKey + "';";
+                               sql_1+= "DELETE Inbound_ORDDT WHERE ExternOrderKey='" + header[i].ExternOrderKey + "';INSERT INTO Inbound_ORDHD VALUES('" + header[i].HeaderFlag + "'";
                         sql_1 += ",'" + header[i].InterfaceActionFlag + "'";
                         sql_1 += ",'" + header[i].OrderKey + "'";
                         sql_1 += ",'" + header[i].StorerKey + "'";
@@ -1314,7 +1316,7 @@ namespace PUMAobj.ASN
                                     detail.CreateTime = DateTime.Now;
                                     aSNDetails.Add(detail);
 
-                                    string sql_2 = "DELETE Inbound_ORDDT WHERE ExternOrderKey='" + details[m].ExternOrderKey + "';INSERT INTO Inbound_ORDDT VALUES('" + id_1 + "'";
+                                    string sql_2 = "INSERT INTO Inbound_ORDDT VALUES('" + id_1 + "'";
                                     sql_2 += ",'" + details[m].HeaderFlag + "'";
                                     sql_2 += ",'" + details[m].InterfaceActionFlag + "'";
                                     sql_2 += ",'" + details[m].OrderLineNumber + "'";
@@ -1451,7 +1453,7 @@ namespace PUMAobj.ASN
                     if (message.IndexOf("添加成功") > -1)
                     {
                         msg = 200;
-                    }
+                    } 
                     else {
                         LogHelper.WriteLog(typeof(string), "AddasnAndasnDetail执行错误:" + message, LogHelper.LogLevel.Error);
                     }
