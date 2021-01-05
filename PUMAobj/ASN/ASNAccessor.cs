@@ -443,7 +443,7 @@ namespace PUMAobj.ASN
         /// 预入库ASN  来自于门店退货  经销商退货
         /// </summary>
         /// <returns></returns>
-        public string GetInbound_ASNHD()
+        public string GetInbound_ASNHD(List<string> txtlists, out string externumber)
         {
             string msg = string.Empty;
             try

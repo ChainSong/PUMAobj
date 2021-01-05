@@ -1,4 +1,5 @@
-﻿using PUMAobj.Common;
+﻿using PUMAobj.ASN;
+using PUMAobj.Common;
 using PUMAobj.Log;
 using PUMAobj.MessageContracts;
 using PUMAobj.Product;
@@ -103,7 +104,7 @@ namespace PUMAobj.Downloader
 
         public override bool Get()
         {
-            return true;
+            //return true;
             try
             {
                 //连接FTP 将文件下载到本地
@@ -154,6 +155,10 @@ namespace PUMAobj.Downloader
                                     case "WMSSKU"://PUMA推给我们的
                                         log.Type = "WMSSKU";
                                         result = new ProductAccessor().AddProduct(txtlists, out externumber);
+                                        break;
+                                    case "WMSASN"://PUMA推给我们的
+                                        log.Type = "WMSASN";
+                                        result = new ASNAccessor().GetInbound_ASNHD(txtlists, out externumber);
                                         break;
                                     default:
                                         log.Type = "";

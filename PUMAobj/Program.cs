@@ -33,22 +33,22 @@ namespace PUMAobj
 
             //DownloadInterface uploadInterface = new DownloadInterface();
 
-            ////Upload upload = new Upload(uploadInterface, defparams,
-            ////                           DateTime.Now.ToString("yyyyMMddHHmmss") + "Test");
+
+            ASNAccessor aSN = new ASNAccessor();
+            //aSN.GetInbound_ASNHD();
+            //Upload upload = new Upload(uploadInterface, defparams,
+            //                           DateTime.Now.ToString("yyyyMMddHHmmss") + "Test");
 
             //LogHelper.WriteLog(typeof(string), "--开始上传接口对接--", LogHelper.LogLevel.INFO);
             //uploadInterface.StartDownload();
             //LogHelper.WriteLog(typeof(string), "--结束上传接口对接--", LogHelper.LogLevel.INFO);
 
-            ASNAccessor aSN = new ASNAccessor();
-            //aSN.GetInbound_ASNHD();
-
             //aSN.GetInbound_ORDHD();
 
             //aSN.Create_RECHD_TXT1(null, null);
 
-            string msg = "";
-            string txtaddress=aSN.Create_RECHD_TXT2(null, null,out msg);
+            //string msg = "";
+            //string txtaddress=aSN.Create_RECHD_TXT2(null, null,out msg);
         }
     }
 }
