@@ -639,14 +639,16 @@ namespace PUMAobj.ASN
                     }
                 }
 
-                //ans 不需要更新 根据ExternReceiptKey字段过滤掉
+                //ans 需要更新(如果asn能够查到数据并且，数据的状态为1就可以更新)
                 for (int i = 0; i < header.Count(); i++)
                 {
-                    string questr = "SELECT * FROM Inbound_ASNHD WHERE ExternReceiptKey = '" + header[i].ExternReceiptKey + "'";
+                    string questr = "SELECT * FROM [dbo].[WMS_ASN] WHERE ExternReceiptNumber='" + header[i].ExternReceiptKey + "'";
                     DataTable SuccessCount = this.ExecuteDataTableBySqlString(questr);
-                    if (SuccessCount.Rows.Count <= 0)
+                    if (SuccessCount.Rows.Count <= 0 || SuccessCount.Rows[0]["Status"].ToString() == "1")
                     {
-                        string sql_1 = "INSERT INTO Inbound_ASNHD VALUES('" + header[i].HeaderFlag + "'";
+                        //先删除 在新增
+                        string sql_1 = "DELETE Inbound_ASNHD WHERE ExternReceiptKey='" + header[i].ExternReceiptKey + "';";
+                               sql_1+= "DELETE Inbound_ASNDT WHERE ExternReceiptKey='" + header[i].ExternReceiptKey + "';INSERT INTO Inbound_ASNHD VALUES('" + header[i].HeaderFlag + "'";
                         sql_1 += ",'" + header[i].InterfaceActionFlag + "'";
                         sql_1 += ",'" + header[i].ReceiptKey + "'";
                         sql_1 += ",'" + header[i].ExternReceiptKey + "'";
@@ -747,13 +749,14 @@ namespace PUMAobj.ASN
                             {
                                 ASNType = "门店入库";
                             }
-                            else {
+                            else
+                            {
                                 ASNType = "经销商入库";
                             }
                             List<ASNH> aSNHs = new List<ASNH>();
                             aSNHs.Add(new ASNH
                             {
-                                ExternReceiptNumber= header[i].ExternReceiptKey,
+                                ExternReceiptNumber = header[i].ExternReceiptKey,
                                 CustomerID = 108,
                                 CustomerName = "PUMA_SH",
                                 WarehouseID = 3,
@@ -785,6 +788,7 @@ namespace PUMAobj.ASN
                                     detail.CreateTime = DateTime.Now;
                                     aSNDetails.Add(detail);
 
+                                    //删除原数据  更新新数据
                                     string sql_2 = "INSERT INTO Inbound_ASNDT VALUES('" + id_1 + "'";
                                     sql_2 += ",'" + details[m].HeaderFlag + "'";
                                     sql_2 += ",'" + details[m].InterfaceActionFlag + "'";
@@ -866,19 +870,24 @@ namespace PUMAobj.ASN
                             }
                             request.asnDetails = aSNDetails;
                             int isresult;
-                            AddasnAndasnDetail(request,out isresult);
-                            if (isresult!=200)
+                            AddasnAndasnDetail(request, out isresult);
+                            if (isresult != 200)
                             {
                                 LogHelper.WriteLog(typeof(string), "ASN入库单写入WMS失败:" + header[i].HeaderFlag, LogHelper.LogLevel.Error);
                                 msg = "ASN入库单写入WMS失败";
                                 return msg;
                             }
                         }
-                        else {
+                        else
+                        {
                             LogHelper.WriteLog(typeof(string), "Inbound_ASNHD数据写入错误:" + sql_1, LogHelper.LogLevel.Error);
                             msg = "Inbound_ASNHD数据写入错误";
                             return msg;
                         }
+                    }
+                    else {
+
+
                     }
                 }
                 msg = "200";
@@ -1129,14 +1138,15 @@ namespace PUMAobj.ASN
                     }
                 }
 
-                //ans 不需要更新 根据ExternReceiptKey字段过滤掉
+                //ans 需要更新(如果asn能够查到数据并且，数据的状态为1就可以更新)
                 for (int i = 0; i < header.Count(); i++)
                 {
-                    string questr = "SELECT * FROM Inbound_ORDHD WHERE ExternOrderKey = '" + header[i].ExternOrderKey + "'";
+                    string questr = "SELECT * FROM [dbo].[WMS_ASN] WHERE ExternReceiptNumber='" + header[i].ExternOrderKey + "'";
                     DataTable SuccessCount = this.ExecuteDataTableBySqlString(questr);
-                    if (SuccessCount.Rows.Count <= 0)
+                    if (SuccessCount.Rows.Count <= 0 || SuccessCount.Rows[0]["Status"].ToString() == "1")
                     {
-                        string sql_1 = "INSERT INTO Inbound_ORDHD VALUES('" + header[i].HeaderFlag + "'";
+                        string sql_1 = "DELETE Inbound_ORDHD WHERE ExternOrderKey='" + header[i].ExternOrderKey + "';";
+                               sql_1+= "DELETE Inbound_ORDDT WHERE ExternOrderKey='" + header[i].ExternOrderKey + "';INSERT INTO Inbound_ORDHD VALUES('" + header[i].HeaderFlag + "'";
                         sql_1 += ",'" + header[i].InterfaceActionFlag + "'";
                         sql_1 += ",'" + header[i].OrderKey + "'";
                         sql_1 += ",'" + header[i].StorerKey + "'";
@@ -1443,7 +1453,7 @@ namespace PUMAobj.ASN
                     if (message.IndexOf("添加成功") > -1)
                     {
                         msg = 200;
-                    }
+                    } 
                     else {
                         LogHelper.WriteLog(typeof(string), "AddasnAndasnDetail执行错误:" + message, LogHelper.LogLevel.Error);
                     }
@@ -1867,6 +1877,13 @@ namespace PUMAobj.ASN
             return msg;
         }
 
+        /// <summary>
+        /// 生成库存调整文件
+        /// </summary>
+        /// <param name="hd"></param>
+        /// <param name="dt"></param>
+        /// <param name="msg"></param>
+        /// <returns></returns>
         public string TxtAdjustment(DataTable hd,DataTable dt,out string msg)
         {
             string TxtAddress = string.Empty;
@@ -1891,9 +1908,82 @@ namespace PUMAobj.ASN
                 FileStream file = new FileStream(filepath, FileMode.Create, FileAccess.Write);//创建写入文件 
                 StreamWriter writer = new StreamWriter(file);
                 writer.WriteLine("WMSITR    O " + DateTime.Now.ToString("yyyyMMddhhmmss") + "PUMA                CN   Inventory Transaction Outbound");
-                string header = "RECHD";
+                string header = "ITRHDA";
+                header += hd.Rows[0]["ITRNKey"].ToString().TxtStrPush(10);
+                header += hd.Rows[0]["ITRType"].ToString().TxtStrPush(3);
+                header += hd.Rows[0]["WMSDocKey"].ToString().TxtStrPush(10);
+                header += hd.Rows[0]["StorerKey"].ToString().TxtStrPush(15);
+                header += hd.Rows[0]["Facility"].ToString().TxtStrPush(5);
+                header += hd.Rows[0]["Reserved-IQC.ToFacility"].ToString().TxtStrPush(10);
+                header += hd.Rows[0]["EffectiveDate"].ToString().TxtStrPush(14);
+                header += hd.Rows[0]["CustomerRefNo"].ToString().TxtStrPush(10);
+                header += hd.Rows[0]["OtherRefNo"].ToString().TxtStrPush(10);
+                header += hd.Rows[0]["DocType"].ToString().TxtStrPush(3);
+                header += hd.Rows[0]["ReasonCode"].ToString().TxtStrPush(10);
+                header += hd.Rows[0]["Remarks"].ToString().TxtStrPush(200);
+                header += hd.Rows[0]["UserDefine01"].ToString().TxtStrPush(20);
+                header += hd.Rows[0]["UserDefine02"].ToString().TxtStrPush(20);
+                header += hd.Rows[0]["UserDefine03"].ToString().TxtStrPush(20);
+                header += hd.Rows[0]["UserDefine04"].ToString().TxtStrPush(20);
+                header += hd.Rows[0]["UserDefine05"].ToString().TxtStrPush(20);
+                header += hd.Rows[0]["UserDefine06"].ToString().TxtStrPush(14);
+                header += hd.Rows[0]["UserDefine07"].ToString().TxtStrPush(14);
+                header += hd.Rows[0]["UserDefine08"].ToString().TxtStrPush(10);
+                header += hd.Rows[0]["UserDefine09"].ToString().TxtStrPush(10);
+                header += hd.Rows[0]["UserDefine10"].ToString().TxtStrPush(10);
 
+                writer.WriteLine(header);
+                for (int i = 0; i < dt.Rows.Count; i++)
+                {
+                    string dtstr = "ITRDTA";
+                    dtstr += dt.Rows[i]["ITRNKey"].ToString().TxtStrPush(10);
+                    dtstr += dt.Rows[i]["ITRNLineNo"].ToString().TxtStrPush(3);
+                    dtstr += dt.Rows[i]["ITRType"].ToString().TxtStrPush(3);
+                    dtstr += dt.Rows[i]["WMSDocKey"].ToString().TxtStrPush(10);
+                    dtstr += dt.Rows[i]["WMSDocLineNo"].ToString().TxtStrPush(5);
+                    dtstr += dt.Rows[i]["StorerKey"].ToString().TxtStrPush(15);
+                    dtstr += dt.Rows[i]["Sku"].ToString().TxtStrPush(20);
+                    dtstr += dt.Rows[i]["HostWHCode"].ToString().TxtStrPush(10);
+                    dtstr += dt.Rows[i]["Loc"].ToString().TxtStrPush(10);
+                    dtstr += dt.Rows[i]["ID"].ToString().TxtStrPush(18);
+                    dtstr += dt.Rows[i]["Sign"].ToString().TxtStrPush(5);
+                    dtstr += dt.Rows[i]["Qty"].ToString().TxtStrPush(10);
+                    dtstr += dt.Rows[i]["UOM"].ToString().TxtStrPush(10);
+                    dtstr += dt.Rows[i]["Lottable01"].ToString().TxtStrPush(18);
+                    dtstr += dt.Rows[i]["Lottable02"].ToString().TxtStrPush(18);
+                    dtstr += dt.Rows[i]["Lottable03"].ToString().TxtStrPush(18);
+                    dtstr += dt.Rows[i]["Lottable04"].ToString().TxtStrPush(14);
+                    dtstr += dt.Rows[i]["Lottable05"].ToString().TxtStrPush(14);
+                    dtstr += dt.Rows[i]["EffectiveDate"].ToString().TxtStrPush(14);
+                    dtstr += dt.Rows[i]["ReasonCode"].ToString().TxtStrPush(10);
+                    dtstr += dt.Rows[i]["UserDefine01"].ToString().TxtStrPush(20);
+                    dtstr += dt.Rows[i]["UserDefine02"].ToString().TxtStrPush(20);
+                    dtstr += dt.Rows[i]["UserDefine03"].ToString().TxtStrPush(20);
+                    dtstr += dt.Rows[i]["UserDefine04"].ToString().TxtStrPush(20);
+                    dtstr += dt.Rows[i]["UserDefine05"].ToString().TxtStrPush(20);
+                    dtstr += dt.Rows[i]["UserDefine06"].ToString().TxtStrPush(14);
+                    dtstr += dt.Rows[i]["UserDefine07"].ToString().TxtStrPush(14);
+                    dtstr += dt.Rows[i]["UserDefine08"].ToString().TxtStrPush(10);
+                    dtstr += dt.Rows[i]["UserDefine09"].ToString().TxtStrPush(10);
+                    dtstr += dt.Rows[i]["UserDefine10"].ToString().TxtStrPush(10);
+                    dtstr += dt.Rows[i]["EditWho"].ToString().TxtStrPush(18);
+                    dtstr += dt.Rows[i]["EditDate"].ToString().TxtStrPush(14);
+                    dtstr += dt.Rows[i]["BUSR5"].ToString().TxtStrPush(30);
+                    dtstr += dt.Rows[i]["Class"].ToString().TxtStrPush(10);
+                    dtstr += dt.Rows[i]["itemclass"].ToString().TxtStrPush(10);
+                    dtstr += dt.Rows[i]["SKUGroup"].ToString().TxtStrPush(10);
+                    dtstr += dt.Rows[i]["Style"].ToString().TxtStrPush(20);
+                    dtstr += dt.Rows[i]["Color"].ToString().TxtStrPush(10);
+                    dtstr += dt.Rows[i]["Size"].ToString().TxtStrPush(5);
+                    dtstr += dt.Rows[i]["Measurement"].ToString().TxtStrPush(5);
+                    writer.WriteLine(dtstr);
+                }
 
+                string fotstr = "ITRTR" + (dt.Rows.Count + 1).ToString().PadLeft(10, '0');
+                writer.WriteLine(fotstr);
+
+                writer.Close();
+                file.Close();
                 msg = "200";
             }
             catch (Exception ex)
