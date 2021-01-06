@@ -1138,11 +1138,46 @@ namespace PUMAobj.ASN
                     }
                 }
 
+                IEnumerable<PreOrder> PreOrderList;
+                IEnumerable<PreOrderDetail> PreDetail;
                 //订单数据 
                 for (int i = 0; i < header.Count(); i++)
                 {
-                    
-                 
+                    PreOrder preOrders = new PreOrder();
+                    preOrders.ExternOrderNumber = header[i].ExternOrderKey;//外部单号
+                    preOrders.CustomerID = 108;//客户ID
+                    preOrders.CustomerName = "PUMA_SH";//客户名称
+                    preOrders.Warehouse = "PUMA上海仓";//仓库名称
+                    preOrders.OrderType = "";//出库类型
+                    preOrders.Status = 1;//订单状态
+                    preOrders.OrderTime = DateTime.Now;//订单时间
+                    preOrders.DetailCount = 0;//明细行数
+                    preOrders.Creator = "API";//创建人
+                    preOrders.CreateTime = DateTime.Now;//创建时间
+                    preOrders.str4 = "PUMA";//默认
+                    List<PreOrder> pres = new List<PreOrder>();
+                    pres.Add(preOrders);
+                    PreOrderList = pres;
+                    for (int m = 0; m < details.Count; m++)
+                    {
+                        if (header[i].ExternOrderKey == details[m].ExternOrderKey)
+                        {
+                            PreOrderDetail detail = new PreOrderDetail();
+                            detail.ExternOrderNumber = details[m].ExternOrderKey;//外部单号
+                            detail.CustomerID = 108;//外部单号
+                            detail.CustomerName = "PUMA_SH";//外部单号
+                            detail.LineNumber = "";//外部单号
+                            detail.WarehouseId = 3;//外部单号
+                            detail.Warehouse = "PUMA上海仓";//外部单号
+                            detail.SKU = "";//外部单号
+                            detail.UPC = "";//外部单号
+                            detail.GoodsName = "";//外部单号
+                            detail.GoodsType = "";//外部单号
+                            detail.OriginalQty = 0;//外部单号
+                            detail.Creator = "API";//外部单号
+                            detail.CreateTime = DateTime.Now//外部单号
+                        }
+                    }
                 }
                 msg = "200";
             }
@@ -1155,9 +1190,8 @@ namespace PUMAobj.ASN
             return msg;
         }
 
-
         //wms 写入asn数据
-        public string AddasnAndasnDetail(AddASNandASNDetailRequest rece,out int msg)
+        public string AddasnAndasnDetail(AddASNandASNDetailRequest rece, out int msg)
         {
 
             using (SqlConnection conn = new SqlConnection(BaseAccessor._dataBase.ConnectionString))
@@ -1188,8 +1222,9 @@ namespace PUMAobj.ASN
                     if (message.IndexOf("添加成功") > -1)
                     {
                         msg = 200;
-                    } 
-                    else {
+                    }
+                    else
+                    {
                         LogHelper.WriteLog(typeof(string), "AddasnAndasnDetail执行错误:" + message, LogHelper.LogLevel.Error);
                     }
                     return message;
@@ -1198,6 +1233,52 @@ namespace PUMAobj.ASN
                 {
                     msg = 400;
                     throw ex;
+                }
+            }
+        }
+
+        //wms 预出库订单写入数据
+        public string AddPreOrderAndPreOrderDetail(IEnumerable<PreOrder> PreOrderList, IEnumerable<PreOrderDetail> PreDetail, out int msg) {
+            using (SqlConnection conn = new SqlConnection(BaseAccessor._dataBase.ConnectionString))
+            {
+                msg = 400;
+                try
+                {
+                    string message = "";
+                    DataSet ds = new DataSet();
+                    SqlCommand cmd = new SqlCommand("Proc_WMS_AddPreOrderANDPreOrderDetali", conn);//默认
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("@Po", PreOrderList.Select(p => new WMSPreOrderInfoToDb(p)));
+                    cmd.Parameters[0].SqlDbType = SqlDbType.Structured;
+                    cmd.Parameters.AddWithValue("@Pod", PreDetail.Select(p => new WMSPreOrderDetailInfoToDb(p)));
+                    cmd.Parameters[1].SqlDbType = SqlDbType.Structured;
+                    cmd.Parameters.AddWithValue("@Creator", "API");
+                    cmd.Parameters[2].SqlDbType = SqlDbType.NVarChar;
+                    cmd.Parameters.AddWithValue("@message", message);
+                    cmd.Parameters[3].SqlDbType = SqlDbType.NVarChar;
+                    cmd.Parameters[3].Direction = ParameterDirection.Output;
+                    cmd.Parameters[3].Size = 500;
+                    cmd.CommandTimeout = 300;//超时时间
+                    conn.Open();
+
+                    SqlDataAdapter sda = new SqlDataAdapter();
+                    sda.SelectCommand = cmd;
+                    sda.Fill(ds);
+                    message = sda.SelectCommand.Parameters["@message"].Value.ToString();
+                    conn.Close();
+                    if (message.IndexOf("添加成功") > -1)
+                    {
+                        msg = 200;
+                    }
+                    else
+                    {
+                        LogHelper.WriteLog(typeof(string), "AddPreOrderAndPreOrderDetail执行错误:" + message, LogHelper.LogLevel.Error);
+                    }
+                    return message;
+                }
+                catch (Exception e)
+                {
+                    throw e;
                 }
             }
         }
@@ -1583,7 +1664,7 @@ namespace PUMAobj.ASN
             string msg = string.Empty;
             try
             {
-                string sql_h = "SELECT * FROM [dbo].[WMS_Adjustment] WHERE AdjustmentType IN('库存调整单','库存品级调整单') AND (INT2 IS NULL OR INT2=0)";
+                string sql_h = "SELECT * FROM [dbo].[WMS_Adjustment] WHERE AdjustmentType IN('库存调整单','库存品级调整单') AND Status='9' AND (INT2 IS NULL OR INT2=0)";
                 DataTable AdjustmentCount = this.ExecuteDataTableBySqlString(sql_h);
                 if (AdjustmentCount.Rows.Count > 0)
                 {

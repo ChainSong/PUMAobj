@@ -72,8 +72,10 @@
     <Compile Include="ASN\InboundASNHDModel.cs" />
     <Compile Include="ASN\InboundORDDTModel.cs" />
     <Compile Include="ASN\InboundORDHDModel.cs" />
+    <Compile Include="Common\DataTableExtension.cs" />
     <Compile Include="Common\EntityPropertyExtensionAttribute.cs" />
     <Compile Include="Common\FtpHelper.cs" />
+    <Compile Include="Common\ObjectExtension.cs" />
     <Compile Include="Common\SFTPConstants.cs" />
     <Compile Include="Common\TextHelper.cs" />
     <Compile Include="Log\LogHelper.cs" />
@@ -91,8 +93,13 @@
     <Compile Include="Model\WMS\AddASNandASNDetailRequest.cs" />
     <Compile Include="Model\WMS\ASNH.cs" />
     <Compile Include="Model\WMS\ASNDetail.cs" />
+    <Compile Include="Model\WMS\PreOrder.cs" />
+    <Compile Include="Model\WMS\PreOrderAndPreOrderDetail.cs" />
+    <Compile Include="Model\WMS\PreOrderDetail.cs" />
     <Compile Include="Model\WMS\WMSASNDetailToDb.cs" />
     <Compile Include="Model\WMS\WMSASNToDb.cs" />
+    <Compile Include="Model\WMS\WMSPreOrderDetailInfoToDb.cs" />
+    <Compile Include="Model\WMS\WMSPreOrderInfoToDb.cs" />
     <Compile Include="Product\ProductAccessor.cs" />
     <Compile Include="Product\ProductModel.cs" />
     <Compile Include="SqlHelper\BaseAccessor.cs" />
