@@ -158,7 +158,7 @@ namespace PUMAobj.Downloader
                                         break;
                                     case "WMSASN"://PUMA推给我们的
                                         log.Type = "WMSASN";
-                                        result = new ASNAccessor().GetInbound_ASNHD(txtlists, out externumber);
+                                        //result = new ASNAccessor().GetInbound_ASNHD(txtlists, out externumber);
                                         break;
                                     default:
                                         log.Type = "";
@@ -174,6 +174,7 @@ namespace PUMAobj.Downloader
                                     log.Externumber = externumber;
                                     log.Flag = "Y";
                                 }
+
                                 else
                                 {
                                     if (log.Type != "")

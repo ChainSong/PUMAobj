@@ -443,9 +443,10 @@ namespace PUMAobj.ASN
         /// 预入库ASN  来自于门店退货  经销商退货
         /// </summary>
         /// <returns></returns>
-        public string GetInbound_ASNHD(List<string> txtlists, out string externumber)
+        public string GetInbound_ASNHD()
         {
             string msg = string.Empty;
+            string Error = "";
             try
             {
                 //读取文件
@@ -646,6 +647,7 @@ namespace PUMAobj.ASN
                     DataTable SuccessCount = this.ExecuteDataTableBySqlString(questr);
                     if (SuccessCount.Rows.Count <= 0 || SuccessCount.Rows[0]["Status"].ToString() == "1")
                     {
+                        Error = header[i].ExternReceiptKey.ToString();
                         //先删除 在新增
                         string sql_1 = "DELETE Inbound_ASNHD WHERE ExternReceiptKey='" + header[i].ExternReceiptKey + "';";
                                sql_1+= "DELETE Inbound_ASNDT WHERE ExternReceiptKey='" + header[i].ExternReceiptKey + "';INSERT INTO Inbound_ASNHD VALUES('" + header[i].HeaderFlag + "'";
@@ -767,6 +769,7 @@ namespace PUMAobj.ASN
                                 Creator = "API",
                                 CreateTime = DateTime.Now,
                                 str3 = "PUMA",
+                                str1 = header[i].UserDefine02,
                             });
                             request.asn = aSNHs;
                             List<ASNDetail> aSNDetails = new List<ASNDetail>();
@@ -862,26 +865,26 @@ namespace PUMAobj.ASN
                                     int id_2 = this.ScanExecuteNonQueryRID(sql_2);
                                     if (id_2 < 0)
                                     {
-                                        LogHelper.WriteLog(typeof(string), "Inbound_ASNDT数据写入错误:" + sql_2, LogHelper.LogLevel.Error);
-                                        msg = "Inbound_ASNDT数据写入错误";
+                                        LogHelper.WriteLog(typeof(string), "ASN-Inbound_ASNDT数据写入错误["+ Error + "]:" + sql_2, LogHelper.LogLevel.Error);
+                                        msg = "ASN-Inbound_ASNDT数据写入错误";
                                         return msg;
                                     }
                                 }
                             }
                             request.asnDetails = aSNDetails;
                             int isresult;
-                            AddasnAndasnDetail(request, out isresult);
+                            string wmsmsg=AddasnAndasnDetail(request, out isresult);
                             if (isresult != 200)
                             {
-                                LogHelper.WriteLog(typeof(string), "ASN入库单写入WMS失败:" + header[i].HeaderFlag, LogHelper.LogLevel.Error);
-                                msg = "ASN入库单写入WMS失败";
+                                LogHelper.WriteLog(typeof(string), "ASN-Inbound_ASNDT入库单写入WMS失败[" + Error + "]:" + wmsmsg, LogHelper.LogLevel.Error);
+                                msg = "ASN-Inbound_ASNDT入库单写入WMS失败";
                                 return msg;
                             }
                         }
                         else
                         {
-                            LogHelper.WriteLog(typeof(string), "Inbound_ASNHD数据写入错误:" + sql_1, LogHelper.LogLevel.Error);
-                            msg = "Inbound_ASNHD数据写入错误";
+                            LogHelper.WriteLog(typeof(string), "ASN-Inbound_ASNHD数据写入错误[" + Error + "]:" + sql_1, LogHelper.LogLevel.Error);
+                            msg = "ASN-Inbound_ASNHD数据写入错误";
                             return msg;
                         }
                     }
@@ -895,19 +898,20 @@ namespace PUMAobj.ASN
             catch (Exception ex)
             {
                 msg = ex.Message;
-                LogHelper.WriteLog(typeof(string), "ASN接口错误:" + ex.Message, LogHelper.LogLevel.Error);
+                LogHelper.WriteLog(typeof(string), "ASN-Inbound_ASNHD接口错误[" + Error + "]:" + ex.Message, LogHelper.LogLevel.Error);
             }
 
              return msg;
         }
 
         /// <summary>
-        /// 来自于 转仓
+        /// 入库订单
         /// </summary>
         /// <returns></returns>
         public string GetInbound_ORDHD()
         {
             string msg = string.Empty;
+            string Error = "";
             try
             {
                 //读取文件
@@ -915,7 +919,7 @@ namespace PUMAobj.ASN
                 string dir = AppDomain.CurrentDomain.BaseDirectory;
                 dir = Path.GetFullPath("..");
                 dir = Path.GetFullPath("../..");
-                string filepath = dir + "/DownFile/WMSORD_202010091045190000000049490837.txt";     //文件路径
+                string filepath = dir + "/DownFile/WMSORD_202010091020160000000049490828.txt";     //文件路径
                 if (System.IO.File.Exists(filepath))
                 {
                     foreach (string str in System.IO.File.ReadAllLines(filepath, Encoding.Default))
@@ -927,7 +931,6 @@ namespace PUMAobj.ASN
                 //实体赋值
                 List<Inbound_ORDHD> header = new List<Inbound_ORDHD>();//asn 主订单信息
                 List<Inbound_ORDDT> details = new List<Inbound_ORDDT>();//asn 订单详细信息
-                AddASNandASNDetailRequest request = new AddASNandASNDetailRequest();
                 for (int i = 0; i < thdata.Count(); i++)
                 {
                     if (thdata[0].TxtSubstring(1, 10) == "WMSORD")//判断txt表头类型
@@ -1138,15 +1141,15 @@ namespace PUMAobj.ASN
                     }
                 }
 
-                //ans 需要更新(如果asn能够查到数据并且，数据的状态为1就可以更新)
+                //保存原数据 并转换成订单数据
                 for (int i = 0; i < header.Count(); i++)
                 {
-                    string questr = "SELECT * FROM [dbo].[WMS_ASN] WHERE ExternReceiptNumber='" + header[i].ExternOrderKey + "'";
-                    DataTable SuccessCount = this.ExecuteDataTableBySqlString(questr);
-                    if (SuccessCount.Rows.Count <= 0 || SuccessCount.Rows[0]["Status"].ToString() == "1")
-                    {
-                        string sql_1 = "DELETE Inbound_ORDHD WHERE ExternOrderKey='" + header[i].ExternOrderKey + "';";
-                               sql_1+= "DELETE Inbound_ORDDT WHERE ExternOrderKey='" + header[i].ExternOrderKey + "';INSERT INTO Inbound_ORDHD VALUES('" + header[i].HeaderFlag + "'";
+                    IEnumerable<PreOrder> PreOrderList;
+                    IEnumerable<PreOrderDetail> PreDetail;
+                    PreOrderList = null;
+                    PreDetail = null;
+                    Error = header[i].ExternOrderKey;
+                    string sql_1 = "INSERT INTO Inbound_ORDHD VALUES('" + header[i].HeaderFlag + "'";
                         sql_1 += ",'" + header[i].InterfaceActionFlag + "'";
                         sql_1 += ",'" + header[i].OrderKey + "'";
                         sql_1 += ",'" + header[i].StorerKey + "'";
@@ -1281,42 +1284,68 @@ namespace PUMAobj.ASN
                         int id_1 = this.ScanExecuteNonQueryRID(sql_1);
                         if (id_1 > 0)
                         {
-                            List<ASNH> aSNHs = new List<ASNH>();
-                            aSNHs.Add(new ASNH
+                            string type = "";
+                            if (header[i].Type == "SH")
                             {
-                                ExternReceiptNumber = header[i].ExternOrderKey,
-                                CustomerID = 108,
-                                CustomerName = "PUMA_SH",
-                                WarehouseID = 3,
-                                WarehouseName = "PUMA上海仓",
-                                ExpectDate = DateTime.Now.AddDays(3),
-                                Status = 1,
-                                ASNType = "转仓入库",
-                                Creator = "API",
-                                CreateTime = DateTime.Now,
-                                str3 = "PUMA",
-                            });
-                            request.asn = aSNHs;
-                            List<ASNDetail> aSNDetails = new List<ASNDetail>();
-                            for (int m = 0; m < details.Count(); m++)
+                                type = "销售订单";
+                            }
+                            else {
+                                type = "转仓订单";
+                            }
+                            #region 原始数据新增成功之后,wms主订单赋值
+                            PreOrder preOrders = new PreOrder();
+                            preOrders.ExternOrderNumber = header[i].ExternOrderKey;//外部单号
+                            preOrders.CustomerID = 108;//客户ID
+                            preOrders.CustomerName = "PUMA_SH";//客户名称
+                            preOrders.Warehouse = "PUMA上海仓";//仓库名称
+                            preOrders.OrderType = type;//出库类型Type 销售订单 转仓订单
+                            preOrders.Status = 1;//订单状态
+                            preOrders.OrderTime = DateTime.Now;//订单时间
+                            preOrders.DetailCount = 0;//明细行数
+                            preOrders.Creator = "API";//创建人
+                            preOrders.CreateTime = DateTime.Now;//创建时间
+                            preOrders.str4 = "PUMA";//默认
+                            List<PreOrder> pres = new List<PreOrder>();
+                            pres.Add(preOrders);
+                            PreOrderList = pres;
+                        #endregion
+
+                        List<PreOrderDetail> detaillist = new List<PreOrderDetail>();
+                        for (int m = 0; m < details.Count(); m++)
                             {
-                                ASNDetail detail = new ASNDetail();
+                                string goodtype = "";
+                                if (details[m].Facility == "D6001")
+                                {
+                                    goodtype = "D6001";
+                                } else if (details[m].Facility == "D7001")
+                                {
+                                    goodtype = "C品";
+                                }
+                                else if (details[m].Facility == "D7002")
+                                {
+                                    goodtype = "D品";
+                                }
+
                                 if (header[i].ExternOrderKey == details[m].ExternOrderKey)
                                 {
-                                    detail.ExternReceiptNumber = header[i].ExternOrderKey;
-                                    detail.CustomerID = 108;
-                                    detail.CustomerName = "PUMA_SH";
-                                    detail.LineNumber = details[m].ExternLineNo;
-                                    detail.SKU = details[m].Sku;
-                                    detail.QtyExpected = details[m].OpenQty;
-                                    detail.QtyReceived = 0.000;
-                                    detail.QtyDiff = 0.000;
-                                    detail.GoodsName = details[m].Sku;
-                                    detail.Creator = "API";
-                                    detail.CreateTime = DateTime.Now;
-                                    aSNDetails.Add(detail);
+                                #region wms明细订单赋值
+                                PreOrderDetail detail = new PreOrderDetail();
+                                detail.ExternOrderNumber = details[m].ExternOrderKey;//外部单号
+                                detail.CustomerID = 108;
+                                detail.CustomerName = "PUMA_SH";
+                                detail.LineNumber = details[m].ExternLineNo;
+                                detail.WarehouseId = 3;//
+                                detail.Warehouse = "PUMA上海仓";
+                                detail.SKU = details[m].Sku;
+                                detail.GoodsName = details[m].Sku;
+                                detail.GoodsType = goodtype;//Facility 6001 7001 7002
+                                detail.OriginalQty = details[m].OpenQty;//
+                                detail.Creator = "API";//
+                                detail.CreateTime = DateTime.Now;//
+                                detaillist.Add(detail);
+                                #endregion
 
-                                    string sql_2 = "INSERT INTO Inbound_ORDDT VALUES('" + id_1 + "'";
+                                string sql_2 = "INSERT INTO Inbound_ORDDT VALUES('" + id_1 + "'";
                                     sql_2 += ",'" + details[m].HeaderFlag + "'";
                                     sql_2 += ",'" + details[m].InterfaceActionFlag + "'";
                                     sql_2 += ",'" + details[m].OrderLineNumber + "'";
@@ -1385,44 +1414,42 @@ namespace PUMAobj.ASN
                                     int id_2 = this.ScanExecuteNonQueryRID(sql_2);
                                     if (id_2 < 0)
                                     {
-                                        LogHelper.WriteLog(typeof(string), "Inbound_ORDDT数据写入错误:" + sql_2, LogHelper.LogLevel.Error);
-                                        msg = "Inbound_ORDDT数据写入错误";
+                                        LogHelper.WriteLog(typeof(string), "Order-GetInbound_ORDHD数据写入错误["+Error+"]:" + sql_2, LogHelper.LogLevel.Error);
+                                        msg = "Order-GetInbound_ORDHD数据写入错误[" + Error + "]";
                                         return msg;
                                     }
                                 }
                             }
-                            request.asnDetails = aSNDetails;
+                            PreDetail = detaillist;
                             int isresult;
-                            AddasnAndasnDetail(request, out isresult);
+                            string wmsmsg=AddPreOrderAndPreOrderDetail(PreOrderList,PreDetail, out isresult);
                             if (isresult != 200)
                             {
-                                LogHelper.WriteLog(typeof(string), "ASN入库单写入WMS失败:" + header[i].HeaderFlag, LogHelper.LogLevel.Error);
-                                msg = "ASN入库单写入WMS失败";
+                                LogHelper.WriteLog(typeof(string), "Order-GetInbound_ORDHD入库单写入WMS失败[" + Error + "]:" + wmsmsg, LogHelper.LogLevel.Error);
+                                msg = "Order-GetInbound_ORDHD入库单写入WMS失败[" + Error + "]";
                                 return msg;
                             }
                         }
                         else
                         {
-                            LogHelper.WriteLog(typeof(string), "Inbound_ORDHD数据写入错误:" + sql_1, LogHelper.LogLevel.Error);
-                            msg = "Inbound_ORDHD数据写入错误";
+                            LogHelper.WriteLog(typeof(string), "Order-GetInbound_ORDHD数据写入错误[" + Error + "]:" + sql_1, LogHelper.LogLevel.Error);
+                            msg = "Order-GetInbound_ORDHD数据写入错误[" + Error + "]";
                             return msg;
                         }
-                    }
                 }
                 msg = "200";
             }
             catch (Exception ex)
             {
                 msg = ex.Message;
-                LogHelper.WriteLog(typeof(string), "ASN接口错误:" + ex.Message, LogHelper.LogLevel.Error);
+                LogHelper.WriteLog(typeof(string), "Order-GetInbound_ORDHD数据写入错误[" + Error + "]:" + ex.Message, LogHelper.LogLevel.Error);
             }
 
             return msg;
         }
 
-
         //wms 写入asn数据
-        public string AddasnAndasnDetail(AddASNandASNDetailRequest rece,out int msg)
+        public string AddasnAndasnDetail(AddASNandASNDetailRequest rece, out int msg)
         {
 
             using (SqlConnection conn = new SqlConnection(BaseAccessor._dataBase.ConnectionString))
@@ -1453,8 +1480,9 @@ namespace PUMAobj.ASN
                     if (message.IndexOf("添加成功") > -1)
                     {
                         msg = 200;
-                    } 
-                    else {
+                    }
+                    else
+                    {
                         LogHelper.WriteLog(typeof(string), "AddasnAndasnDetail执行错误:" + message, LogHelper.LogLevel.Error);
                     }
                     return message;
@@ -1463,6 +1491,52 @@ namespace PUMAobj.ASN
                 {
                     msg = 400;
                     throw ex;
+                }
+            }
+        }
+
+        //wms 预出库订单写入数据
+        public string AddPreOrderAndPreOrderDetail(IEnumerable<PreOrder> PreOrderList, IEnumerable<PreOrderDetail> PreDetail, out int msg) {
+            using (SqlConnection conn = new SqlConnection(BaseAccessor._dataBase.ConnectionString))
+            {
+                msg = 400;
+                try
+                {
+                    string message = "";
+                    DataSet ds = new DataSet();
+                    SqlCommand cmd = new SqlCommand("Proc_WMS_AddPreOrderANDPreOrderDetali", conn);//默认
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("@Po", PreOrderList.Select(p => new WMSPreOrderInfoToDb(p)));
+                    cmd.Parameters[0].SqlDbType = SqlDbType.Structured;
+                    cmd.Parameters.AddWithValue("@Pod", PreDetail.Select(p => new WMSPreOrderDetailInfoToDb(p)));
+                    cmd.Parameters[1].SqlDbType = SqlDbType.Structured;
+                    cmd.Parameters.AddWithValue("@Creator", "API");
+                    cmd.Parameters[2].SqlDbType = SqlDbType.NVarChar;
+                    cmd.Parameters.AddWithValue("@message", message);
+                    cmd.Parameters[3].SqlDbType = SqlDbType.NVarChar;
+                    cmd.Parameters[3].Direction = ParameterDirection.Output;
+                    cmd.Parameters[3].Size = 500;
+                    cmd.CommandTimeout = 300;//超时时间
+                    conn.Open();
+
+                    SqlDataAdapter sda = new SqlDataAdapter();
+                    sda.SelectCommand = cmd;
+                    sda.Fill(ds);
+                    message = sda.SelectCommand.Parameters["@message"].Value.ToString();
+                    conn.Close();
+                    if (message=="")
+                    {
+                        msg = 200;
+                    }
+                    else
+                    {
+                        LogHelper.WriteLog(typeof(string), "AddPreOrderAndPreOrderDetail执行错误:" + message, LogHelper.LogLevel.Error);
+                    }
+                    return message;
+                }
+                catch (Exception e)
+                {
+                    throw e;
                 }
             }
         }
@@ -1848,7 +1922,7 @@ namespace PUMAobj.ASN
             string msg = string.Empty;
             try
             {
-                string sql_h = "SELECT * FROM [dbo].[WMS_Adjustment] WHERE AdjustmentType IN('库存调整单','库存品级调整单') AND (INT2 IS NULL OR INT2=0)";
+                string sql_h = "SELECT * FROM [dbo].[WMS_Adjustment] WHERE AdjustmentType IN('库存调整单','库存品级调整单') AND Status='9' AND (INT2 IS NULL OR INT2=0)";
                 DataTable AdjustmentCount = this.ExecuteDataTableBySqlString(sql_h);
                 if (AdjustmentCount.Rows.Count > 0)
                 {
@@ -1869,10 +1943,10 @@ namespace PUMAobj.ASN
                     }
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-
-                throw;
+                msg = ex.Message;
+                LogHelper.WriteLog(typeof(string), "WMSAdjustment执行错误:" + msg, LogHelper.LogLevel.Error);
             }
             return msg;
         }
@@ -1993,6 +2067,99 @@ namespace PUMAobj.ASN
             }
             return TxtAddress;
         }
+
+
+        /// <summary>
+        /// 生成库存快照 并且生成txt
+        /// </summary>
+        /// <returns></returns>
+        public string WMSInventory()
+        {
+            string msg = string.Empty;
+            try
+            {
+
+            }
+            catch (Exception ex)
+            {
+                msg = ex.Message;
+                LogHelper.WriteLog(typeof(string), "TxtWMSInventory执行错误:" + msg, LogHelper.LogLevel.Error);
+            }
+            return msg;
+        }
+
+        /// <summary>
+        /// 生成库存快照txt文件
+        /// </summary>
+        /// <param name="hd"></param>
+        /// <param name="msg"></param>
+        public string TxtWMSInventory(DataTable hd,out string msg)
+        {
+            string TxtAddress = string.Empty;
+            try
+            {
+                string dir = AppDomain.CurrentDomain.BaseDirectory;
+                dir = Path.GetFullPath("..");
+                dir = Path.GetFullPath("../..");
+                string filepath = dir + "/UploadFile";     //文件路径
+                if (Directory.Exists(filepath) == false)//如果不存在就创建file文件夹
+                {
+                    Directory.CreateDirectory(filepath);
+                }
+                filepath += "/WMSSOH_"+DateTime.Now.ToString("yyyyMMddhhmmss")+".txt";
+                TxtAddress = filepath;
+                FileStream file = new FileStream(filepath, FileMode.Create, FileAccess.Write);//创建写入文件 
+                StreamWriter writer = new StreamWriter(file);
+                writer.WriteLine("WMSSOHO "+DateTime.Now.ToString("yyyyMMddhhmmss")+ "PUMA                CN   SOH Outbound");
+                for (int i = 0; i < hd.Rows.Count; i++)
+                {
+                    string content = "SOHDTA";
+                    content += hd.Rows[i]["SNAPSHOTDATE"].ToString().TxtStrPush(14);
+                    content += hd.Rows[i]["StorerKey"].ToString().TxtStrPush(15);
+                    content += hd.Rows[i]["Facility"].ToString().TxtStrPush(5);
+                    content += hd.Rows[i]["HostWhCode"].ToString().TxtStrPush(10);
+                    content += hd.Rows[i]["SKU"].ToString().TxtStrPush(20);
+                    content += hd.Rows[i]["ID"].ToString().TxtStrPush(18);
+                    content += hd.Rows[i]["Lottable01"].ToString().TxtStrPush(18);
+                    content += hd.Rows[i]["Lottable02"].ToString().TxtStrPush(18);
+                    content += hd.Rows[i]["Lottable03"].ToString().TxtStrPush(18);
+                    content += hd.Rows[i]["Lottable04"].ToString().TxtStrPush(14);
+                    content += hd.Rows[i]["Lottable05"].ToString().TxtStrPush(14);
+                    content += hd.Rows[i]["PackUOM3"].ToString().TxtStrPush(10);
+                    content += hd.Rows[i]["TOTALSOH"].ToString().TxtStrPush(10);
+                    content += hd.Rows[i]["AVAILSOH"].ToString().TxtStrPush(10);
+                    content += hd.Rows[i]["QtyAllocPicked = QtyAllocated + QtyPicked"].ToString().TxtStrPush(10);
+                    content += hd.Rows[i]["QtyonHold"].ToString().TxtStrPush(10);
+                    content += hd.Rows[i]["QtyDamage"].ToString().TxtStrPush(10);
+                    content += hd.Rows[i]["UserDefine01"].ToString().TxtStrPush(30);
+                    content += hd.Rows[i]["UserDefine02"].ToString().TxtStrPush(30);
+                    content += hd.Rows[i]["UserDefine03"].ToString().TxtStrPush(30);
+                    content += hd.Rows[i]["UserDefine04"].ToString().TxtStrPush(30);
+                    content += hd.Rows[i]["UserDefine05"].ToString().TxtStrPush(30);
+                    content += hd.Rows[i]["ALTSKU"].ToString().TxtStrPush(20);
+                    content += hd.Rows[i]["Style"].ToString().TxtStrPush(20);
+                    content += hd.Rows[i]["Color"].ToString().TxtStrPush(10);
+                    content += hd.Rows[i]["Size"].ToString().TxtStrPush(5);
+                    content += hd.Rows[i]["Measurement"].ToString().TxtStrPush(5);
+                    writer.WriteLine(content);
+                }
+                string fotstr = "SOHTR" + (hd.Rows.Count + 1).ToString().PadLeft(10, '0');
+                writer.WriteLine(fotstr);
+
+                writer.Close();
+                file.Close();
+                msg = "200";
+            }
+            catch (Exception ex)
+            {
+                msg = ex.Message;
+                LogHelper.WriteLog(typeof(string), "TxtWMSInventory执行错误:" + msg, LogHelper.LogLevel.Error);
+            }
+            return TxtAddress;
+        }
+
+
+
 
     }
 }
