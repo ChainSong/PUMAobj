@@ -20,9 +20,9 @@ namespace PUMAobj.Common
 
         public FtpHelper()
         {
-            FTPCONSTR = ConfigurationManager.AppSettings["sftpip"].ToString();
-            FTPUSERNAME = ConfigurationManager.AppSettings["sftpuser"].ToString();
-            FTPPASSWORD = ConfigurationManager.AppSettings["sftppwd"].ToString();
+            FTPCONSTR = ConfigurationManager.AppSettings["MUPAftpip"].ToString();
+            FTPUSERNAME = ConfigurationManager.AppSettings["PUMAftpuser"].ToString();
+            FTPPASSWORD = ConfigurationManager.AppSettings["PUMAftppwd"].ToString();
         }
 
         #region FTP连接

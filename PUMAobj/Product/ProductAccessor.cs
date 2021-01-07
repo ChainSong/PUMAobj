@@ -70,13 +70,13 @@ namespace PUMAobj.Product
                     //筛选已经插入数据库的SKU信息
                     StringBuilder sbCheck = new StringBuilder();
                     sbCheck.Append(" select SKU from WMS_Product where SKU in (");
-                    sbCheck.Append(string.Join(",", productModels.Select(a => "'" + a.Sku + "'")));
+                    sbCheck.Append(string.Join(",", productModels.Select(a => "'" + a.MANUFACTURERSKU + "'")));
                     var sbCheckData = this.ScanDataTable(sbCheck.ToString());
                     foreach (DataRow item in sbCheckData.Rows)
                     {
-                        if (productModels.Where(a => a.Sku == item["SKU"].ToString()).Count() > 0)
+                        if (productModels.Where(a => a.MANUFACTURERSKU == item["SKU"].ToString()).Count() > 0)
                         {
-                            productModels.RemoveAll(a => a.Sku == item["SKU"].ToString());
+                            productModels.RemoveAll(a => a.MANUFACTURERSKU == item["SKU"].ToString());
                         }
                     }
 
@@ -91,6 +91,7 @@ namespace PUMAobj.Product
                     ,[GoodsType]
                     ,[SKUClassification]
                     ,[SKUGroup]
+                    ,[ManufacturerSKU]
                     ,[Creator]
                     ,[CreateTime]
                     ,[Str5]
@@ -104,12 +105,13 @@ namespace PUMAobj.Product
                         foreach (var item in productModels)
                         {
                             i++;
-                            sbBack.Append("( 107," +
-                                "'" + item.Sku + "'," +
+                            sbBack.Append("( 108," +
+                                "'" + item.MANUFACTURERSKU + "'," +
                                 "'1'," +
                                 "'" + item.DESCR + "'," +
                                 "'类型1'," +
                                 "'组1'," +
+                                "'" + item.Sku + "'," +
                                 "'dbo'," +
                                 "'getdate()'," +
                                 "'" + item.Size + "'," +
