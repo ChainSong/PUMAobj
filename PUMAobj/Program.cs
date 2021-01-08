@@ -43,10 +43,10 @@ namespace PUMAobj
             //uploadInterface.StartDownload();
             //LogHelper.WriteLog(typeof(string), "--结束上传接口对接--", LogHelper.LogLevel.INFO);
 
-            ASNAccessor aSN = new ASNAccessor();
+            //ASNAccessor aSN = new ASNAccessor();
             //aSN.GetInbound_ASNHD();
 
-            aSN.GetInbound_ORDHD();
+            //aSN.GetInbound_ORDHD();
 
             //aSN.Create_RECHD_TXT1(null, null);
 

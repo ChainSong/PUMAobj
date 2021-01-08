@@ -113,8 +113,12 @@ namespace PUMAobj.Downloader
                 string[] fileNames = FtpHelper.GetFtpFileList("");
                 foreach (var item in fileNames)
                 {
-                    FtpHelper.Download("", "", item);
-                } 
+                    bool results = FtpHelper.Download("", "", item);
+                    if (results)
+                    {
+                        FtpHelper.RenameAndMove(item, "");
+                    }
+                }
             }
             catch (Exception)
             {

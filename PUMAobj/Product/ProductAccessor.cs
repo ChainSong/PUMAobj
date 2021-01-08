@@ -109,21 +109,25 @@ namespace PUMAobj.Product
                                 "'" + item.MANUFACTURERSKU + "'," +
                                 "'1'," +
                                 "'" + item.DESCR + "'," +
+                                "'1'," +
                                 "'类型1'," +
                                 "'组1'," +
                                 "'" + item.Sku + "'," +
                                 "'dbo'," +
-                                "'getdate()'," +
+                                "getdate()," +
                                 "'" + item.Size + "'," +
                                 "'" + item.Size + "'," +
                                 "'" + item.Size + "'," +
                                 "'" + item.Style + "'," +
-                                "'" + item.Color + "'," +
-                                ")");
+                                "'" + item.Color + "'" +
+                                "),");
                             if (i > 500)
                             {
                                 i = 0;
-                                this.ScanExecuteNonQuery(sbBack.ToString());
+                                //s.Substring(0, s.Length - 1)
+                                //this.ScanExecuteNonQuery(sbBack.ToString());
+                                this.ScanExecuteNonQuery(sbBack.ToString().Substring(0, sbBack.ToString().Length - 1));
+
                                 sbBack = new StringBuilder();
                                 sbBack.Append(@" insert into WMS_Product ([StorerID]
                             ,[SKU]
@@ -143,7 +147,8 @@ namespace PUMAobj.Product
                                 //sbBack=
                             }
                         }
-
+                        
+                        this.ScanExecuteNonQuery(sbBack.ToString().Substring(0, sbBack.ToString().Length - 1));
                     }
                 }
             }
