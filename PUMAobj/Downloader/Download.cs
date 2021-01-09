@@ -160,9 +160,13 @@ namespace PUMAobj.Downloader
                                         log.Type = "WMSSKU";
                                         result = new ProductAccessor().AddProduct(txtlists, out externumber);
                                         break;
-                                    case "WMSASN"://PUMA推给我们的
+                                    case "WMSASN"://PUMA推给我们的 入库单
                                         log.Type = "WMSASN";
-                                        //result = new ASNAccessor().GetInbound_ASNHD(txtlists, out externumber);
+                                        result = new ASNAccessor().GetInbound_ASNHD(txtlists, out externumber);
+                                        break;
+                                    case "WMSORD"://PUMA推给我们的出库单
+                                        log.Type = "WMSORD";
+                                        result = new ASNAccessor().GetInbound_ASNHD(txtlists, out externumber);
                                         break;
                                     default:
                                         log.Type = "";

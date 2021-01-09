@@ -22,7 +22,7 @@ namespace PUMAobj.Common
         {
             FileStream fs = new FileStream(fileName, FileMode.Open, FileAccess.Read);
             List<string> list = new List<string>();
-            StreamReader sr = new StreamReader(fs, Encoding.UTF8);
+            StreamReader sr = new StreamReader(fs, Encoding.Default);
             try
             {
                 //使用StreamReader类来读取文件 

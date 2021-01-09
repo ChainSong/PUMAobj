@@ -444,25 +444,26 @@ namespace PUMAobj.ASN
         /// 预入库ASN  来自于门店退货  经销商退货
         /// </summary>
         /// <returns></returns>
-        public string GetInbound_ASNHD()
+        public string GetInbound_ASNHD(List<string> thdata, out string externumber)
         {
             string msg = string.Empty;
             string Error = "";
+            externumber = "";
             try
             {
-                //读取文件
-                List<string> thdata = new List<string>();
-                string dir = AppDomain.CurrentDomain.BaseDirectory;
-                dir = Path.GetFullPath("..");
-                dir = Path.GetFullPath("../..");
-                string filepath = dir + "/DownFile/WMSASN_202010090917430000000049490757.txt";     //文件路径
-                if (System.IO.File.Exists(filepath))
-                {
-                    foreach (string str in System.IO.File.ReadAllLines(filepath, Encoding.Default))
-                    {
-                        thdata.Add(str);
-                    }
-                }
+                ////读取文件
+                //List<string> thdata = new List<string>();
+                //string dir = AppDomain.CurrentDomain.BaseDirectory;
+                //dir = Path.GetFullPath("..");
+                //dir = Path.GetFullPath("../..");
+                //string filepath = dir + "/DownFile/WMSASN_202010090917430000000049490757.txt";     //文件路径
+                //if (System.IO.File.Exists(filepath))
+                //{
+                //    foreach (string str in System.IO.File.ReadAllLines(filepath, Encoding.Default))
+                //    {
+                //        thdata.Add(str);
+                //    }
+                //}
 
                 //实体赋值
                 List<Inbound_ASNHD> header = new List<Inbound_ASNHD>();//asn 主订单信息
@@ -908,26 +909,27 @@ namespace PUMAobj.ASN
         /// 入库订单
         /// </summary>
         /// <returns></returns>
-        public string GetInbound_ORDHD()
+        public string GetInbound_ORDHD(List<string> thdata, out string externumber)
         {
             string msg = string.Empty;
             string Error = "";
+            externumber = "";
             try
             {
                 //读取文件
-                List<string> thdata = new List<string>();
-                string dir = AppDomain.CurrentDomain.BaseDirectory;
-                dir = Path.GetFullPath("..");
-                dir = Path.GetFullPath("../..");
-                string filepath = dir + "/DownFile/WMSORD_202010091020160000000049490828.txt";     //文件路径
+                //List<string> thdata = new List<string>();
+                //string dir = AppDomain.CurrentDomain.BaseDirectory;
+                //dir = Path.GetFullPath("..");
+                //dir = Path.GetFullPath("../..");
+                //string filepath = dir + "/DownFile/WMSORD_202010091020160000000049490828.txt";     //文件路径
 
-                if (System.IO.File.Exists(filepath))
-                {
-                    foreach (string str in System.IO.File.ReadAllLines(filepath, Encoding.Default))
-                    {
-                        thdata.Add(str);
-                    }
-                }
+                //if (System.IO.File.Exists(filepath))
+                //{
+                //    foreach (string str in System.IO.File.ReadAllLines(filepath, Encoding.Default))
+                //    {
+                //        thdata.Add(str);
+                //    }
+                //}
 
                 //实体赋值
                 List<Inbound_ORDHD> header = new List<Inbound_ORDHD>();//asn 主订单信息
