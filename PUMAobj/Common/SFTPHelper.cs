@@ -98,7 +98,9 @@ namespace PUMAobj.Common
                 {
                     Connect();
                     //sftp.ChangeDirectory(@"\NIKEReturn\Receive");
+
                     sftp.ChangeDirectory(SFTPPath); //先注释看看
+
                     sftp.UploadFile(file, remotePath);
                     Disconnect();
                 }
@@ -112,6 +114,30 @@ namespace PUMAobj.Common
             return false;
         }
         #endregion
+
+        public bool PUMAPut(string localPath, string localfilename, string remotePath)
+        {
+            try
+            {
+                using (var file = File.OpenRead(localPath + "/" + localfilename))
+                {
+                    Connect();
+                    //sftp.ChangeDirectory(@"\NIKEReturn\Receive");
+                    sftp.ChangeDirectory(remotePath); //先注释看看
+                    sftp.UploadFile(file, localfilename);
+                    Disconnect();
+                }
+                LocalFileHelper.MoveToCover(localPath + localfilename, localPath + "/Success" + localfilename);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                LogHelper.WriteLog(typeof(string), localPath + ":SFTP文件上传失败 原因：:" + ex.ToString(), LogHelper.LogLevel.Error);
+                //throw new Exception(string.Format("SFTP文件上传失败，原因：{0}", ex.Message));
+            }
+            LocalFileHelper.MoveToCover(localPath + localfilename, localPath + "/Warning" + localfilename);
+            return false;
+        }
 
 
         #region SFTP获取文件

@@ -5,6 +5,7 @@ using PUMAobj.Model.WMS;
 using PUMAobj.SqlHelper;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
 using System.IO;
@@ -17,6 +18,19 @@ namespace PUMAobj.ASN
 {
     public class ASNAccessor : BaseAccessor
     {
+        public string putpath = "";
+        public readonly static string sftpip = GetConfigValue("sftpip");//ip
+        public readonly static string sftpport = GetConfigValue("sftpport");//端口
+        public readonly static string sftpuser = GetConfigValue("sftpuser");//用户名
+        public readonly static string sftppwd = GetConfigValue("sftppwd");//密码
+        public readonly static string sftpfilepath = GetConfigValue("sftpfilepath");//lf接收文件地址
+
+        public static string GetConfigValue(string key)
+        {
+            return string.IsNullOrEmpty(key) ? string.Empty : ConfigurationManager.AppSettings[key].ToString();
+        }
+
+        SFTPHelper sFTP = new SFTPHelper(sftpip, sftpport, sftpuser, sftppwd);
         /// <summary>
         /// Inbound-PURDT
         /// </summary>
@@ -506,13 +520,13 @@ namespace PUMAobj.ASN
                                 ContainerKey = thdata[i].TxtSubstring(510, 527),
                                 Signatory = thdata[i].TxtSubstring(528, 545),
                                 PlaceofIssue = thdata[i].TxtSubstring(546, 563),
-                                OpenQty = thdata[i].TxtSubstring(564,573).TxtConvertInt(),
+                                OpenQty = thdata[i].TxtSubstring(564, 573).TxtConvertInt(),
                                 Status = thdata[i].TxtSubstring(574, 583),
                                 Notes = thdata[i].TxtSubstring(584, 798),
                                 EffectiveDate = thdata[i].TxtSubstring(799, 812),
                                 ContainerType = thdata[i].TxtSubstring(813, 832),
-                                ContainerQty = thdata[i].TxtSubstring(833,842).TxtConvertInt(),
-                                BilledContainerQty = thdata[i].TxtSubstring(843,852).TxtConvertInt(),
+                                ContainerQty = thdata[i].TxtSubstring(833, 842).TxtConvertInt(),
+                                BilledContainerQty = thdata[i].TxtSubstring(843, 852).TxtConvertInt(),
                                 RECType = thdata[i].TxtSubstring(853, 862),
                                 ASNStatus = thdata[i].TxtSubstring(863, 872),
                                 ASNReason = thdata[i].TxtSubstring(873, 882),
@@ -536,7 +550,7 @@ namespace PUMAobj.ASN
                                 DOCTYPE = thdata[i].TxtSubstring(1198, 1198),
                                 RoutingTool = thdata[i].TxtSubstring(1199, 1228),
                                 CTNTYPE1 = thdata[i].TxtSubstring(1229, 1258),
-                                CTNQTY1 = thdata[i].TxtSubstring(1259,1268).TxtConvertInt(),
+                                CTNQTY1 = thdata[i].TxtSubstring(1259, 1268).TxtConvertInt(),
                                 CTNTYPE2 = thdata[i].TxtSubstring(1269, 1298),
                                 CTNQTY2 = thdata[i].TxtSubstring(1299, 1308).TxtConvertInt(),
                                 CTNTYPE3 = thdata[i].TxtSubstring(1309, 1338),
@@ -555,12 +569,12 @@ namespace PUMAobj.ASN
                                 CTNQTY9 = thdata[i].TxtSubstring(1579, 1588).TxtConvertInt(),
                                 CTNTYPE10 = thdata[i].TxtSubstring(1589, 1618),
                                 CTNQTY10 = thdata[i].TxtSubstring(1619, 1628).TxtConvertInt(),
-                                NoOfBulkCtn = thdata[i].TxtSubstring(1629,1638).TxtConvertInt(),
-                                NoOfMiniPacks = thdata[i].TxtSubstring(1639,1648).TxtConvertInt(),
-                                NoOfPallet = thdata[i].TxtSubstring(1649,1658).TxtConvertInt(),
-                                Weight = thdata[i].TxtSubstring(1659,1668).TxtConvertFloat(),
+                                NoOfBulkCtn = thdata[i].TxtSubstring(1629, 1638).TxtConvertInt(),
+                                NoOfMiniPacks = thdata[i].TxtSubstring(1639, 1648).TxtConvertInt(),
+                                NoOfPallet = thdata[i].TxtSubstring(1649, 1658).TxtConvertInt(),
+                                Weight = thdata[i].TxtSubstring(1659, 1668).TxtConvertFloat(),
                                 WeightUnit = thdata[i].TxtSubstring(1669, 1688),
-                                Cube = thdata[i].TxtSubstring(1689,1698).TxtConvertFloat(),
+                                Cube = thdata[i].TxtSubstring(1689, 1698).TxtConvertFloat(),
                                 CubeUnit = thdata[i].TxtSubstring(1699, 1718)
                             });
                         }
@@ -580,10 +594,10 @@ namespace PUMAobj.ASN
                                 AltSku = thdata[i].TxtSubstring(115, 134),
                                 Id = thdata[i].TxtSubstring(135, 152),
                                 Status = thdata[i].TxtSubstring(153, 162),
-                                DateReceived = thdata[i].TxtSubstring(163,176).TxtConvertTime(),
-                                QtyExpected = thdata[i].TxtSubstring(177,186).TxtConvertInt(),
-                                QtyAdjusted = thdata[i].TxtSubstring(187,196).TxtConvertInt(),
-                                QtyReceived = thdata[i].TxtSubstring(197,206).TxtConvertInt(),
+                                DateReceived = thdata[i].TxtSubstring(163, 176).TxtConvertTime(),
+                                QtyExpected = thdata[i].TxtSubstring(177, 186).TxtConvertInt(),
+                                QtyAdjusted = thdata[i].TxtSubstring(187, 196).TxtConvertInt(),
+                                QtyReceived = thdata[i].TxtSubstring(197, 206).TxtConvertInt(),
                                 UOM = thdata[i].TxtSubstring(207, 216),
                                 PackKey = thdata[i].TxtSubstring(217, 226),
                                 VesselKey = thdata[i].TxtSubstring(227, 244),
@@ -597,26 +611,26 @@ namespace PUMAobj.ASN
                                 Lottable01 = thdata[i].TxtSubstring(347, 364),
                                 Lottable02 = thdata[i].TxtSubstring(365, 382),
                                 Lottable03 = thdata[i].TxtSubstring(383, 400),
-                                Lottable04 = thdata[i].TxtSubstring(401,414).TxtConvertTime(),
-                                Lottable05 = thdata[i].TxtSubstring(415,428).TxtConvertTime(),
-                                CaseCnt = thdata[i].TxtSubstring(429,438).TxtConvertInt(),
-                                InnerPack = thdata[i].TxtSubstring(439,448).TxtConvertInt(),
-                                Pallet = thdata[i].TxtSubstring(449,458).TxtConvertInt(),
-                                Cube = thdata[i].TxtSubstring(459,468).TxtConvertFloat(),
-                                GrossWgt = thdata[i].TxtSubstring(469,478).TxtConvertFloat(),
-                                NetWgt = thdata[i].TxtSubstring(479,488).TxtConvertFloat(),
-                                OtherUnit1 = thdata[i].TxtSubstring(489,498).TxtConvertFloat(),
-                                OtherUnit2 = thdata[i].TxtSubstring(499,508).TxtConvertFloat(),
-                                UnitPrice = thdata[i].TxtSubstring(509,524).TxtConvertFloat(),
-                                ExtendedPrice = thdata[i].TxtSubstring(525,540).TxtConvertFloat(),
-                                EffectiveDate = thdata[i].TxtSubstring(541,554).TxtConvertTime(),
+                                Lottable04 = thdata[i].TxtSubstring(401, 414).TxtConvertTime(),
+                                Lottable05 = thdata[i].TxtSubstring(415, 428).TxtConvertTime(),
+                                CaseCnt = thdata[i].TxtSubstring(429, 438).TxtConvertInt(),
+                                InnerPack = thdata[i].TxtSubstring(439, 448).TxtConvertInt(),
+                                Pallet = thdata[i].TxtSubstring(449, 458).TxtConvertInt(),
+                                Cube = thdata[i].TxtSubstring(459, 468).TxtConvertFloat(),
+                                GrossWgt = thdata[i].TxtSubstring(469, 478).TxtConvertFloat(),
+                                NetWgt = thdata[i].TxtSubstring(479, 488).TxtConvertFloat(),
+                                OtherUnit1 = thdata[i].TxtSubstring(489, 498).TxtConvertFloat(),
+                                OtherUnit2 = thdata[i].TxtSubstring(499, 508).TxtConvertFloat(),
+                                UnitPrice = thdata[i].TxtSubstring(509, 524).TxtConvertFloat(),
+                                ExtendedPrice = thdata[i].TxtSubstring(525, 540).TxtConvertFloat(),
+                                EffectiveDate = thdata[i].TxtSubstring(541, 554).TxtConvertTime(),
                                 TariffKey = thdata[i].TxtSubstring(555, 564),
-                                FreeGoodQtyExpected = thdata[i].TxtSubstring(565,574).TxtConvertInt(),
-                                FreeGoodQtyReceived = thdata[i].TxtSubstring(575,584).TxtConvertInt(),
+                                FreeGoodQtyExpected = thdata[i].TxtSubstring(565, 574).TxtConvertInt(),
+                                FreeGoodQtyReceived = thdata[i].TxtSubstring(575, 584).TxtConvertInt(),
                                 SubReasonCode = thdata[i].TxtSubstring(585, 594),
                                 FinalizeFlag = thdata[i].TxtSubstring(595, 595),
                                 DuplicateFrom = thdata[i].TxtSubstring(596, 600),
-                                BeforeReceivedQty = thdata[i].TxtSubstring(601,610).TxtConvertInt(),
+                                BeforeReceivedQty = thdata[i].TxtSubstring(601, 610).TxtConvertInt(),
                                 PutawayLoc = thdata[i].TxtSubstring(611, 620),
                                 ExportStatus = thdata[i].TxtSubstring(621, 621),
                                 SplitPalletFlag = thdata[i].TxtSubstring(622, 622),
@@ -628,8 +642,8 @@ namespace PUMAobj.ASN
                                 UserDefine03 = thdata[i].TxtSubstring(718, 747),
                                 UserDefine04 = thdata[i].TxtSubstring(748, 777),
                                 UserDefine05 = thdata[i].TxtSubstring(778, 807),
-                                UserDefine06 = thdata[i].TxtSubstring(808,821).TxtConvertTime(),
-                                UserDefine07 = thdata[i].TxtSubstring(822,835).TxtConvertTime(),
+                                UserDefine06 = thdata[i].TxtSubstring(808, 821).TxtConvertTime(),
+                                UserDefine07 = thdata[i].TxtSubstring(822, 835).TxtConvertTime(),
                                 UserDefine08 = thdata[i].TxtSubstring(836, 865),
                                 UserDefine09 = thdata[i].TxtSubstring(866, 895),
                                 UserDefine10 = thdata[i].TxtSubstring(896, 925)
@@ -652,7 +666,7 @@ namespace PUMAobj.ASN
                         Error = header[i].ExternReceiptKey.ToString();
                         //先删除 在新增
                         string sql_1 = "DELETE Inbound_ASNHD WHERE ExternReceiptKey='" + header[i].ExternReceiptKey + "';";
-                               sql_1+= "DELETE Inbound_ASNDT WHERE ExternReceiptKey='" + header[i].ExternReceiptKey + "';INSERT INTO Inbound_ASNHD VALUES('" + header[i].HeaderFlag + "'";
+                        sql_1 += "DELETE Inbound_ASNDT WHERE ExternReceiptKey='" + header[i].ExternReceiptKey + "';INSERT INTO Inbound_ASNHD VALUES('" + header[i].HeaderFlag + "'";
                         sql_1 += ",'" + header[i].InterfaceActionFlag + "'";
                         sql_1 += ",'" + header[i].ReceiptKey + "'";
                         sql_1 += ",'" + header[i].ExternReceiptKey + "'";
@@ -867,7 +881,7 @@ namespace PUMAobj.ASN
                                     int id_2 = this.ScanExecuteNonQueryRID(sql_2);
                                     if (id_2 < 0)
                                     {
-                                        LogHelper.WriteLog(typeof(string), "ASN-Inbound_ASNDT数据写入错误["+ Error + "]:" + sql_2, LogHelper.LogLevel.Error);
+                                        LogHelper.WriteLog(typeof(string), "ASN-Inbound_ASNDT数据写入错误[" + Error + "]:" + sql_2, LogHelper.LogLevel.Error);
                                         msg = "ASN-Inbound_ASNDT数据写入错误";
                                         return msg;
                                     }
@@ -875,7 +889,7 @@ namespace PUMAobj.ASN
                             }
                             request.asnDetails = aSNDetails;
                             int isresult;
-                            string wmsmsg=AddasnAndasnDetail(request, out isresult);
+                            string wmsmsg = AddasnAndasnDetail(request, out isresult);
                             if (isresult != 200)
                             {
                                 LogHelper.WriteLog(typeof(string), "ASN-Inbound_ASNDT入库单写入WMS失败[" + Error + "]:" + wmsmsg, LogHelper.LogLevel.Error);
@@ -890,7 +904,8 @@ namespace PUMAobj.ASN
                             return msg;
                         }
                     }
-                    else {
+                    else
+                    {
 
 
                     }
@@ -903,7 +918,7 @@ namespace PUMAobj.ASN
                 LogHelper.WriteLog(typeof(string), "ASN-Inbound_ASNHD接口错误[" + Error + "]:" + ex.Message, LogHelper.LogLevel.Error);
             }
 
-             return msg;
+            return msg;
         }
         /// <summary>
         /// 入库订单
@@ -942,199 +957,199 @@ namespace PUMAobj.ASN
                         {
                             header.Add(new Inbound_ORDHD
                             {
-                                HeaderFlag = thdata[i].TxtSubstring(1,5),
-                                InterfaceActionFlag = thdata[i].TxtSubstring(6,6),
-                                OrderKey = thdata[i].TxtSubstring(7,16),
-                                StorerKey = thdata[i].TxtSubstring(17,31),
-                                ExternOrderKey = thdata[i].TxtSubstring(32,51),
-                                Reserved = thdata[i].TxtSubstring(52,61),
+                                HeaderFlag = thdata[i].TxtSubstring(1, 5),
+                                InterfaceActionFlag = thdata[i].TxtSubstring(6, 6),
+                                OrderKey = thdata[i].TxtSubstring(7, 16),
+                                StorerKey = thdata[i].TxtSubstring(17, 31),
+                                ExternOrderKey = thdata[i].TxtSubstring(32, 51),
+                                Reserved = thdata[i].TxtSubstring(52, 61),
                                 OrderDate = thdata[i].TxtSubstring(62, 75).TxtConvertTime(),
-                                DeliveryDate = thdata[i].TxtSubstring(76,89).TxtConvertTime(),
-                                Priority = thdata[i].TxtSubstring(90,99),
-                                ConsigneeKey = thdata[i].TxtSubstring(100,114),
-                                C_contact1 = thdata[i].TxtSubstring(115,144),
-                                C_Contact2 = thdata[i].TxtSubstring(145,174),
-                                C_Company = thdata[i].TxtSubstring(175,219),
-                                C_Address1 = thdata[i].TxtSubstring(220,264),
-                                C_Address2 = thdata[i].TxtSubstring(265,309),
-                                C_Address3 = thdata[i].TxtSubstring(310,354),
-                                C_Address4 = thdata[i].TxtSubstring(355,399),
-                                C_City = thdata[i].TxtSubstring(400,444),
-                                C_State = thdata[i].TxtSubstring(445,446),
-                                C_Zip = thdata[i].TxtSubstring(447,464),
-                                C_Country = thdata[i].TxtSubstring(465,494),
-                                C_ISOCntryCode = thdata[i].TxtSubstring(495,504),
-                                C_Phone1 = thdata[i].TxtSubstring(505,522),
-                                C_Phone2 = thdata[i].TxtSubstring(523,540),
-                                C_Fax1 = thdata[i].TxtSubstring(541,558),
-                                C_Fax2 = thdata[i].TxtSubstring(559,576),
-                                C_vat = thdata[i].TxtSubstring(577,594),
-                                BuyerPO = thdata[i].TxtSubstring(595,614),
-                                BillToKey = thdata[i].TxtSubstring(615,629),
-                                B_contact1 = thdata[i].TxtSubstring(630,659),
-                                B_Contact2 = thdata[i].TxtSubstring(660,689),
-                                B_Company = thdata[i].TxtSubstring(690,734),
-                                B_Address1 = thdata[i].TxtSubstring(735,779),
-                                B_Address2 = thdata[i].TxtSubstring(780,824),
-                                B_Address3 = thdata[i].TxtSubstring(825,869),
-                                B_Address4 = thdata[i].TxtSubstring(870,914),
-                                B_City = thdata[i].TxtSubstring(915,959),
-                                B_State = thdata[i].TxtSubstring(960,961),
-                                B_Zip = thdata[i].TxtSubstring(962,979),
-                                B_Country = thdata[i].TxtSubstring(980,1009),
-                                B_ISOCntryCode = thdata[i].TxtSubstring(1010,1019),
-                                B_Phone1 = thdata[i].TxtSubstring(1020,1037),
-                                B_Phone2 = thdata[i].TxtSubstring(1038,1055),
-                                B_Fax1 = thdata[i].TxtSubstring(1056,1073),
-                                B_Fax2 = thdata[i].TxtSubstring(1074,1091),
-                                B_Vat = thdata[i].TxtSubstring(1092,1109),
-                                IncoTerm = thdata[i].TxtSubstring(1110,1119),
-                                PmtTerm = thdata[i].TxtSubstring(1120,1129),
-                                OpenQty = thdata[i].TxtSubstring(1130,1139).TxtConvertInt(),
-                                Status = thdata[i].TxtSubstring(1140,1149),
-                                DischargePlace = thdata[i].TxtSubstring(1150,1179),
-                                DeliveryPlace = thdata[i].TxtSubstring(1180,1209),
-                                IntermodalVehicle = thdata[i].TxtSubstring(1210,1239),
-                                CountryOfOrigin = thdata[i].TxtSubstring(1240,1269),
-                                CountryDestination = thdata[i].TxtSubstring(1270,1299),
-                                UpdateSource = thdata[i].TxtSubstring(1300,1309),
-                                Type = thdata[i].TxtSubstring(1310,1319),
-                                OrderGroup = thdata[i].TxtSubstring(1320,1339),
-                                Door = thdata[i].TxtSubstring(1340,1349),
-                                Route = thdata[i].TxtSubstring(1350,1359),
-                                Stop = thdata[i].TxtSubstring(1360,1369),
-                                Notes = thdata[i].TxtSubstring(1370,1494),
-                                EffectiveDate = thdata[i].TxtSubstring(1495,1508).TxtConvertTime(),
-                                ContainerType = thdata[i].TxtSubstring(1509,1528),
-                                ContainerQty = thdata[i].TxtSubstring(1529,1538).TxtConvertInt(),
-                                BilledContainerQty = thdata[i].TxtSubstring(1539,1548).TxtConvertInt(),
-                                SOStatus = thdata[i].TxtSubstring(1549,1558),
-                                MBOLKey = thdata[i].TxtSubstring(1559,1568),
-                                InvoiceNo = thdata[i].TxtSubstring(1569,1578),
-                                InvoiceAmount = thdata[i].TxtSubstring(1579,1594).TxtConvertFloat(),
-                                Salesman = thdata[i].TxtSubstring(1595,1624),
-                                GrossWeight = thdata[i].TxtSubstring(1625,1640).TxtConvertFloat(),
-                                WgtUnit = thdata[i].TxtSubstring(1641,1645),
-                                Capacity = thdata[i].TxtSubstring(1646,1661).TxtConvertFloat(),
-                                CubeUnit = thdata[i].TxtSubstring(1662,1666),
-                                PrintFlag = thdata[i].TxtSubstring(1667,1667),
-                                LoadKey = thdata[i].TxtSubstring(1668,1677),
-                                Rdd = thdata[i].TxtSubstring(1678,1707),
-                                Notes2 = thdata[i].TxtSubstring(1708,1832),
-                                SequenceNo = thdata[i].TxtSubstring(1833,1842).TxtConvertInt(),
-                                Rds = thdata[i].TxtSubstring(1843,1843),
-                                SectionKey = thdata[i].TxtSubstring(1844,1853),
-                                Facility = thdata[i].TxtSubstring(1854,1858),
-                                PrintDocDate = thdata[i].TxtSubstring(1859,1872).TxtConvertTime(),
-                                LabelPrice = thdata[i].TxtSubstring(1873,1877),
-                                POKey = thdata[i].TxtSubstring(1878,1887),
-                                ExternPOKey = thdata[i].TxtSubstring(1888,1907),
-                                XDockFlag = thdata[i].TxtSubstring(1908,1908),
-                                UserDefine01 = thdata[i].TxtSubstring(1909,1928),
-                                UserDefine02 = thdata[i].TxtSubstring(1929,1948),
-                                UserDefine03 = thdata[i].TxtSubstring(1949,1968),
-                                UserDefine04 = thdata[i].TxtSubstring(1969,1988),
-                                UserDefine05 = thdata[i].TxtSubstring(1989,2008),
-                                UserDefine06 = thdata[i].TxtSubstring(2009,2022).TxtConvertTime(),
-                                UserDefine07 = thdata[i].TxtSubstring(2023,2036).TxtConvertTime(),
-                                UserDefine08 = thdata[i].TxtSubstring(2037,2046),
-                                UserDefine09 = thdata[i].TxtSubstring(2047,2056),
-                                UserDefine10 = thdata[i].TxtSubstring(2057,2066),
-                                Issued = thdata[i].TxtSubstring(2067,2067),
-                                DeliveryNote = thdata[i].TxtSubstring(2068,2077),
-                                PODCust = thdata[i].TxtSubstring(2078,2091).TxtConvertTime(),
-                                PODArrive = thdata[i].TxtSubstring(2092,2105).TxtConvertTime(),
-                                PODReject = thdata[i].TxtSubstring(2106,2119).TxtConvertTime(),
-                                PODUser = thdata[i].TxtSubstring(2120,2137),
-                                xdockpokey = thdata[i].TxtSubstring(2138,2157),
-                                SpecialHandling = thdata[i].TxtSubstring(2158,2158),
-                                RoutingTool = thdata[i].TxtSubstring(2159,2188),
-                                MarkforKey = thdata[i].TxtSubstring(2189,2203),
-                                M_Contact1 = thdata[i].TxtSubstring(2204,2233),
-                                M_Contact2 = thdata[i].TxtSubstring(2234,2263),
-                                M_Company = thdata[i].TxtSubstring(2264,2308),
-                                M_Address1 = thdata[i].TxtSubstring(2309,2353),
-                                M_Address2 = thdata[i].TxtSubstring(2354,2398),
-                                M_Address3 = thdata[i].TxtSubstring(2399,2443),
-                                M_Address4 = thdata[i].TxtSubstring(2444,2488),
-                                M_City = thdata[i].TxtSubstring(2489,2533),
-                                M_State = thdata[i].TxtSubstring(2534,2535),
-                                M_Zip = thdata[i].TxtSubstring(2536,2553),
-                                M_Country = thdata[i].TxtSubstring(2554,2583),
-                                M_ISOCntryCode = thdata[i].TxtSubstring(2584,2593),
-                                M_Phone1 = thdata[i].TxtSubstring(2594,2611),
-                                M_Phone2 = thdata[i].TxtSubstring(2612,2629),
-                                M_Fax1 = thdata[i].TxtSubstring(2630,2647),
-                                M_Fax2 = thdata[i].TxtSubstring(2648,2665),
-                                M_vat = thdata[i].TxtSubstring(2666,2683),
+                                DeliveryDate = thdata[i].TxtSubstring(76, 89).TxtConvertTime(),
+                                Priority = thdata[i].TxtSubstring(90, 99),
+                                ConsigneeKey = thdata[i].TxtSubstring(100, 114),
+                                C_contact1 = thdata[i].TxtSubstring(115, 144),
+                                C_Contact2 = thdata[i].TxtSubstring(145, 174),
+                                C_Company = thdata[i].TxtSubstring(175, 219),
+                                C_Address1 = thdata[i].TxtSubstring(220, 264),
+                                C_Address2 = thdata[i].TxtSubstring(265, 309),
+                                C_Address3 = thdata[i].TxtSubstring(310, 354),
+                                C_Address4 = thdata[i].TxtSubstring(355, 399),
+                                C_City = thdata[i].TxtSubstring(400, 444),
+                                C_State = thdata[i].TxtSubstring(445, 446),
+                                C_Zip = thdata[i].TxtSubstring(447, 464),
+                                C_Country = thdata[i].TxtSubstring(465, 494),
+                                C_ISOCntryCode = thdata[i].TxtSubstring(495, 504),
+                                C_Phone1 = thdata[i].TxtSubstring(505, 522),
+                                C_Phone2 = thdata[i].TxtSubstring(523, 540),
+                                C_Fax1 = thdata[i].TxtSubstring(541, 558),
+                                C_Fax2 = thdata[i].TxtSubstring(559, 576),
+                                C_vat = thdata[i].TxtSubstring(577, 594),
+                                BuyerPO = thdata[i].TxtSubstring(595, 614),
+                                BillToKey = thdata[i].TxtSubstring(615, 629),
+                                B_contact1 = thdata[i].TxtSubstring(630, 659),
+                                B_Contact2 = thdata[i].TxtSubstring(660, 689),
+                                B_Company = thdata[i].TxtSubstring(690, 734),
+                                B_Address1 = thdata[i].TxtSubstring(735, 779),
+                                B_Address2 = thdata[i].TxtSubstring(780, 824),
+                                B_Address3 = thdata[i].TxtSubstring(825, 869),
+                                B_Address4 = thdata[i].TxtSubstring(870, 914),
+                                B_City = thdata[i].TxtSubstring(915, 959),
+                                B_State = thdata[i].TxtSubstring(960, 961),
+                                B_Zip = thdata[i].TxtSubstring(962, 979),
+                                B_Country = thdata[i].TxtSubstring(980, 1009),
+                                B_ISOCntryCode = thdata[i].TxtSubstring(1010, 1019),
+                                B_Phone1 = thdata[i].TxtSubstring(1020, 1037),
+                                B_Phone2 = thdata[i].TxtSubstring(1038, 1055),
+                                B_Fax1 = thdata[i].TxtSubstring(1056, 1073),
+                                B_Fax2 = thdata[i].TxtSubstring(1074, 1091),
+                                B_Vat = thdata[i].TxtSubstring(1092, 1109),
+                                IncoTerm = thdata[i].TxtSubstring(1110, 1119),
+                                PmtTerm = thdata[i].TxtSubstring(1120, 1129),
+                                OpenQty = thdata[i].TxtSubstring(1130, 1139).TxtConvertInt(),
+                                Status = thdata[i].TxtSubstring(1140, 1149),
+                                DischargePlace = thdata[i].TxtSubstring(1150, 1179),
+                                DeliveryPlace = thdata[i].TxtSubstring(1180, 1209),
+                                IntermodalVehicle = thdata[i].TxtSubstring(1210, 1239),
+                                CountryOfOrigin = thdata[i].TxtSubstring(1240, 1269),
+                                CountryDestination = thdata[i].TxtSubstring(1270, 1299),
+                                UpdateSource = thdata[i].TxtSubstring(1300, 1309),
+                                Type = thdata[i].TxtSubstring(1310, 1319),
+                                OrderGroup = thdata[i].TxtSubstring(1320, 1339),
+                                Door = thdata[i].TxtSubstring(1340, 1349),
+                                Route = thdata[i].TxtSubstring(1350, 1359),
+                                Stop = thdata[i].TxtSubstring(1360, 1369),
+                                Notes = thdata[i].TxtSubstring(1370, 1494),
+                                EffectiveDate = thdata[i].TxtSubstring(1495, 1508).TxtConvertTime(),
+                                ContainerType = thdata[i].TxtSubstring(1509, 1528),
+                                ContainerQty = thdata[i].TxtSubstring(1529, 1538).TxtConvertInt(),
+                                BilledContainerQty = thdata[i].TxtSubstring(1539, 1548).TxtConvertInt(),
+                                SOStatus = thdata[i].TxtSubstring(1549, 1558),
+                                MBOLKey = thdata[i].TxtSubstring(1559, 1568),
+                                InvoiceNo = thdata[i].TxtSubstring(1569, 1578),
+                                InvoiceAmount = thdata[i].TxtSubstring(1579, 1594).TxtConvertFloat(),
+                                Salesman = thdata[i].TxtSubstring(1595, 1624),
+                                GrossWeight = thdata[i].TxtSubstring(1625, 1640).TxtConvertFloat(),
+                                WgtUnit = thdata[i].TxtSubstring(1641, 1645),
+                                Capacity = thdata[i].TxtSubstring(1646, 1661).TxtConvertFloat(),
+                                CubeUnit = thdata[i].TxtSubstring(1662, 1666),
+                                PrintFlag = thdata[i].TxtSubstring(1667, 1667),
+                                LoadKey = thdata[i].TxtSubstring(1668, 1677),
+                                Rdd = thdata[i].TxtSubstring(1678, 1707),
+                                Notes2 = thdata[i].TxtSubstring(1708, 1832),
+                                SequenceNo = thdata[i].TxtSubstring(1833, 1842).TxtConvertInt(),
+                                Rds = thdata[i].TxtSubstring(1843, 1843),
+                                SectionKey = thdata[i].TxtSubstring(1844, 1853),
+                                Facility = thdata[i].TxtSubstring(1854, 1858),
+                                PrintDocDate = thdata[i].TxtSubstring(1859, 1872).TxtConvertTime(),
+                                LabelPrice = thdata[i].TxtSubstring(1873, 1877),
+                                POKey = thdata[i].TxtSubstring(1878, 1887),
+                                ExternPOKey = thdata[i].TxtSubstring(1888, 1907),
+                                XDockFlag = thdata[i].TxtSubstring(1908, 1908),
+                                UserDefine01 = thdata[i].TxtSubstring(1909, 1928),
+                                UserDefine02 = thdata[i].TxtSubstring(1929, 1948),
+                                UserDefine03 = thdata[i].TxtSubstring(1949, 1968),
+                                UserDefine04 = thdata[i].TxtSubstring(1969, 1988),
+                                UserDefine05 = thdata[i].TxtSubstring(1989, 2008),
+                                UserDefine06 = thdata[i].TxtSubstring(2009, 2022).TxtConvertTime(),
+                                UserDefine07 = thdata[i].TxtSubstring(2023, 2036).TxtConvertTime(),
+                                UserDefine08 = thdata[i].TxtSubstring(2037, 2046),
+                                UserDefine09 = thdata[i].TxtSubstring(2047, 2056),
+                                UserDefine10 = thdata[i].TxtSubstring(2057, 2066),
+                                Issued = thdata[i].TxtSubstring(2067, 2067),
+                                DeliveryNote = thdata[i].TxtSubstring(2068, 2077),
+                                PODCust = thdata[i].TxtSubstring(2078, 2091).TxtConvertTime(),
+                                PODArrive = thdata[i].TxtSubstring(2092, 2105).TxtConvertTime(),
+                                PODReject = thdata[i].TxtSubstring(2106, 2119).TxtConvertTime(),
+                                PODUser = thdata[i].TxtSubstring(2120, 2137),
+                                xdockpokey = thdata[i].TxtSubstring(2138, 2157),
+                                SpecialHandling = thdata[i].TxtSubstring(2158, 2158),
+                                RoutingTool = thdata[i].TxtSubstring(2159, 2188),
+                                MarkforKey = thdata[i].TxtSubstring(2189, 2203),
+                                M_Contact1 = thdata[i].TxtSubstring(2204, 2233),
+                                M_Contact2 = thdata[i].TxtSubstring(2234, 2263),
+                                M_Company = thdata[i].TxtSubstring(2264, 2308),
+                                M_Address1 = thdata[i].TxtSubstring(2309, 2353),
+                                M_Address2 = thdata[i].TxtSubstring(2354, 2398),
+                                M_Address3 = thdata[i].TxtSubstring(2399, 2443),
+                                M_Address4 = thdata[i].TxtSubstring(2444, 2488),
+                                M_City = thdata[i].TxtSubstring(2489, 2533),
+                                M_State = thdata[i].TxtSubstring(2534, 2535),
+                                M_Zip = thdata[i].TxtSubstring(2536, 2553),
+                                M_Country = thdata[i].TxtSubstring(2554, 2583),
+                                M_ISOCntryCode = thdata[i].TxtSubstring(2584, 2593),
+                                M_Phone1 = thdata[i].TxtSubstring(2594, 2611),
+                                M_Phone2 = thdata[i].TxtSubstring(2612, 2629),
+                                M_Fax1 = thdata[i].TxtSubstring(2630, 2647),
+                                M_Fax2 = thdata[i].TxtSubstring(2648, 2665),
+                                M_vat = thdata[i].TxtSubstring(2666, 2683),
                                 //C_State_Long = thdata[i].TxtSubstring(2684,2728)
-                                C_State_Long = thdata[i].TxtSubstring(2684,2688)
+                                C_State_Long = thdata[i].TxtSubstring(2684, 2688)
                             });
                         }
                         if (thdata[i].TxtSubstring(1, 5) == "ORDDT")//取出主订单详细信息
                         {
                             details.Add(new Inbound_ORDDT
                             {
-                                HeaderFlag = thdata[i].TxtSubstring(1,5),
-                                InterfaceActionFlag = thdata[i].TxtSubstring(6,6),
-                                OrderLineNumber = thdata[i].TxtSubstring(7,11),
-                                OrderDetailSysId = thdata[i].TxtSubstring(12,21).TxtConvertInt(),
-                                ExternOrderKey = thdata[i].TxtSubstring(22,41),
-                                ExternLineNo = thdata[i].TxtSubstring(42,51),
-                                Sku = thdata[i].TxtSubstring(52,71),
-                                StorerKey = thdata[i].TxtSubstring(72,86),
-                                ManufacturerSku = thdata[i].TxtSubstring(87,106),
-                                RetailSku = thdata[i].TxtSubstring(107,126),
-                                AltSku = thdata[i].TxtSubstring(127,146),
-                                OriginalQty = thdata[i].TxtSubstring(147,156).TxtConvertInt(),
-                                OpenQty = thdata[i].TxtSubstring(157,166).TxtConvertInt(),
-                                ShippedQty = thdata[i].TxtSubstring(167,176).TxtConvertInt(),
-                                AdjustedQty = thdata[i].TxtSubstring(177,186).TxtConvertInt(),
-                                QtyPreAllocated = thdata[i].TxtSubstring(187,196).TxtConvertInt(),
-                                QtyAllocated = thdata[i].TxtSubstring(197,206).TxtConvertInt(),
-                                QtyPicked = thdata[i].TxtSubstring(207,216).TxtConvertInt(),
-                                UOM = thdata[i].TxtSubstring(217,226),
-                                PackKey = thdata[i].TxtSubstring(227,236),
-                                PickCode = thdata[i].TxtSubstring(237,246),
-                                CartonGroup = thdata[i].TxtSubstring(247,256),
-                                Lot = thdata[i].TxtSubstring(257,266),
-                                ID = thdata[i].TxtSubstring(267,284).TxtConvertInt(),
-                                Facility = thdata[i].TxtSubstring(285,289),
-                                Status = thdata[i].TxtSubstring(290,299),
-                                UnitPrice = thdata[i].TxtSubstring(300,315).TxtConvertFloat(),
-                                Tax01 = thdata[i].TxtSubstring(316,331).TxtConvertFloat(),
-                                Tax02 = thdata[i].TxtSubstring(332,347).TxtConvertFloat(),
-                                ExtendedPrice = thdata[i].TxtSubstring(348,363).TxtConvertFloat(),
-                                Reserved = thdata[i].TxtSubstring(364,400),
-                                UpdateSource = thdata[i].TxtSubstring(401,410),
-                                Lottable01 = thdata[i].TxtSubstring(411,428),
-                                Lottable02 = thdata[i].TxtSubstring(429,446),
-                                Lottable03 = thdata[i].TxtSubstring(447,464),
-                                Lottable04 = thdata[i].TxtSubstring(465,478).TxtConvertTime(),
-                                Lottable05 = thdata[i].TxtSubstring(479,492).TxtConvertTime(),
-                                EffectiveDate = thdata[i].TxtSubstring(493,506).TxtConvertTime(),
-                                TariffKey = thdata[i].TxtSubstring(507,516),
-                                FreeGoodQty = thdata[i].TxtSubstring(517,526).TxtConvertInt(),
-                                GrossWeight = thdata[i].TxtSubstring(527,542).TxtConvertFloat(),
-                                WgtUnit = thdata[i].TxtSubstring(543,547),
-                                Capacity = thdata[i].TxtSubstring(548,563).TxtConvertFloat(),
-                                CubeUnit = thdata[i].TxtSubstring(564,568),
-                                LoadKey = thdata[i].TxtSubstring(569,578),
-                                MBOLKey = thdata[i].TxtSubstring(579,588),
-                                QtyToProcess = thdata[i].TxtSubstring(589,598).TxtConvertInt(),
-                                MinShelfLife = thdata[i].TxtSubstring(599,608).TxtConvertInt(),
-                                UserDefine01 = thdata[i].TxtSubstring(609,626),
-                                UserDefine02 = thdata[i].TxtSubstring(627,644),
-                                UserDefine03 = thdata[i].TxtSubstring(645,662),
-                                UserDefine04 = thdata[i].TxtSubstring(663,680),
-                                UserDefine05 = thdata[i].TxtSubstring(681,698),
-                                UserDefine06 = thdata[i].TxtSubstring(699,716),
-                                UserDefine07 = thdata[i].TxtSubstring(717,734),
-                                UserDefine08 = thdata[i].TxtSubstring(735,752),
-                                UserDefine09 = thdata[i].TxtSubstring(753,770),
-                                POkey = thdata[i].TxtSubstring(771,790),
-                                ExternPOKey = thdata[i].TxtSubstring(791,810),
-                                OrgExternLineNo = thdata[i].TxtSubstring(811,820),
+                                HeaderFlag = thdata[i].TxtSubstring(1, 5),
+                                InterfaceActionFlag = thdata[i].TxtSubstring(6, 6),
+                                OrderLineNumber = thdata[i].TxtSubstring(7, 11),
+                                OrderDetailSysId = thdata[i].TxtSubstring(12, 21).TxtConvertInt(),
+                                ExternOrderKey = thdata[i].TxtSubstring(22, 41),
+                                ExternLineNo = thdata[i].TxtSubstring(42, 51),
+                                Sku = thdata[i].TxtSubstring(52, 71),
+                                StorerKey = thdata[i].TxtSubstring(72, 86),
+                                ManufacturerSku = thdata[i].TxtSubstring(87, 106),
+                                RetailSku = thdata[i].TxtSubstring(107, 126),
+                                AltSku = thdata[i].TxtSubstring(127, 146),
+                                OriginalQty = thdata[i].TxtSubstring(147, 156).TxtConvertInt(),
+                                OpenQty = thdata[i].TxtSubstring(157, 166).TxtConvertInt(),
+                                ShippedQty = thdata[i].TxtSubstring(167, 176).TxtConvertInt(),
+                                AdjustedQty = thdata[i].TxtSubstring(177, 186).TxtConvertInt(),
+                                QtyPreAllocated = thdata[i].TxtSubstring(187, 196).TxtConvertInt(),
+                                QtyAllocated = thdata[i].TxtSubstring(197, 206).TxtConvertInt(),
+                                QtyPicked = thdata[i].TxtSubstring(207, 216).TxtConvertInt(),
+                                UOM = thdata[i].TxtSubstring(217, 226),
+                                PackKey = thdata[i].TxtSubstring(227, 236),
+                                PickCode = thdata[i].TxtSubstring(237, 246),
+                                CartonGroup = thdata[i].TxtSubstring(247, 256),
+                                Lot = thdata[i].TxtSubstring(257, 266),
+                                ID = thdata[i].TxtSubstring(267, 284).TxtConvertInt(),
+                                Facility = thdata[i].TxtSubstring(285, 289),
+                                Status = thdata[i].TxtSubstring(290, 299),
+                                UnitPrice = thdata[i].TxtSubstring(300, 315).TxtConvertFloat(),
+                                Tax01 = thdata[i].TxtSubstring(316, 331).TxtConvertFloat(),
+                                Tax02 = thdata[i].TxtSubstring(332, 347).TxtConvertFloat(),
+                                ExtendedPrice = thdata[i].TxtSubstring(348, 363).TxtConvertFloat(),
+                                Reserved = thdata[i].TxtSubstring(364, 400),
+                                UpdateSource = thdata[i].TxtSubstring(401, 410),
+                                Lottable01 = thdata[i].TxtSubstring(411, 428),
+                                Lottable02 = thdata[i].TxtSubstring(429, 446),
+                                Lottable03 = thdata[i].TxtSubstring(447, 464),
+                                Lottable04 = thdata[i].TxtSubstring(465, 478).TxtConvertTime(),
+                                Lottable05 = thdata[i].TxtSubstring(479, 492).TxtConvertTime(),
+                                EffectiveDate = thdata[i].TxtSubstring(493, 506).TxtConvertTime(),
+                                TariffKey = thdata[i].TxtSubstring(507, 516),
+                                FreeGoodQty = thdata[i].TxtSubstring(517, 526).TxtConvertInt(),
+                                GrossWeight = thdata[i].TxtSubstring(527, 542).TxtConvertFloat(),
+                                WgtUnit = thdata[i].TxtSubstring(543, 547),
+                                Capacity = thdata[i].TxtSubstring(548, 563).TxtConvertFloat(),
+                                CubeUnit = thdata[i].TxtSubstring(564, 568),
+                                LoadKey = thdata[i].TxtSubstring(569, 578),
+                                MBOLKey = thdata[i].TxtSubstring(579, 588),
+                                QtyToProcess = thdata[i].TxtSubstring(589, 598).TxtConvertInt(),
+                                MinShelfLife = thdata[i].TxtSubstring(599, 608).TxtConvertInt(),
+                                UserDefine01 = thdata[i].TxtSubstring(609, 626),
+                                UserDefine02 = thdata[i].TxtSubstring(627, 644),
+                                UserDefine03 = thdata[i].TxtSubstring(645, 662),
+                                UserDefine04 = thdata[i].TxtSubstring(663, 680),
+                                UserDefine05 = thdata[i].TxtSubstring(681, 698),
+                                UserDefine06 = thdata[i].TxtSubstring(699, 716),
+                                UserDefine07 = thdata[i].TxtSubstring(717, 734),
+                                UserDefine08 = thdata[i].TxtSubstring(735, 752),
+                                UserDefine09 = thdata[i].TxtSubstring(753, 770),
+                                POkey = thdata[i].TxtSubstring(771, 790),
+                                ExternPOKey = thdata[i].TxtSubstring(791, 810),
+                                OrgExternLineNo = thdata[i].TxtSubstring(811, 820),
                             });
                         }
                         if (thdata[i].TxtSubstring(1, 5) == "ORDTR")
@@ -1152,172 +1167,173 @@ namespace PUMAobj.ASN
                     PreOrderList = null;
                     PreDetail = null;
                     Error = header[i].ExternOrderKey;
-                    string sql_1 = "DELETE Inbound_ORDHD WHERE ExternOrderKey='"+ header[i].ExternOrderKey + "';DELETE Inbound_ORDDT WHERE ExternOrderKey='"+ header[i].ExternOrderKey + "';";
-                        sql_1 += "INSERT INTO Inbound_ORDHD VALUES('" + header[i].HeaderFlag + "'";
-                        sql_1 += ",'" + header[i].InterfaceActionFlag + "'";
-                        sql_1 += ",'" + header[i].OrderKey + "'";
-                        sql_1 += ",'" + header[i].StorerKey + "'";
-                        sql_1 += ",'" + header[i].ExternOrderKey + "'";
-                        sql_1 += ",'" + header[i].Reserved + "'";
-                        sql_1 += ",'" + header[i].OrderDate + "'";
-                        sql_1 += ",'" + header[i].DeliveryDate + "'";
-                        sql_1 += ",'" + header[i].Priority + "'";
-                        sql_1 += ",'" + header[i].ConsigneeKey + "'";
-                        sql_1 += ",'" + header[i].C_contact1 + "'";
-                        sql_1 += ",'" + header[i].C_Contact2 + "'";
-                        sql_1 += ",'" + header[i].C_Company + "'";
-                        sql_1 += ",'" + header[i].C_Address1 + "'";
-                        sql_1 += ",'" + header[i].C_Address2 + "'";
-                        sql_1 += ",'" + header[i].C_Address3 + "'";
-                        sql_1 += ",'" + header[i].C_Address4 + "'";
-                        sql_1 += ",'" + header[i].C_City + "'";
-                        sql_1 += ",'" + header[i].C_State + "'";
-                        sql_1 += ",'" + header[i].C_Zip + "'";
-                        sql_1 += ",'" + header[i].C_Country + "'";
-                        sql_1 += ",'" + header[i].C_ISOCntryCode + "'";
-                        sql_1 += ",'" + header[i].C_Phone1 + "'";
-                        sql_1 += ",'" + header[i].C_Phone2 + "'";
-                        sql_1 += ",'" + header[i].C_Fax1 + "'";
-                        sql_1 += ",'" + header[i].C_Fax2 + "'";
-                        sql_1 += ",'" + header[i].C_vat + "'";
-                        sql_1 += ",'" + header[i].BuyerPO + "'";
-                        sql_1 += ",'" + header[i].BillToKey + "'";
-                        sql_1 += ",'" + header[i].B_contact1 + "'";
-                        sql_1 += ",'" + header[i].B_Contact2 + "'";
-                        sql_1 += ",'" + header[i].B_Company + "'";
-                        sql_1 += ",'" + header[i].B_Address1 + "'";
-                        sql_1 += ",'" + header[i].B_Address2 + "'";
-                        sql_1 += ",'" + header[i].B_Address3 + "'";
-                        sql_1 += ",'" + header[i].B_Address4 + "'";
-                        sql_1 += ",'" + header[i].B_City + "'";
-                        sql_1 += ",'" + header[i].B_State + "'";
-                        sql_1 += ",'" + header[i].B_Zip + "'";
-                        sql_1 += ",'" + header[i].B_Country + "'";
-                        sql_1 += ",'" + header[i].B_ISOCntryCode + "'";
-                        sql_1 += ",'" + header[i].B_Phone1 + "'";
-                        sql_1 += ",'" + header[i].B_Phone2 + "'";
-                        sql_1 += ",'" + header[i].B_Fax1 + "'";
-                        sql_1 += ",'" + header[i].B_Fax2 + "'";
-                        sql_1 += ",'" + header[i].B_Vat + "'";
-                        sql_1 += ",'" + header[i].IncoTerm + "'";
-                        sql_1 += ",'" + header[i].PmtTerm + "'";
-                        sql_1 += ",'" + header[i].OpenQty + "'";
-                        sql_1 += ",'" + header[i].Status + "'";
-                        sql_1 += ",'" + header[i].DischargePlace + "'";
-                        sql_1 += ",'" + header[i].DeliveryPlace + "'";
-                        sql_1 += ",'" + header[i].IntermodalVehicle + "'";
-                        sql_1 += ",'" + header[i].CountryOfOrigin + "'";
-                        sql_1 += ",'" + header[i].CountryDestination + "'";
-                        sql_1 += ",'" + header[i].UpdateSource + "'";
-                        sql_1 += ",'" + header[i].Type + "'";
-                        sql_1 += ",'" + header[i].OrderGroup + "'";
-                        sql_1 += ",'" + header[i].Door + "'";
-                        sql_1 += ",'" + header[i].Route + "'";
-                        sql_1 += ",'" + header[i].Stop + "'";
-                        sql_1 += ",'" + header[i].Notes + "'";
-                        sql_1 += ",'" + header[i].EffectiveDate + "'";
-                        sql_1 += ",'" + header[i].ContainerType + "'";
-                        sql_1 += ",'" + header[i].ContainerQty + "'";
-                        sql_1 += ",'" + header[i].BilledContainerQty + "'";
-                        sql_1 += ",'" + header[i].SOStatus + "'";
-                        sql_1 += ",'" + header[i].MBOLKey + "'";
-                        sql_1 += ",'" + header[i].InvoiceNo + "'";
-                        sql_1 += ",'" + header[i].InvoiceAmount + "'";
-                        sql_1 += ",'" + header[i].Salesman + "'";
-                        sql_1 += ",'" + header[i].GrossWeight + "'";
-                        sql_1 += ",'" + header[i].WgtUnit + "'";
-                        sql_1 += ",'" + header[i].Capacity + "'";
-                        sql_1 += ",'" + header[i].CubeUnit + "'";
-                        sql_1 += ",'" + header[i].PrintFlag + "'";
-                        sql_1 += ",'" + header[i].LoadKey + "'";
-                        sql_1 += ",'" + header[i].Rdd + "'";
-                        sql_1 += ",'" + header[i].Notes2 + "'";
-                        sql_1 += ",'" + header[i].SequenceNo + "'";
-                        sql_1 += ",'" + header[i].Rds + "'";
-                        sql_1 += ",'" + header[i].SectionKey + "'";
-                        sql_1 += ",'" + header[i].Facility + "'";
-                        sql_1 += ",'" + header[i].PrintDocDate + "'";
-                        sql_1 += ",'" + header[i].LabelPrice + "'";
-                        sql_1 += ",'" + header[i].POKey + "'";
-                        sql_1 += ",'" + header[i].ExternPOKey + "'";
-                        sql_1 += ",'" + header[i].XDockFlag + "'";
-                        sql_1 += ",'" + header[i].UserDefine01 + "'";
-                        sql_1 += ",'" + header[i].UserDefine02 + "'";
-                        sql_1 += ",'" + header[i].UserDefine03 + "'";
-                        sql_1 += ",'" + header[i].UserDefine04 + "'";
-                        sql_1 += ",'" + header[i].UserDefine05 + "'";
-                        sql_1 += ",'" + header[i].UserDefine06 + "'";
-                        sql_1 += ",'" + header[i].UserDefine07 + "'";
-                        sql_1 += ",'" + header[i].UserDefine08 + "'";
-                        sql_1 += ",'" + header[i].UserDefine09 + "'";
-                        sql_1 += ",'" + header[i].UserDefine10 + "'";
-                        sql_1 += ",'" + header[i].Issued + "'";
-                        sql_1 += ",'" + header[i].DeliveryNote + "'";
-                        sql_1 += ",'" + header[i].PODCust + "'";
-                        sql_1 += ",'" + header[i].PODArrive + "'";
-                        sql_1 += ",'" + header[i].PODReject + "'";
-                        sql_1 += ",'" + header[i].PODUser + "'";
-                        sql_1 += ",'" + header[i].xdockpokey + "'";
-                        sql_1 += ",'" + header[i].SpecialHandling + "'";
-                        sql_1 += ",'" + header[i].RoutingTool + "'";
-                        sql_1 += ",'" + header[i].MarkforKey + "'";
-                        sql_1 += ",'" + header[i].M_Contact1 + "'";
-                        sql_1 += ",'" + header[i].M_Contact2 + "'";
-                        sql_1 += ",'" + header[i].M_Company + "'";
-                        sql_1 += ",'" + header[i].M_Address1 + "'";
-                        sql_1 += ",'" + header[i].M_Address2 + "'";
-                        sql_1 += ",'" + header[i].M_Address3 + "'";
-                        sql_1 += ",'" + header[i].M_Address4 + "'";
-                        sql_1 += ",'" + header[i].M_City + "'";
-                        sql_1 += ",'" + header[i].M_State + "'";
-                        sql_1 += ",'" + header[i].M_Zip + "'";
-                        sql_1 += ",'" + header[i].M_Country + "'";
-                        sql_1 += ",'" + header[i].M_ISOCntryCode + "'";
-                        sql_1 += ",'" + header[i].M_Phone1 + "'";
-                        sql_1 += ",'" + header[i].M_Phone2 + "'";
-                        sql_1 += ",'" + header[i].M_Fax1 + "'";
-                        sql_1 += ",'" + header[i].M_Fax2 + "'";
-                        sql_1 += ",'" + header[i].M_vat + "'";
-                        sql_1 += ",'" + header[i].C_State_Long + "'";
+                    string sql_1 = "DELETE Inbound_ORDHD WHERE ExternOrderKey='" + header[i].ExternOrderKey + "';DELETE Inbound_ORDDT WHERE ExternOrderKey='" + header[i].ExternOrderKey + "';";
+                    sql_1 += "INSERT INTO Inbound_ORDHD VALUES('" + header[i].HeaderFlag + "'";
+                    sql_1 += ",'" + header[i].InterfaceActionFlag + "'";
+                    sql_1 += ",'" + header[i].OrderKey + "'";
+                    sql_1 += ",'" + header[i].StorerKey + "'";
+                    sql_1 += ",'" + header[i].ExternOrderKey + "'";
+                    sql_1 += ",'" + header[i].Reserved + "'";
+                    sql_1 += ",'" + header[i].OrderDate + "'";
+                    sql_1 += ",'" + header[i].DeliveryDate + "'";
+                    sql_1 += ",'" + header[i].Priority + "'";
+                    sql_1 += ",'" + header[i].ConsigneeKey + "'";
+                    sql_1 += ",'" + header[i].C_contact1 + "'";
+                    sql_1 += ",'" + header[i].C_Contact2 + "'";
+                    sql_1 += ",'" + header[i].C_Company + "'";
+                    sql_1 += ",'" + header[i].C_Address1 + "'";
+                    sql_1 += ",'" + header[i].C_Address2 + "'";
+                    sql_1 += ",'" + header[i].C_Address3 + "'";
+                    sql_1 += ",'" + header[i].C_Address4 + "'";
+                    sql_1 += ",'" + header[i].C_City + "'";
+                    sql_1 += ",'" + header[i].C_State + "'";
+                    sql_1 += ",'" + header[i].C_Zip + "'";
+                    sql_1 += ",'" + header[i].C_Country + "'";
+                    sql_1 += ",'" + header[i].C_ISOCntryCode + "'";
+                    sql_1 += ",'" + header[i].C_Phone1 + "'";
+                    sql_1 += ",'" + header[i].C_Phone2 + "'";
+                    sql_1 += ",'" + header[i].C_Fax1 + "'";
+                    sql_1 += ",'" + header[i].C_Fax2 + "'";
+                    sql_1 += ",'" + header[i].C_vat + "'";
+                    sql_1 += ",'" + header[i].BuyerPO + "'";
+                    sql_1 += ",'" + header[i].BillToKey + "'";
+                    sql_1 += ",'" + header[i].B_contact1 + "'";
+                    sql_1 += ",'" + header[i].B_Contact2 + "'";
+                    sql_1 += ",'" + header[i].B_Company + "'";
+                    sql_1 += ",'" + header[i].B_Address1 + "'";
+                    sql_1 += ",'" + header[i].B_Address2 + "'";
+                    sql_1 += ",'" + header[i].B_Address3 + "'";
+                    sql_1 += ",'" + header[i].B_Address4 + "'";
+                    sql_1 += ",'" + header[i].B_City + "'";
+                    sql_1 += ",'" + header[i].B_State + "'";
+                    sql_1 += ",'" + header[i].B_Zip + "'";
+                    sql_1 += ",'" + header[i].B_Country + "'";
+                    sql_1 += ",'" + header[i].B_ISOCntryCode + "'";
+                    sql_1 += ",'" + header[i].B_Phone1 + "'";
+                    sql_1 += ",'" + header[i].B_Phone2 + "'";
+                    sql_1 += ",'" + header[i].B_Fax1 + "'";
+                    sql_1 += ",'" + header[i].B_Fax2 + "'";
+                    sql_1 += ",'" + header[i].B_Vat + "'";
+                    sql_1 += ",'" + header[i].IncoTerm + "'";
+                    sql_1 += ",'" + header[i].PmtTerm + "'";
+                    sql_1 += ",'" + header[i].OpenQty + "'";
+                    sql_1 += ",'" + header[i].Status + "'";
+                    sql_1 += ",'" + header[i].DischargePlace + "'";
+                    sql_1 += ",'" + header[i].DeliveryPlace + "'";
+                    sql_1 += ",'" + header[i].IntermodalVehicle + "'";
+                    sql_1 += ",'" + header[i].CountryOfOrigin + "'";
+                    sql_1 += ",'" + header[i].CountryDestination + "'";
+                    sql_1 += ",'" + header[i].UpdateSource + "'";
+                    sql_1 += ",'" + header[i].Type + "'";
+                    sql_1 += ",'" + header[i].OrderGroup + "'";
+                    sql_1 += ",'" + header[i].Door + "'";
+                    sql_1 += ",'" + header[i].Route + "'";
+                    sql_1 += ",'" + header[i].Stop + "'";
+                    sql_1 += ",'" + header[i].Notes + "'";
+                    sql_1 += ",'" + header[i].EffectiveDate + "'";
+                    sql_1 += ",'" + header[i].ContainerType + "'";
+                    sql_1 += ",'" + header[i].ContainerQty + "'";
+                    sql_1 += ",'" + header[i].BilledContainerQty + "'";
+                    sql_1 += ",'" + header[i].SOStatus + "'";
+                    sql_1 += ",'" + header[i].MBOLKey + "'";
+                    sql_1 += ",'" + header[i].InvoiceNo + "'";
+                    sql_1 += ",'" + header[i].InvoiceAmount + "'";
+                    sql_1 += ",'" + header[i].Salesman + "'";
+                    sql_1 += ",'" + header[i].GrossWeight + "'";
+                    sql_1 += ",'" + header[i].WgtUnit + "'";
+                    sql_1 += ",'" + header[i].Capacity + "'";
+                    sql_1 += ",'" + header[i].CubeUnit + "'";
+                    sql_1 += ",'" + header[i].PrintFlag + "'";
+                    sql_1 += ",'" + header[i].LoadKey + "'";
+                    sql_1 += ",'" + header[i].Rdd + "'";
+                    sql_1 += ",'" + header[i].Notes2 + "'";
+                    sql_1 += ",'" + header[i].SequenceNo + "'";
+                    sql_1 += ",'" + header[i].Rds + "'";
+                    sql_1 += ",'" + header[i].SectionKey + "'";
+                    sql_1 += ",'" + header[i].Facility + "'";
+                    sql_1 += ",'" + header[i].PrintDocDate + "'";
+                    sql_1 += ",'" + header[i].LabelPrice + "'";
+                    sql_1 += ",'" + header[i].POKey + "'";
+                    sql_1 += ",'" + header[i].ExternPOKey + "'";
+                    sql_1 += ",'" + header[i].XDockFlag + "'";
+                    sql_1 += ",'" + header[i].UserDefine01 + "'";
+                    sql_1 += ",'" + header[i].UserDefine02 + "'";
+                    sql_1 += ",'" + header[i].UserDefine03 + "'";
+                    sql_1 += ",'" + header[i].UserDefine04 + "'";
+                    sql_1 += ",'" + header[i].UserDefine05 + "'";
+                    sql_1 += ",'" + header[i].UserDefine06 + "'";
+                    sql_1 += ",'" + header[i].UserDefine07 + "'";
+                    sql_1 += ",'" + header[i].UserDefine08 + "'";
+                    sql_1 += ",'" + header[i].UserDefine09 + "'";
+                    sql_1 += ",'" + header[i].UserDefine10 + "'";
+                    sql_1 += ",'" + header[i].Issued + "'";
+                    sql_1 += ",'" + header[i].DeliveryNote + "'";
+                    sql_1 += ",'" + header[i].PODCust + "'";
+                    sql_1 += ",'" + header[i].PODArrive + "'";
+                    sql_1 += ",'" + header[i].PODReject + "'";
+                    sql_1 += ",'" + header[i].PODUser + "'";
+                    sql_1 += ",'" + header[i].xdockpokey + "'";
+                    sql_1 += ",'" + header[i].SpecialHandling + "'";
+                    sql_1 += ",'" + header[i].RoutingTool + "'";
+                    sql_1 += ",'" + header[i].MarkforKey + "'";
+                    sql_1 += ",'" + header[i].M_Contact1 + "'";
+                    sql_1 += ",'" + header[i].M_Contact2 + "'";
+                    sql_1 += ",'" + header[i].M_Company + "'";
+                    sql_1 += ",'" + header[i].M_Address1 + "'";
+                    sql_1 += ",'" + header[i].M_Address2 + "'";
+                    sql_1 += ",'" + header[i].M_Address3 + "'";
+                    sql_1 += ",'" + header[i].M_Address4 + "'";
+                    sql_1 += ",'" + header[i].M_City + "'";
+                    sql_1 += ",'" + header[i].M_State + "'";
+                    sql_1 += ",'" + header[i].M_Zip + "'";
+                    sql_1 += ",'" + header[i].M_Country + "'";
+                    sql_1 += ",'" + header[i].M_ISOCntryCode + "'";
+                    sql_1 += ",'" + header[i].M_Phone1 + "'";
+                    sql_1 += ",'" + header[i].M_Phone2 + "'";
+                    sql_1 += ",'" + header[i].M_Fax1 + "'";
+                    sql_1 += ",'" + header[i].M_Fax2 + "'";
+                    sql_1 += ",'" + header[i].M_vat + "'";
+                    sql_1 += ",'" + header[i].C_State_Long + "'";
 
-                        sql_1 += ",'0'";
-                        sql_1 += ",Null";
-                        sql_1 += ",'" + DateTime.Now + "'";
-                        sql_1 += ",Null";
-                        sql_1 += ") SELECT @@IDENTITY AS Inbound_ORDHD;";
-                        int id_1 = this.ScanExecuteNonQueryRID(sql_1);
-                        if (id_1 > 0)
+                    sql_1 += ",'0'";
+                    sql_1 += ",Null";
+                    sql_1 += ",'" + DateTime.Now + "'";
+                    sql_1 += ",Null";
+                    sql_1 += ") SELECT @@IDENTITY AS Inbound_ORDHD;";
+                    int id_1 = this.ScanExecuteNonQueryRID(sql_1);
+                    if (id_1 > 0)
+                    {
+                        string type = "";
+                        if (header[i].Type == "SH")
                         {
-                            string type = "";
-                            if (header[i].Type == "SH")
-                            {
-                                type = "销售订单";
-                            }
-                            else {
-                                type = "转仓订单";
-                            }
-                            #region 原始数据新增成功之后,wms主订单赋值
-                            PreOrder preOrders = new PreOrder();
-                            preOrders.ExternOrderNumber = header[i].ExternOrderKey;//外部单号
-                            preOrders.CustomerID = 108;//客户ID
-                            preOrders.CustomerName = "PUMA_SH";//客户名称
-                            preOrders.Warehouse = "PUMA上海仓";//仓库名称
-                            preOrders.OrderType = type;//出库类型Type 销售订单 转仓订单
-                            preOrders.Status = 1;//订单状态
-                            preOrders.OrderTime = DateTime.Now;//订单时间
-                            preOrders.DetailCount = 0;//明细行数
-                            preOrders.Creator = "API";//创建人
-                            preOrders.CreateTime = DateTime.Now;//创建时间
-                            preOrders.str4 = "PUMA";//默认
-                            List<PreOrder> pres = new List<PreOrder>();
-                            pres.Add(preOrders);
-                            PreOrderList = pres;
+                            type = "销售订单";
+                        }
+                        else
+                        {
+                            type = "转仓订单";
+                        }
+                        #region 原始数据新增成功之后,wms主订单赋值
+                        PreOrder preOrders = new PreOrder();
+                        preOrders.ExternOrderNumber = header[i].ExternOrderKey;//外部单号
+                        preOrders.CustomerID = 108;//客户ID
+                        preOrders.CustomerName = "PUMA_SH";//客户名称
+                        preOrders.Warehouse = "PUMA上海仓";//仓库名称
+                        preOrders.OrderType = type;//出库类型Type 销售订单 转仓订单
+                        preOrders.Status = 1;//订单状态
+                        preOrders.OrderTime = DateTime.Now;//订单时间
+                        preOrders.DetailCount = 0;//明细行数
+                        preOrders.Creator = "API";//创建人
+                        preOrders.CreateTime = DateTime.Now;//创建时间
+                        preOrders.str4 = "PUMA";//默认
+                        List<PreOrder> pres = new List<PreOrder>();
+                        pres.Add(preOrders);
+                        PreOrderList = pres;
                         #endregion
 
                         List<PreOrderDetail> detaillist = new List<PreOrderDetail>();
                         for (int m = 0; m < details.Count(); m++)
-                            {
-                                string goodtype = "";
+                        {
+                            string goodtype = "";
                             if (header[i].Facility == "D6001")
                             {
                                 goodtype = "A品";
@@ -1330,11 +1346,12 @@ namespace PUMAobj.ASN
                             {
                                 goodtype = "D品";
                             }
-                            else {
+                            else
+                            {
                                 goodtype = header[i].Facility;
                             }
-                                if (header[i].ExternOrderKey == details[m].ExternOrderKey)
-                                {
+                            if (header[i].ExternOrderKey == details[m].ExternOrderKey)
+                            {
                                 #region wms明细订单赋值
                                 PreOrderDetail detail = new PreOrderDetail();
                                 detail.ExternOrderNumber = details[m].ExternOrderKey;//外部单号
@@ -1353,96 +1370,96 @@ namespace PUMAobj.ASN
                                 #endregion
 
                                 string sql_2 = "INSERT INTO Inbound_ORDDT VALUES('" + id_1 + "'";
-                                    sql_2 += ",'" + details[m].HeaderFlag + "'";
-                                    sql_2 += ",'" + details[m].InterfaceActionFlag + "'";
-                                    sql_2 += ",'" + details[m].OrderLineNumber + "'";
-                                    sql_2 += ",'" + details[m].OrderDetailSysId + "'";
-                                    sql_2 += ",'" + details[m].ExternOrderKey + "'";
-                                    sql_2 += ",'" + details[m].ExternLineNo + "'";
-                                    sql_2 += ",'" + details[m].Sku + "'";
-                                    sql_2 += ",'" + details[m].StorerKey + "'";
-                                    sql_2 += ",'" + details[m].ManufacturerSku + "'";
-                                    sql_2 += ",'" + details[m].RetailSku + "'";
-                                    sql_2 += ",'" + details[m].AltSku + "'";
-                                    sql_2 += ",'" + details[m].OriginalQty + "'";
-                                    sql_2 += ",'" + details[m].OpenQty + "'";
-                                    sql_2 += ",'" + details[m].ShippedQty + "'";
-                                    sql_2 += ",'" + details[m].AdjustedQty + "'";
-                                    sql_2 += ",'" + details[m].QtyPreAllocated + "'";
-                                    sql_2 += ",'" + details[m].QtyAllocated + "'";
-                                    sql_2 += ",'" + details[m].QtyPicked + "'";
-                                    sql_2 += ",'" + details[m].UOM + "'";
-                                    sql_2 += ",'" + details[m].PackKey + "'";
-                                    sql_2 += ",'" + details[m].PickCode + "'";
-                                    sql_2 += ",'" + details[m].CartonGroup + "'";
-                                    sql_2 += ",'" + details[m].Lot + "'";
-                                    sql_2 += ",'" + details[m].ID + "'";
-                                    sql_2 += ",'" + details[m].Facility + "'";
-                                    sql_2 += ",'" + details[m].Status + "'";
-                                    sql_2 += ",'" + details[m].UnitPrice + "'";
-                                    sql_2 += ",'" + details[m].Tax01 + "'";
-                                    sql_2 += ",'" + details[m].Tax02 + "'";
-                                    sql_2 += ",'" + details[m].ExtendedPrice + "'";
-                                    sql_2 += ",'" + details[m].Reserved + "'";
-                                    sql_2 += ",'" + details[m].UpdateSource + "'";
-                                    sql_2 += ",'" + details[m].Lottable01 + "'";
-                                    sql_2 += ",'" + details[m].Lottable02 + "'";
-                                    sql_2 += ",'" + details[m].Lottable03 + "'";
-                                    sql_2 += ",'" + details[m].Lottable04 + "'";
-                                    sql_2 += ",'" + details[m].Lottable05 + "'";
-                                    sql_2 += ",'" + details[m].EffectiveDate + "'";
-                                    sql_2 += ",'" + details[m].TariffKey + "'";
-                                    sql_2 += ",'" + details[m].FreeGoodQty + "'";
-                                    sql_2 += ",'" + details[m].GrossWeight + "'";
-                                    sql_2 += ",'" + details[m].WgtUnit + "'";
-                                    sql_2 += ",'" + details[m].Capacity + "'";
-                                    sql_2 += ",'" + details[m].CubeUnit + "'";
-                                    sql_2 += ",'" + details[m].LoadKey + "'";
-                                    sql_2 += ",'" + details[m].MBOLKey + "'";
-                                    sql_2 += ",'" + details[m].QtyToProcess + "'";
-                                    sql_2 += ",'" + details[m].MinShelfLife + "'";
-                                    sql_2 += ",'" + details[m].UserDefine01 + "'";
-                                    sql_2 += ",'" + details[m].UserDefine02 + "'";
-                                    sql_2 += ",'" + details[m].UserDefine03 + "'";
-                                    sql_2 += ",'" + details[m].UserDefine04 + "'";
-                                    sql_2 += ",'" + details[m].UserDefine05 + "'";
-                                    sql_2 += ",'" + details[m].UserDefine06 + "'";
-                                    sql_2 += ",'" + details[m].UserDefine07 + "'";
-                                    sql_2 += ",'" + details[m].UserDefine08 + "'";
-                                    sql_2 += ",'" + details[m].UserDefine09 + "'";
-                                    sql_2 += ",'" + details[m].POkey + "'";
-                                    sql_2 += ",'" + details[m].ExternPOKey + "'";
-                                    sql_2 += ",'" + details[m].OrgExternLineNo + "'";
+                                sql_2 += ",'" + details[m].HeaderFlag + "'";
+                                sql_2 += ",'" + details[m].InterfaceActionFlag + "'";
+                                sql_2 += ",'" + details[m].OrderLineNumber + "'";
+                                sql_2 += ",'" + details[m].OrderDetailSysId + "'";
+                                sql_2 += ",'" + details[m].ExternOrderKey + "'";
+                                sql_2 += ",'" + details[m].ExternLineNo + "'";
+                                sql_2 += ",'" + details[m].Sku + "'";
+                                sql_2 += ",'" + details[m].StorerKey + "'";
+                                sql_2 += ",'" + details[m].ManufacturerSku + "'";
+                                sql_2 += ",'" + details[m].RetailSku + "'";
+                                sql_2 += ",'" + details[m].AltSku + "'";
+                                sql_2 += ",'" + details[m].OriginalQty + "'";
+                                sql_2 += ",'" + details[m].OpenQty + "'";
+                                sql_2 += ",'" + details[m].ShippedQty + "'";
+                                sql_2 += ",'" + details[m].AdjustedQty + "'";
+                                sql_2 += ",'" + details[m].QtyPreAllocated + "'";
+                                sql_2 += ",'" + details[m].QtyAllocated + "'";
+                                sql_2 += ",'" + details[m].QtyPicked + "'";
+                                sql_2 += ",'" + details[m].UOM + "'";
+                                sql_2 += ",'" + details[m].PackKey + "'";
+                                sql_2 += ",'" + details[m].PickCode + "'";
+                                sql_2 += ",'" + details[m].CartonGroup + "'";
+                                sql_2 += ",'" + details[m].Lot + "'";
+                                sql_2 += ",'" + details[m].ID + "'";
+                                sql_2 += ",'" + details[m].Facility + "'";
+                                sql_2 += ",'" + details[m].Status + "'";
+                                sql_2 += ",'" + details[m].UnitPrice + "'";
+                                sql_2 += ",'" + details[m].Tax01 + "'";
+                                sql_2 += ",'" + details[m].Tax02 + "'";
+                                sql_2 += ",'" + details[m].ExtendedPrice + "'";
+                                sql_2 += ",'" + details[m].Reserved + "'";
+                                sql_2 += ",'" + details[m].UpdateSource + "'";
+                                sql_2 += ",'" + details[m].Lottable01 + "'";
+                                sql_2 += ",'" + details[m].Lottable02 + "'";
+                                sql_2 += ",'" + details[m].Lottable03 + "'";
+                                sql_2 += ",'" + details[m].Lottable04 + "'";
+                                sql_2 += ",'" + details[m].Lottable05 + "'";
+                                sql_2 += ",'" + details[m].EffectiveDate + "'";
+                                sql_2 += ",'" + details[m].TariffKey + "'";
+                                sql_2 += ",'" + details[m].FreeGoodQty + "'";
+                                sql_2 += ",'" + details[m].GrossWeight + "'";
+                                sql_2 += ",'" + details[m].WgtUnit + "'";
+                                sql_2 += ",'" + details[m].Capacity + "'";
+                                sql_2 += ",'" + details[m].CubeUnit + "'";
+                                sql_2 += ",'" + details[m].LoadKey + "'";
+                                sql_2 += ",'" + details[m].MBOLKey + "'";
+                                sql_2 += ",'" + details[m].QtyToProcess + "'";
+                                sql_2 += ",'" + details[m].MinShelfLife + "'";
+                                sql_2 += ",'" + details[m].UserDefine01 + "'";
+                                sql_2 += ",'" + details[m].UserDefine02 + "'";
+                                sql_2 += ",'" + details[m].UserDefine03 + "'";
+                                sql_2 += ",'" + details[m].UserDefine04 + "'";
+                                sql_2 += ",'" + details[m].UserDefine05 + "'";
+                                sql_2 += ",'" + details[m].UserDefine06 + "'";
+                                sql_2 += ",'" + details[m].UserDefine07 + "'";
+                                sql_2 += ",'" + details[m].UserDefine08 + "'";
+                                sql_2 += ",'" + details[m].UserDefine09 + "'";
+                                sql_2 += ",'" + details[m].POkey + "'";
+                                sql_2 += ",'" + details[m].ExternPOKey + "'";
+                                sql_2 += ",'" + details[m].OrgExternLineNo + "'";
 
-                                    sql_2 += ",'" + DateTime.Now + "'";
-                                    sql_2 += ",Null";
-                                    sql_2 += ") SELECT @@IDENTITY AS Inbound_ORDDT;";
+                                sql_2 += ",'" + DateTime.Now + "'";
+                                sql_2 += ",Null";
+                                sql_2 += ") SELECT @@IDENTITY AS Inbound_ORDDT;";
 
-                                    int id_2 = this.ScanExecuteNonQueryRID(sql_2);
-                                    if (id_2 < 0)
-                                    {
-                                        LogHelper.WriteLog(typeof(string), "Order-GetInbound_ORDHD数据写入错误["+Error+"]:" + sql_2, LogHelper.LogLevel.Error);
-                                        msg = "Order-GetInbound_ORDHD数据写入错误[" + Error + "]";
-                                        return msg;
-                                    }
+                                int id_2 = this.ScanExecuteNonQueryRID(sql_2);
+                                if (id_2 < 0)
+                                {
+                                    LogHelper.WriteLog(typeof(string), "Order-GetInbound_ORDHD数据写入错误[" + Error + "]:" + sql_2, LogHelper.LogLevel.Error);
+                                    msg = "Order-GetInbound_ORDHD数据写入错误[" + Error + "]";
+                                    return msg;
                                 }
                             }
-                            PreDetail = detaillist;
-                            int isresult;
-                            string wmsmsg=AddPreOrderAndPreOrderDetail(PreOrderList,PreDetail, out isresult);
-                            if (isresult != 200)
-                            {
-                                LogHelper.WriteLog(typeof(string), "Order-GetInbound_ORDHD入库单写入WMS失败[" + Error + "]:" + wmsmsg, LogHelper.LogLevel.Error);
-                                msg = "Order-GetInbound_ORDHD入库单写入WMS失败[" + Error + "]";
-                                return msg;
-                            }
                         }
-                        else
+                        PreDetail = detaillist;
+                        int isresult;
+                        string wmsmsg = AddPreOrderAndPreOrderDetail(PreOrderList, PreDetail, out isresult);
+                        if (isresult != 200)
                         {
-                            LogHelper.WriteLog(typeof(string), "Order-GetInbound_ORDHD数据写入错误[" + Error + "]:" + sql_1, LogHelper.LogLevel.Error);
-                            msg = "Order-GetInbound_ORDHD数据写入错误[" + Error + "]";
+                            LogHelper.WriteLog(typeof(string), "Order-GetInbound_ORDHD入库单写入WMS失败[" + Error + "]:" + wmsmsg, LogHelper.LogLevel.Error);
+                            msg = "Order-GetInbound_ORDHD入库单写入WMS失败[" + Error + "]";
                             return msg;
                         }
+                    }
+                    else
+                    {
+                        LogHelper.WriteLog(typeof(string), "Order-GetInbound_ORDHD数据写入错误[" + Error + "]:" + sql_1, LogHelper.LogLevel.Error);
+                        msg = "Order-GetInbound_ORDHD数据写入错误[" + Error + "]";
+                        return msg;
+                    }
                 }
                 msg = "200";
             }
@@ -1502,7 +1519,8 @@ namespace PUMAobj.ASN
         }
 
         //wms 预出库订单写入数据
-        public string AddPreOrderAndPreOrderDetail(IEnumerable<PreOrder> PreOrderList, IEnumerable<PreOrderDetail> PreDetail, out int msg) {
+        public string AddPreOrderAndPreOrderDetail(IEnumerable<PreOrder> PreOrderList, IEnumerable<PreOrderDetail> PreDetail, out int msg)
+        {
             using (SqlConnection conn = new SqlConnection(BaseAccessor._dataBase.ConnectionString))
             {
                 msg = 400;
@@ -1530,7 +1548,7 @@ namespace PUMAobj.ASN
                     sda.Fill(ds);
                     message = sda.SelectCommand.Parameters["@message"].Value.ToString();
                     conn.Close();
-                    if (message=="")
+                    if (message == "")
                     {
                         msg = 200;
                     }
@@ -1574,16 +1592,17 @@ namespace PUMAobj.ASN
                             if (data1_hd.Rows.Count > 0 && data1_dt.Rows.Count > 0)
                             {
                                 string istrue = "";//是否创建成功
-                                string txtaddress = Create_RECHD_TXT1(data1_hd, data1_dt,out istrue);
+                                string txtaddress = Create_RECHD_TXT1(data1_hd, data1_dt, out istrue);
                                 if (istrue == "200")//创建成功 更新状态
                                 {
-                                    string upstr = "UPDATE Inbound_ASNHD SET ISReturn=1,ReturnDate=GETDATE() WHERE ID='" + ReceiptCount.Rows[i]["ID"] .ToString()+ "'";
+                                    string upstr = "UPDATE Inbound_ASNHD SET ISReturn=1,ReturnDate=GETDATE() WHERE ID='" + ReceiptCount.Rows[i]["ID"].ToString() + "'";
                                     int upid = this.ScanExecuteNonQueryRID(upstr);
                                     if (upid > 0)
                                     {
                                         //反馈更新成功
                                     }
-                                    else {
+                                    else
+                                    {
                                         LogHelper.WriteLog(typeof(string), "wms_receipt反馈入库更新接口失败:" + upstr, LogHelper.LogLevel.Error);
                                     }
                                 }
@@ -1606,15 +1625,16 @@ namespace PUMAobj.ASN
         /// <param name="hd">订单头部</param>
         /// <param name="dt">订单详细</param>
         /// <returns></returns>
-        public string Create_RECHD_TXT1(DataTable hd, DataTable dt,out string msg)
+        public string Create_RECHD_TXT1(DataTable hd, DataTable dt, out string msg)
         {
+            Thread.Sleep(1000);
             string txtaddress = string.Empty;
             try
             {
-                string sql1_hd = "SELECT Top 1 * FROM Inbound_ASNHD WHERE ExternReceiptKey='3400559973' AND ISReturn='0'";
-                string sql1_dt = "SELECT * FROM Inbound_ASNDT WHERE ExternReceiptKey='3400559973'";
-                hd = this.ExecuteDataTableBySqlString(sql1_hd);
-                dt = this.ExecuteDataTableBySqlString(sql1_dt);
+                //string sql1_hd = "SELECT Top 1 * FROM Inbound_ASNHD WHERE ExternReceiptKey='3400559973' AND ISReturn='0'";
+                //string sql1_dt = "SELECT * FROM Inbound_ASNDT WHERE ExternReceiptKey='3400559973'";
+                //hd = this.ExecuteDataTableBySqlString(sql1_hd);
+                //dt = this.ExecuteDataTableBySqlString(sql1_dt);
 
                 string dir = AppDomain.CurrentDomain.BaseDirectory;
                 dir = Path.GetFullPath("..");
@@ -1624,12 +1644,12 @@ namespace PUMAobj.ASN
                 {
                     Directory.CreateDirectory(filepath);
                 }
-                filepath += "/WMSREC_" + DateTime.Now.ToString("yyyyMMddhhmmss") + ".txt";
+                string filename = "WMSREC_" + DateTime.Now.ToString("yyyyMMddhhmmss") + ".txt";
                 txtaddress = filepath;
 
-                FileStream file = new FileStream(filepath, FileMode.Create, FileAccess.Write);//创建写入文件 
+                FileStream file = new FileStream(filepath + "/" + filename, FileMode.Create, FileAccess.Write);//创建写入文件 
                 StreamWriter writer = new StreamWriter(file);
-                writer.WriteLine("WMSREC    O "+DateTime.Now.ToString("yyyyMMddhhmmss")+ "PUMA                CN   Receipt Outbound                                  ");
+                writer.WriteLine("WMSREC    O " + DateTime.Now.ToString("yyyyMMddhhmmss") + "PUMA                CN   Receipt Outbound                                  ");
                 string header = "RECHD";
                 header += "A";
                 header += "".TxtStrPush(10);
@@ -1740,15 +1760,23 @@ namespace PUMAobj.ASN
 
                 writer.Close();
                 file.Close();
-                msg = "200";
-
-                //入库反馈成功之后 执行品级自动调整
-                CreatIQC(hd.Rows[0]["ExternReceiptKey"].ToString());
+                bool issuccess = sFTP.PUMAPut(filepath, filename, sftpfilepath);
+                if (issuccess)
+                {
+                    msg = "200";
+                    //入库反馈成功之后 执行品级自动调整
+                    CreatIQC(hd.Rows[0]["ExternReceiptKey"].ToString());
+                }
+                else
+                {
+                    msg = "500";
+                    LogHelper.WriteLog(typeof(string), "Create_RECHD_TXT1入库文件上传失败[" + hd.Rows[0]["ExternReceiptKey"].ToString() + "]:" + msg, LogHelper.LogLevel.Error);
+                }
             }
             catch (Exception ex)
             {
                 msg = ex.Message;
-                LogHelper.WriteLog(typeof(string), "Create_RECHD_TXT1生成入库文件失败["+ hd.Rows[0]["ExternReceiptKey"].ToString() + "]:" + msg, LogHelper.LogLevel.Error);
+                LogHelper.WriteLog(typeof(string), "Create_RECHD_TXT1生成入库文件失败[" + hd.Rows[0]["ExternReceiptKey"].ToString() + "]:" + msg, LogHelper.LogLevel.Error);
             }
             return txtaddress;
         }
@@ -1757,7 +1785,8 @@ namespace PUMAobj.ASN
         /// 入库完成反馈之后根据 外部订单号查询 上架信息 自动生成品级调整单
         /// </summary>
         /// <returns></returns>
-        public string CreatIQC(string ExternReceiptNumber) {
+        public string CreatIQC(string ExternReceiptNumber)
+        {
             string msg = string.Empty;
             try
             {
@@ -1776,23 +1805,23 @@ namespace PUMAobj.ASN
                             if (CID == 0)
                             {
                                 CNumber = "ADJ" + DateTime.Now.ToString("yyyyMMddhhmmss") + "C";
-                                string hc = "INSERT INTO  WMS_Adjustment VALUES('"+ CNumber + "',108,'PUMA_SH','PUMA上海仓',9,'库存品级调整单','入库完成系统根据WMS_ReceiptReceiving移库'";
+                                string hc = "INSERT INTO  WMS_Adjustment VALUES('" + CNumber + "',108,'PUMA_SH','PUMA上海仓',9,'库存品级调整单','入库完成系统根据WMS_ReceiptReceiving移库'";
                                 hc += ", GETDATE(),0,'API',GETDATE(),NULL,NULL,'D6001品级C品区分',NULL,NULL,'PUMA'";
                                 hc += ",NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL)SELECT @@IDENTITY AS WMS_Adjustment;";
                                 CID = this.ScanExecuteNonQueryRID(hc);
                             }
                             string sql_C = "";
-                            sql_C += "INSERT INTO WMS_AdjustmentDetail VALUES("+ CID + ",'"+ CNumber + "',108,'PUMA_SH',NULL,NULL,'"+ ReceiptReceiving.Rows[i]["SKU"] + "',NULL,NULL,NULL,'" + ReceiptReceiving.Rows[i]["SKU"] + "','PUMA上海仓','PUMA上海仓'";
+                            sql_C += "INSERT INTO WMS_AdjustmentDetail VALUES(" + CID + ",'" + CNumber + "',108,'PUMA_SH',NULL,NULL,'" + ReceiptReceiving.Rows[i]["SKU"] + "',NULL,NULL,NULL,'" + ReceiptReceiving.Rows[i]["SKU"] + "','PUMA上海仓','PUMA上海仓'";
                             sql_C += ",NULL,NULL,NULL,NULL,NULL," + ReceiptReceiving.Rows[i]["QtyReceived"] + ",'A品','C品',NULL,NULL,0,NULL,'API',GETDATE(),NULL,NULL";
                             sql_C += ",NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL)SELECT @@IDENTITY AS WMS_AdjustmentDetail;";
-                            int thint=this.ScanExecuteNonQueryRID(sql_C);
+                            int thint = this.ScanExecuteNonQueryRID(sql_C);
                         }
                         if (ReceiptReceiving.Rows[i]["GoodsType"].ToString() == "D品")
                         {
                             if (DID == 0)
                             {
                                 DNumber = "ADJ" + DateTime.Now.ToString("yyyyMMddhhmmss") + "D";
-                                string hc = "INSERT INTO  WMS_Adjustment VALUES('"+ DNumber + "',108,'PUMA_SH','PUMA上海仓',9,'库存品级调整单','入库完成系统根据WMS_ReceiptReceiving移库'";
+                                string hc = "INSERT INTO  WMS_Adjustment VALUES('" + DNumber + "',108,'PUMA_SH','PUMA上海仓',9,'库存品级调整单','入库完成系统根据WMS_ReceiptReceiving移库'";
                                 hc += ", GETDATE(),0,'API',GETDATE(),NULL,NULL,'D6001品级D品区分',NULL,NULL,'PUMA'";
                                 hc += ",NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL)SELECT @@IDENTITY AS WMS_Adjustment;";
                                 DID = this.ScanExecuteNonQueryRID(hc);
@@ -1804,15 +1833,16 @@ namespace PUMAobj.ASN
                             int thint = this.ScanExecuteNonQueryRID(sql_D);
                         }
                     }
-                  
-                    
 
-                    string upstr = "UPDATE [WMS_ReceiptReceiving] SET Int2='6' WHERE ExternReceiptNumber='"+ ExternReceiptNumber + "'";
+
+
+                    string upstr = "UPDATE [WMS_ReceiptReceiving] SET Int2='6' WHERE ExternReceiptNumber='" + ExternReceiptNumber + "'";
                     this.ScanExecuteNonQueryRID(upstr);
                     msg = "200";
                 }
-                else {
-                    LogHelper.WriteLog(typeof(string), "CreatIQC接口外部单号[" + ExternReceiptNumber + "]没有查询到数据："+ querstr, LogHelper.LogLevel.Error);
+                else
+                {
+                    LogHelper.WriteLog(typeof(string), "CreatIQC接口外部单号[" + ExternReceiptNumber + "]没有查询到数据：" + querstr, LogHelper.LogLevel.Error);
                 }
             }
             catch (Exception ex)
@@ -1838,10 +1868,10 @@ namespace PUMAobj.ASN
                 {
                     for (int i = 0; i < OrderCount.Rows.Count; i++)
                     {
-                        string sql1 = "SELECT * FROM Inbound_ORDHD WHERE ExternOrderKey='"+ OrderCount.Rows[i]["ExternOrderNumber"] + "'";
+                        string sql1 = "SELECT * FROM Inbound_ORDHD WHERE ExternOrderKey='" + OrderCount.Rows[i]["ExternOrderNumber"] + "'";
                         string sql2 = "SELECT * FROM Inbound_ORDDT WHERE ExternOrderKey='" + OrderCount.Rows[i]["ExternOrderNumber"] + "'";
-                        DataTable hd= this.ExecuteDataTableBySqlString(sql1);
-                        DataTable dt= this.ExecuteDataTableBySqlString(sql1);
+                        DataTable hd = this.ExecuteDataTableBySqlString(sql1);
+                        DataTable dt = this.ExecuteDataTableBySqlString(sql1);
                         string ispick = "";
                         string picktxt = Create_PICKTXT(OrderCount.Rows[i]["OrderNumber"].ToString(), hd, dt, out ispick);
                         if (ispick == "200")//拣货回传成功
@@ -1852,12 +1882,14 @@ namespace PUMAobj.ASN
                             {
 
                             }
-                            else {
+                            else
+                            {
                                 LogHelper.WriteLog(typeof(string), "Create_SHPPK生成出库完成反馈文件失败[" + OrderCount.Rows[i]["ExternOrderNumber"] + "]:" + msg, LogHelper.LogLevel.Error);
                             }
                         }
-                        else {
-                            LogHelper.WriteLog(typeof(string), "Create_SHPPK生成拣货反馈文件失败["+ OrderCount.Rows[i]["ExternOrderNumber"] + "]:" + msg, LogHelper.LogLevel.Error);
+                        else
+                        {
+                            LogHelper.WriteLog(typeof(string), "Create_SHPPK生成拣货反馈文件失败[" + OrderCount.Rows[i]["ExternOrderNumber"] + "]:" + msg, LogHelper.LogLevel.Error);
                         }
                     }
                 }
@@ -1872,16 +1904,16 @@ namespace PUMAobj.ASN
         }
 
         //生成拣货反馈文件
-        public string Create_PICKTXT(string WmsNo,DataTable hd, DataTable dt, out string msg)
+        public string Create_PICKTXT(string WmsNo, DataTable hd, DataTable dt, out string msg)
         {
             string txtaddress = string.Empty;
             try
             {
 
-                string sql1_hd = "SELECT Top 1 * FROM Inbound_ORDHD WHERE ExternOrderKey='3400525580' AND ISReturn='0'";
-                string sql1_dt = "SELECT * FROM Inbound_ORDDT WHERE ExternOrderKey='3400525580'";
-                hd = this.ExecuteDataTableBySqlString(sql1_hd);
-                dt = this.ExecuteDataTableBySqlString(sql1_dt);
+                //string sql1_hd = "SELECT Top 1 * FROM Inbound_ORDHD WHERE ExternOrderKey='3400525580' AND ISReturn='0'";
+                //string sql1_dt = "SELECT * FROM Inbound_ORDDT WHERE ExternOrderKey='3400525580'";
+                //hd = this.ExecuteDataTableBySqlString(sql1_hd);
+                //dt = this.ExecuteDataTableBySqlString(sql1_dt);
 
                 string dir = AppDomain.CurrentDomain.BaseDirectory;
                 dir = Path.GetFullPath("..");
@@ -1891,58 +1923,59 @@ namespace PUMAobj.ASN
                 {
                     Directory.CreateDirectory(filepath);
                 }
-                filepath += "/WMSSHP_" + DateTime.Now.ToString("yyyyMMddhhmmss") + "_PICK.txt";
+                string filename= "WMSSHP_" + DateTime.Now.ToString("yyyyMMddhhmmss") + "_PICK.txt";
+
                 txtaddress = filepath;
 
-                FileStream file = new FileStream(filepath, FileMode.Create, FileAccess.Write);//创建写入文件 
+                FileStream file = new FileStream(filepath+"/"+filename, FileMode.Create, FileAccess.Write);//创建写入文件 
                 StreamWriter writer = new StreamWriter(file);
                 writer.WriteLine("WMSSHP    O " + DateTime.Now.ToString("yyyyMMddhhmmss") + "PUMA                CN   Shipment Outbound                                 ");
                 string header = "SHPHDA";
-                header+=hd.Rows[0]["StorerKey"].ToString().TxtStrPush(15);
-                header+=hd.Rows[0]["ExternOrderKey"].ToString().TxtStrPush(20);
-                header+="".ToString().TxtStrPush(10);
-                header+="".ToString().TxtStrPush(14);
-                header+="".ToString().TxtStrPush(14);
-                header+="".ToString().TxtStrPush(15);
-                header+="".ToString().TxtStrPush(20);
-                header+="".ToString().TxtStrPush(15);
-                header+="".ToString().TxtStrPush(10);
-                header+="".ToString().TxtStrPush(10);
-                header+="".ToString().TxtStrPush(30);
-                header+="".ToString().TxtStrPush(30);
-                header+="".ToString().TxtStrPush(30);
-                header+="".ToString().TxtStrPush(30);
-                header+="".ToString().TxtStrPush(30);
-                header+="".ToString().TxtStrPush(10);
-                header+="".ToString().TxtStrPush(20);
-                header+="".ToString().TxtStrPush(10);
-                header+="".ToString().TxtStrPush(10);
-                header+="".ToString().TxtStrPush(10);
-                header+="".ToString().TxtStrPush(125);
-                header+="".ToString().TxtStrPush(10);
-                header+="".ToString().TxtStrPush(10);
-                header+="".ToString().TxtStrPush(10);
-                header+="".ToString().TxtStrPush(30);
-                header+="".ToString().TxtStrPush(125);
-                header+="".ToString().TxtStrPush(10);
-                header+="".ToString().TxtStrPush(5);
-                header+="".ToString().TxtStrPush(14);
-                header+="".ToString().TxtStrPush(5);
-                header+="".ToString().TxtStrPush(20);
-                header+="".ToString().TxtStrPush(1);
-                header+="".ToString().TxtStrPush(20);
-                header+="".ToString().TxtStrPush(20);
-                header+="".ToString().TxtStrPush(20);
-                header+="".ToString().TxtStrPush(20);
-                header+="".ToString().TxtStrPush(20);
-                header+="".ToString().TxtStrPush(14);
-                header+="".ToString().TxtStrPush(14);
-                header+="".ToString().TxtStrPush(10);
-                header+="".ToString().TxtStrPush(10);
-                header+="".ToString().TxtStrPush(10);
-                header+="".ToString().TxtStrPush(10);
-                header+="".ToString().TxtStrPush(1);
-                header+=DateTime.Now.ToString("yyyyMMddhhmmss").ToString().TxtStrPush(14);
+                header += hd.Rows[0]["StorerKey"].ToString().TxtStrPush(15);
+                header += hd.Rows[0]["ExternOrderKey"].ToString().TxtStrPush(20);
+                header += "".ToString().TxtStrPush(10);
+                header += "".ToString().TxtStrPush(14);
+                header += "".ToString().TxtStrPush(14);
+                header += "".ToString().TxtStrPush(15);
+                header += "".ToString().TxtStrPush(20);
+                header += "".ToString().TxtStrPush(15);
+                header += "".ToString().TxtStrPush(10);
+                header += "".ToString().TxtStrPush(10);
+                header += "".ToString().TxtStrPush(30);
+                header += "".ToString().TxtStrPush(30);
+                header += "".ToString().TxtStrPush(30);
+                header += "".ToString().TxtStrPush(30);
+                header += "".ToString().TxtStrPush(30);
+                header += "".ToString().TxtStrPush(10);
+                header += "".ToString().TxtStrPush(20);
+                header += "".ToString().TxtStrPush(10);
+                header += "".ToString().TxtStrPush(10);
+                header += "".ToString().TxtStrPush(10);
+                header += "".ToString().TxtStrPush(125);
+                header += "".ToString().TxtStrPush(10);
+                header += "".ToString().TxtStrPush(10);
+                header += "".ToString().TxtStrPush(10);
+                header += "".ToString().TxtStrPush(30);
+                header += "".ToString().TxtStrPush(125);
+                header += "".ToString().TxtStrPush(10);
+                header += "".ToString().TxtStrPush(5);
+                header += "".ToString().TxtStrPush(14);
+                header += "".ToString().TxtStrPush(5);
+                header += "".ToString().TxtStrPush(20);
+                header += "".ToString().TxtStrPush(1);
+                header += "".ToString().TxtStrPush(20);
+                header += "".ToString().TxtStrPush(20);
+                header += "".ToString().TxtStrPush(20);
+                header += "".ToString().TxtStrPush(20);
+                header += "".ToString().TxtStrPush(20);
+                header += "".ToString().TxtStrPush(14);
+                header += "".ToString().TxtStrPush(14);
+                header += "".ToString().TxtStrPush(10);
+                header += "".ToString().TxtStrPush(10);
+                header += "".ToString().TxtStrPush(10);
+                header += "".ToString().TxtStrPush(10);
+                header += "".ToString().TxtStrPush(1);
+                header += DateTime.Now.ToString("yyyyMMddhhmmss").ToString().TxtStrPush(14);
                 header += "".ToString().TxtStrPush(30);
                 header += "".ToString().TxtStrPush(30);
                 header += "".ToString().TxtStrPush(30);
@@ -2034,23 +2067,23 @@ namespace PUMAobj.ASN
                 for (int i = 0; i < dt.Rows.Count; i++)
                 {
                     string detstr = "SHPPKA";
-                    detstr+= dt.Rows[i]["StorerKey"].ToString().TxtStrPush(20);
-                    detstr+= dt.Rows[i]["ExternOrderKey"].ToString().TxtStrPush(20);
-                    detstr+= "".TxtStrPush(10);
-                    detstr+= "".TxtStrPush(1);
-                    detstr+= "".TxtStrPush(10);
-                    detstr+= "".TxtStrPush(20);
-                    detstr+= "".TxtStrPush(5);
-                    detstr+= "".TxtStrPush(10);
-                    detstr+= "".TxtStrPush(10);
-                    detstr+= "".TxtStrPush(10);
-                    detstr+= dt.Rows[i]["SKU"].ToString().TxtStrPush(20);
-                    detstr+= "".TxtStrPush(10);
-                    detstr+= dt.Rows[i]["OpenQty"].ToString().TxtStrPush(10);
-                    detstr+= WmsNo.TxtStrPush(20);
-                    detstr+= "".TxtStrPush(18);
-                    detstr+= DateTime.Now.ToString("yyyyMMddhhmmss").ToString().TxtStrPush(14);
-                    detstr+= "".TxtStrPush(30);
+                    detstr += dt.Rows[i]["StorerKey"].ToString().TxtStrPush(20);
+                    detstr += dt.Rows[i]["ExternOrderKey"].ToString().TxtStrPush(20);
+                    detstr += "".TxtStrPush(10);
+                    detstr += "".TxtStrPush(1);
+                    detstr += "".TxtStrPush(10);
+                    detstr += "".TxtStrPush(20);
+                    detstr += "".TxtStrPush(5);
+                    detstr += "".TxtStrPush(10);
+                    detstr += "".TxtStrPush(10);
+                    detstr += "".TxtStrPush(10);
+                    detstr += dt.Rows[i]["SKU"].ToString().TxtStrPush(20);
+                    detstr += "".TxtStrPush(10);
+                    detstr += dt.Rows[i]["OpenQty"].ToString().TxtStrPush(10);
+                    detstr += WmsNo.TxtStrPush(20);
+                    detstr += "".TxtStrPush(18);
+                    detstr += DateTime.Now.ToString("yyyyMMddhhmmss").ToString().TxtStrPush(14);
+                    detstr += "".TxtStrPush(30);
                     writer.WriteLine(detstr);
                 }
                 //结束标识
@@ -2059,7 +2092,16 @@ namespace PUMAobj.ASN
 
                 writer.Close();
                 file.Close();
-                msg = "200";
+                bool issuccess = sFTP.PUMAPut(filepath, filename, sftpfilepath);
+                if (issuccess)
+                {
+                    msg = "200";
+                }
+                else
+                {
+                    msg = "500";
+                    LogHelper.WriteLog(typeof(string), "Create_PICKTX拣货文件上传失败[" + hd.Rows[0]["ExternOrderKey"].ToString() + "]:" + msg, LogHelper.LogLevel.Error);
+                }
             }
             catch (Exception ex)
             {
@@ -2076,10 +2118,10 @@ namespace PUMAobj.ASN
             try
             {
 
-                string sql1_hd = "SELECT Top 1 * FROM Inbound_ORDHD WHERE ExternOrderKey='3400525580' AND ISReturn='0'";
-                string sql1_dt = "SELECT * FROM Inbound_ORDDT WHERE ExternOrderKey='3400525580'";
-                hd = this.ExecuteDataTableBySqlString(sql1_hd);
-                dt = this.ExecuteDataTableBySqlString(sql1_dt);
+                //string sql1_hd = "SELECT Top 1 * FROM Inbound_ORDHD WHERE ExternOrderKey='3400525580' AND ISReturn='0'";
+                //string sql1_dt = "SELECT * FROM Inbound_ORDDT WHERE ExternOrderKey='3400525580'";
+                //hd = this.ExecuteDataTableBySqlString(sql1_hd);
+                //dt = this.ExecuteDataTableBySqlString(sql1_dt);
 
                 string dir = AppDomain.CurrentDomain.BaseDirectory;
                 dir = Path.GetFullPath("..");
@@ -2089,10 +2131,11 @@ namespace PUMAobj.ASN
                 {
                     Directory.CreateDirectory(filepath);
                 }
-                filepath += "/WMSSHP_" + DateTime.Now.ToString("yyyyMMddhhmmss") + "_SHP.txt";
+                string filename = "WMSSHP_" + DateTime.Now.ToString("yyyyMMddhhmmss") + "_SHP.txt";
+   
                 txtaddress = filepath;
 
-                FileStream file = new FileStream(filepath, FileMode.Create, FileAccess.Write);//创建写入文件 
+                FileStream file = new FileStream(filepath+"/"+ filename, FileMode.Create, FileAccess.Write);//创建写入文件 
                 StreamWriter writer = new StreamWriter(file);
                 writer.WriteLine("WMSSHP    O " + DateTime.Now.ToString("yyyyMMddhhmmss") + "PUMA                CN   Shipment Outbound                                 ");
                 string header = "SHPHDA";
@@ -2250,7 +2293,7 @@ namespace PUMAobj.ASN
                     detstr += "".TxtStrPush(18);
                     detstr += "".TxtStrPush(18);
                     detstr += "".TxtStrPush(18);
-                    detstr += "".TxtStrPush(18);
+                    detstr += "".TxtStrPush(18);sFTP.
                     detstr += "".TxtStrPush(18);
                     detstr += "".TxtStrPush(18);
                     detstr += "".TxtStrPush(18);
@@ -2273,7 +2316,16 @@ namespace PUMAobj.ASN
 
                 writer.Close();
                 file.Close();
-                msg = "200";
+                bool issuccess = sFTP.PUMAPut(filepath, filename, sftpfilepath);
+                if (issuccess)
+                {
+                    msg = "200";
+                }
+                else
+                {
+                    msg = "500";
+                    LogHelper.WriteLog(typeof(string), "Create_SHPTXT出库反馈文件上传失败[" + hd.Rows[0]["ExternOrderKey"].ToString() + "]:" + msg, LogHelper.LogLevel.Error);
+                }
             }
             catch (Exception ex)
             {
@@ -2296,28 +2348,30 @@ namespace PUMAobj.ASN
                 this.ExecuteDataTableBySqlString(execstr);
 
                 string querstr = "SELECT * FROM WMS_InventoryPUMA WHERE Str10 IS NULL";
-                DataTable INV= this.ExecuteDataTableBySqlString(querstr);
+                DataTable INV = this.ExecuteDataTableBySqlString(querstr);
 
                 if (INV.Rows.Count > 0)
                 {
                     string istrue = "";
-                    string txtaddress = TxtWMSInventory(INV,out istrue);
+                    string txtaddress = TxtWMSInventory(INV, out istrue);
                     if (istrue == "200")
                     {
 
                     }
-                    else {
+                    else
+                    {
                         LogHelper.WriteLog(typeof(string), "WMSInventory生成库存快照失败[" + DateTime.Now.ToString() + "]", LogHelper.LogLevel.Error);
                     }
                 }
-                else {
+                else
+                {
                     LogHelper.WriteLog(typeof(string), "WMSInventory查询库存表无数据[" + DateTime.Now.ToString() + "]:" + querstr, LogHelper.LogLevel.Error);
                 }
             }
             catch (Exception ex)
             {
                 msg = ex.Message;
-                LogHelper.WriteLog(typeof(string), "WMSInventory执行错误["+DateTime.Now.ToString()+"]:" + msg, LogHelper.LogLevel.Error);
+                LogHelper.WriteLog(typeof(string), "WMSInventory执行错误[" + DateTime.Now.ToString() + "]:" + msg, LogHelper.LogLevel.Error);
             }
             return msg;
         }
@@ -2340,9 +2394,9 @@ namespace PUMAobj.ASN
                 {
                     Directory.CreateDirectory(filepath);
                 }
-                filepath += "/WMSSOH_" + DateTime.Now.ToString("yyyyMMddhhmmss") + ".txt";
+                string filename= "WMSSOH_" + DateTime.Now.ToString("yyyyMMddhhmmss") + ".txt";
                 TxtAddress = filepath;
-                FileStream file = new FileStream(filepath, FileMode.Create, FileAccess.Write);//创建写入文件 
+                FileStream file = new FileStream(filepath+"/"+ filename, FileMode.Create, FileAccess.Write);//创建写入文件 
                 StreamWriter writer = new StreamWriter(file);
                 writer.WriteLine("WMSSOHO " + DateTime.Now.ToString("yyyyMMddhhmmss") + "PUMA                CN   SOH Outbound");
                 for (int i = 0; i < hd.Rows.Count; i++)
@@ -2362,10 +2416,11 @@ namespace PUMAobj.ASN
                     {
                         content += "D7001".TxtStrPush(5);
                     }
-                    else {
+                    else
+                    {
                         content += "".TxtStrPush(5);
                     }
-                   
+
                     content += "".TxtStrPush(10);
                     content += SKUQuery(hd.Rows[i]["SKU"].ToString()).TxtStrPush(20);
                     content += "".TxtStrPush(18);
@@ -2400,7 +2455,16 @@ namespace PUMAobj.ASN
 
                 writer.Close();
                 file.Close();
-                msg = "200";
+                bool issuccess = sFTP.PUMAPut(filepath, filename, sftpfilepath);
+                if (issuccess)
+                {
+                    msg = "200";
+                }
+                else
+                {
+                    msg = "500";
+                    LogHelper.WriteLog(typeof(string), "TxtWMSInventory库存快照文件上传失败:" + msg, LogHelper.LogLevel.Error);
+                }
             }
             catch (Exception ex)
             {
@@ -2428,7 +2492,7 @@ namespace PUMAobj.ASN
                     for (int i = 0; i < AdjustmentCount.Rows.Count; i++)
                     {
 
-                        string sql_d = "SELECT * FROM [WMS_AdjustmentDetail] WHERE AID='"+ AdjustmentCount.Rows[i]["ID"] + "'";
+                        string sql_d = "SELECT * FROM [WMS_AdjustmentDetail] WHERE AID='" + AdjustmentCount.Rows[i]["ID"] + "'";
                         DataTable de = this.ExecuteDataTableBySqlString(sql_d);
                         if (de.Rows.Count > 0)
                         {
@@ -2440,7 +2504,8 @@ namespace PUMAobj.ASN
                                 update_Adjustment(AdjustmentCount.Rows[i]["ID"].ToString(), "6");
                             }
                         }
-                        else {
+                        else
+                        {
                             LogHelper.WriteLog(typeof(string), "WMSAdjustment没有查询到明细信息:" + sql_d, LogHelper.LogLevel.Error);
                         }
                     }
@@ -2461,7 +2526,7 @@ namespace PUMAobj.ASN
         /// <param name="dt"></param>
         /// <param name="msg"></param>
         /// <returns></returns>
-        public string TxtAdjustment(DataRow hd,DataTable dt,out string msg)
+        public string TxtAdjustment(DataRow hd, DataTable dt, out string msg)
         {
             Thread.Sleep(1000);
             string TxtAddress = string.Empty;
@@ -2474,24 +2539,27 @@ namespace PUMAobj.ASN
                 dir = Path.GetFullPath("..");
                 dir = Path.GetFullPath("../..");
                 string filepath = dir + "/UploadFile";     //文件路径
+                string filename = "";
                 if (Directory.Exists(filepath) == false)//如果不存在就创建file文件夹
                 {
                     Directory.CreateDirectory(filepath);
                 }
                 if (type == "库存调整单")
                 {
-                    filepath += "/WMSITR_" + DateTime.Now.ToString("yyyyMMddhhmmss") + "_ADJ.txt";
+                    filename = "WMSITR_" + DateTime.Now.ToString("yyyyMMddhhmmss") + "_ADJ.txt";
                 }
-                else if (type == "库存品级调整单") {
-                    filepath += "/WMSITR_" + DateTime.Now.ToString("yyyyMMddhhmmss") + "_IQC.txt";
+                else if (type == "库存品级调整单")
+                {
+                    filename = "WMSITR_" + DateTime.Now.ToString("yyyyMMddhhmmss") + "_IQC.txt";
                 }
-                else {
+                else
+                {
                     msg = "400";
                     LogHelper.WriteLog(typeof(string), "TxtAdjustment执行错误:调整单类型错误[AdjustmentType]", LogHelper.LogLevel.Error);
                     return "";
                 }
                 TxtAddress = filepath;
-                FileStream file = new FileStream(filepath, FileMode.Create, FileAccess.Write);//创建写入文件 
+                FileStream file = new FileStream(filepath+"/"+ filename, FileMode.Create, FileAccess.Write);//创建写入文件 
                 StreamWriter writer = new StreamWriter(file);
                 writer.WriteLine("WMSITR    O " + DateTime.Now.ToString("yyyyMMddhhmmss") + "PUMA                CN   Inventory Transaction Outbound");
                 string header = "ITRHDA";
@@ -2500,10 +2568,11 @@ namespace PUMAobj.ASN
                 {
                     header += "ADJ".TxtStrPush(3);
                 }
-                else {
+                else
+                {
                     header += "IQC".TxtStrPush(3);
                 }
-                header += hd["ID"].ToString().PadLeft(10,'0').TxtStrPush(10);//wms单号直接ID补0
+                header += hd["ID"].ToString().PadLeft(10, '0').TxtStrPush(10);//wms单号直接ID补0
                 header += "PUMA".TxtStrPush(15);
 
                 if (type == "库存调整单")
@@ -2511,7 +2580,8 @@ namespace PUMAobj.ASN
                     header += from.TxtStrPush(5);
                     header += "".TxtStrPush(10);
                 }
-                else {
+                else
+                {
                     header += from.TxtStrPush(5);
                     header += to.TxtStrPush(10);
                 }
@@ -2571,19 +2641,21 @@ namespace PUMAobj.ASN
 
                     string qty = dt.Rows[i]["ToQty"].ToString();
                     qty = qty.Substring(0, qty.Length - 3);//去掉小数点 和后两位
-                    if (Convert.ToInt32(qty)<= 0) {//如果位-数就去掉-号
-                        qty = qty.Replace("-","");
+                    if (Convert.ToInt32(qty) <= 0)
+                    {//如果位-数就去掉-号
+                        qty = qty.Replace("-", "");
                     }
                     qty = qty.PadLeft(10, '0');//根据格式左边不足位数补0
 
                     if (type == "库存调整单")
                     {
-                        float sign =Convert.ToSingle(dt.Rows[i]["ToQty"]);
+                        float sign = Convert.ToSingle(dt.Rows[i]["ToQty"]);
                         if (sign > 0)
                         {
                             dtstr += "+".TxtStrPush(5);
                         }
-                        else {
+                        else
+                        {
                             dtstr += "-".TxtStrPush(5);
                         }
                     }
@@ -2628,7 +2700,16 @@ namespace PUMAobj.ASN
 
                 writer.Close();
                 file.Close();
-                msg = "200";
+                bool issuccess = sFTP.PUMAPut(filepath, filename, sftpfilepath);
+                if (issuccess)
+                {
+                    msg = "200";
+                }
+                else
+                {
+                    msg = "500";
+                    LogHelper.WriteLog(typeof(string), "TxtAdjustment库存调整文件上传失败:" + msg, LogHelper.LogLevel.Error);
+                }
             }
             catch (Exception ex)
             {
@@ -2641,13 +2722,14 @@ namespace PUMAobj.ASN
         //更新库存调整状态  6成功 2失败
         public string update_Adjustment(string ID, string Int2)
         {
-            string upstr = "UPDATE [WMS_Adjustment] SET Int2="+ Int2 + " WHERE ID='" + ID + "'";
+            string upstr = "UPDATE [WMS_Adjustment] SET Int2=" + Int2 + " WHERE ID='" + ID + "'";
             int upid = this.ScanExecuteNonQueryRID(upstr);
             if (upid > 0)
             {
 
             }
-            else {
+            else
+            {
                 LogHelper.WriteLog(typeof(string), "update_Adjustment执行错误更新库存调整状态失败:" + upstr, LogHelper.LogLevel.Error);
             }
             return "";
@@ -2661,14 +2743,15 @@ namespace PUMAobj.ASN
         public string EANQuery(string SKU)
         {
             string EAN = "";
-            string questr = "SELECT * FROM WMS_Product WHERE ManufacturerSKU='"+SKU+"'";
+            string questr = "SELECT * FROM WMS_Product WHERE ManufacturerSKU='" + SKU + "'";
             DataTable SuccessCount = this.ExecuteDataTableBySqlString(questr);
             if (SuccessCount.Rows.Count > 0)
             {
                 EAN = SuccessCount.Rows[0]["SKU"].ToString();
             }
-            else {
-                LogHelper.WriteLog(typeof(string), "EANQuery没有查询到对应EAN,查询条件ManufacturerSKU等于"+ SKU + "]", LogHelper.LogLevel.Error);
+            else
+            {
+                LogHelper.WriteLog(typeof(string), "EANQuery没有查询到对应EAN,查询条件ManufacturerSKU等于" + SKU + "]", LogHelper.LogLevel.Error);
             }
             return EAN;
         }
@@ -2699,28 +2782,29 @@ namespace PUMAobj.ASN
         /// </summary>
         /// <param name="str"></param>
         /// <returns></returns>
-        public string Grade(string str) {
+        public string Grade(string str)
+        {
             string value = "";
             switch (str)
             {
                 case "A品":
                     value = "D6001";
-                break;
+                    break;
                 case "C品":
                     value = "D7001";
-                break;
+                    break;
                 case "D品":
                     value = "D7002";
-                break;
+                    break;
                 case "D6001":
                     value = "A品";
-                break;
+                    break;
                 case "D7001":
                     value = "C品";
-                break;
+                    break;
                 case "D7002":
                     value = "D品";
-               break;
+                    break;
             }
             return value;
         }
