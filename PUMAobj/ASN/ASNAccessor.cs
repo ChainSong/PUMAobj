@@ -1760,7 +1760,7 @@ namespace PUMAobj.ASN
 
                 writer.Close();
                 file.Close();
-                bool issuccess = sFTP.Put(filepath, filename, sftpfilepath);
+                bool issuccess = sFTP.PUMAPut(filepath, filename, sftpfilepath);
                 if (issuccess)
                 {
                     msg = "200";
@@ -2092,7 +2092,7 @@ namespace PUMAobj.ASN
 
                 writer.Close();
                 file.Close();
-                bool issuccess = sFTP.Put(filepath, filename, sftpfilepath);
+                bool issuccess = sFTP.PUMAPut(filepath, filename, sftpfilepath);
                 if (issuccess)
                 {
                     msg = "200";
@@ -2293,7 +2293,7 @@ namespace PUMAobj.ASN
                     detstr += "".TxtStrPush(18);
                     detstr += "".TxtStrPush(18);
                     detstr += "".TxtStrPush(18);
-                    detstr += "".TxtStrPush(18);
+                    detstr += "".TxtStrPush(18);sFTP.
                     detstr += "".TxtStrPush(18);
                     detstr += "".TxtStrPush(18);
                     detstr += "".TxtStrPush(18);
@@ -2316,7 +2316,7 @@ namespace PUMAobj.ASN
 
                 writer.Close();
                 file.Close();
-                bool issuccess = sFTP.Put(filepath, filename, sftpfilepath);
+                bool issuccess = sFTP.PUMAPut(filepath, filename, sftpfilepath);
                 if (issuccess)
                 {
                     msg = "200";
@@ -2455,7 +2455,7 @@ namespace PUMAobj.ASN
 
                 writer.Close();
                 file.Close();
-                bool issuccess = sFTP.Put(filepath, filename, sftpfilepath);
+                bool issuccess = sFTP.PUMAPut(filepath, filename, sftpfilepath);
                 if (issuccess)
                 {
                     msg = "200";
@@ -2700,7 +2700,7 @@ namespace PUMAobj.ASN
 
                 writer.Close();
                 file.Close();
-                bool issuccess = sFTP.Put(filepath, filename, sftpfilepath);
+                bool issuccess = sFTP.PUMAPut(filepath, filename, sftpfilepath);
                 if (issuccess)
                 {
                     msg = "200";

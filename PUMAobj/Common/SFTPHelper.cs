@@ -90,16 +90,41 @@ namespace PUMAobj.Common
         /// </summary>
         /// <param name="localPath">本地路径</param>
         /// <param name="remotePath">远程路径</param>
-        public bool Put(string localPath,string localfilename, string remotePath)
+        public bool Put(string localPath, string remotePath, string SFTPPath)
         {
             try
             {
-                using (var file = File.OpenRead(localPath+"/"+localfilename))
+                using (var file = File.OpenRead(localPath))
                 {
                     Connect();
                     //sftp.ChangeDirectory(@"\NIKEReturn\Receive");
-                    //sftp.ChangeDirectory(SFTPPath); //先注释看看
+
+                    sftp.ChangeDirectory(SFTPPath); //先注释看看
+
                     sftp.UploadFile(file, remotePath);
+                    Disconnect();
+                }
+                return true;
+            }
+            catch (Exception ex)
+            {
+                LogHelper.WriteLog(typeof(string), localPath + ":SFTP文件上传失败 原因：:" + ex.ToString(), LogHelper.LogLevel.Error);
+                //throw new Exception(string.Format("SFTP文件上传失败，原因：{0}", ex.Message));
+            }
+            return false;
+        }
+        #endregion
+
+        public bool PUMAPut(string localPath, string localfilename, string remotePath)
+        {
+            try
+            {
+                using (var file = File.OpenRead(localPath + "/" + localfilename))
+                {
+                    Connect();
+                    //sftp.ChangeDirectory(@"\NIKEReturn\Receive");
+                    sftp.ChangeDirectory(remotePath); //先注释看看
+                    sftp.UploadFile(file, localfilename);
                     Disconnect();
                 }
                 LocalFileHelper.MoveToCover(localPath + localfilename, localPath + "/Success" + localfilename);
@@ -113,7 +138,6 @@ namespace PUMAobj.Common
             LocalFileHelper.MoveToCover(localPath + localfilename, localPath + "/Warning" + localfilename);
             return false;
         }
-        #endregion
 
 
         #region SFTP获取文件
