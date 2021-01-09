@@ -110,13 +110,30 @@ namespace PUMAobj.Downloader
                 //连接FTP 将文件下载到本地
                 //FtpHelper ftpHelper = new FtpHelper("","","");
                 //先获取文件中的列表
-                string[] fileNames = FtpHelper.GetFtpFileList("");
+                //开始上传SFTP/
+                string SFTPIP = SFTPConstants.sftpip;
+                //ConfigurationManager.AppSettings["SFTPIP"];
+                string SFTPort = SFTPConstants.sftpport;
+                //= ConfigurationManager.AppSettings["SFTPort"];
+                string SFTPUser = SFTPConstants.sftpuser;
+                //ConfigurationManager.AppSettings["SFTPUser"];
+                string SFTPPwd = SFTPConstants.sftppwd;
+                //ConfigurationManager.AppSettings["SFTPPwd"];
+                string SFTPPath = SFTPConstants.sftpfilepath;
+                string sftpfilepath_successful = SFTPConstants.sftpfilepath_successful;
+
+
+                string ReceiveFilePath = SFTPConstants.ReceiveFilePath;
+                //ConfigurationManager.AppSettings["SFTPPath"];
+
+                SFTPHelper fTPHelper = new SFTPHelper(SFTPIP, SFTPort, SFTPUser, SFTPPwd);
+                var fileNames = fTPHelper.GetFileList(SFTPPath, "txt");
                 foreach (var item in fileNames)
                 {
-                    bool results = FtpHelper.Download("", "", item);
+                    bool results = fTPHelper.Get(SFTPPath, ReceiveFilePath);
                     if (results)
                     {
-                        FtpHelper.RenameAndMove(item, "");
+                        fTPHelper.Move(SFTPPath, sftpfilepath_successful);
                     }
                 }
             }

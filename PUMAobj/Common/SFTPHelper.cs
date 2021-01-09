@@ -120,7 +120,7 @@ namespace PUMAobj.Common
         /// </summary>
         /// <param name="remotePath">远程路径</param>
         /// <param name="localPath">本地路径</param>
-        public void Get(string remotePath, string localPath)
+        public bool Get(string remotePath, string localPath)
         {
             try
             {
@@ -128,10 +128,12 @@ namespace PUMAobj.Common
                 var byt = sftp.ReadAllBytes(remotePath);
                 Disconnect();
                 File.WriteAllBytes(localPath, byt);
+                return true;
             }
             catch (Exception ex)
             {
-                throw new Exception(string.Format("SFTP文件获取失败，原因：{0}", ex.Message));
+                return false;
+                //throw new Exception(string.Format("SFTP文件获取失败，原因：{0}", ex.Message));
             }
 
         }

@@ -78,6 +78,7 @@
     <Compile Include="Common\DataTableExtension.cs" />
     <Compile Include="Common\EntityPropertyExtensionAttribute.cs" />
     <Compile Include="Common\FtpHelper.cs" />
+    <Compile Include="Common\LocalFileHelper.cs" />
     <Compile Include="Common\ObjectExtension.cs" />
     <Compile Include="Common\SFTPConstants.cs" />
     <Compile Include="Common\SFTPHelper.cs" />

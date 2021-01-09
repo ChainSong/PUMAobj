@@ -43,6 +43,7 @@ namespace PUMAobj.Common
         public readonly static string sftpuser = GetConfigValue("sftpuser");//用户名
         public readonly static string sftppwd = GetConfigValue("sftppwd");//密码
         public readonly static string sftpfilepath = GetConfigValue("sftpfilepath");//lf接收文件地址
+        public readonly static string sftpfilepath_successful = GetConfigValue("sftpfilepath_successful");//lf接收文件地址
 
         public readonly static string IsParsingFile = GetConfigValue("IsParsingFile");//解析文件功能是否启用
         public readonly static string IsBuildFile = GetConfigValue("IsBuildFile");//生成文件功能是否启用
