@@ -84,7 +84,12 @@ namespace PUMAobj.Common
         /// <returns></returns>
         public static string TxtSubstring(this string str, int start, int end)
         {
-            return str.Substring(start - 1, end - start + 1).Trim();
+            //return str.Substring(start - 1, end - start + 1).Trim();
+            start = start - 1;
+            end = end - start;
+            var strBytes = Encoding.Default.GetBytes(str);
+            string substr = Encoding.Default.GetString(strBytes, start, end);
+            return substr.Trim();
         }
 
         /// <summary>
@@ -166,7 +171,6 @@ namespace PUMAobj.Common
             }
         }
 
-        
         /// <summary>
         /// 字符超出最大长度要截取 ，字符小于最大长度要补空格
         /// </summary>
@@ -175,13 +179,25 @@ namespace PUMAobj.Common
         /// <returns></returns>
         public static string TxtStrPush(this string str,int max)
         {
-            string S ="";
-            if (str.Length >= max)
+            //string S ="";
+            //if (str.Length > max)
+            //{
+            //    S = str.Substring(0, max);
+            //}
+            //else if (str.Length < max) {
+            //    S += str.PadRight(max,' ');
+            //}
+            //return S;
+            string S = str;
+            int len = System.Text.Encoding.Default.GetByteCount(str);
+            var strBytes = Encoding.Default.GetBytes(str);
+            if (len > max)
             {
-                S = str.Substring(0, max);
+                S = Encoding.Default.GetString(strBytes, 0, max);
             }
-            else if (str.Length < max) {
-                S += str.PadRight(max,' ');
+            else if (len < max)
+            {
+                S +="".PadRight(max - len, ' ');
             }
             return S;
         }
