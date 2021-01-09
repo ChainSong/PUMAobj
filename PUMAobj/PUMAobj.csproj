@@ -124,7 +124,8 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="DownFile\" />
-    <Folder Include="UploadFile\" />
+    <Folder Include="UploadFile\Success\" />
+    <Folder Include="UploadFile\Warning\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
