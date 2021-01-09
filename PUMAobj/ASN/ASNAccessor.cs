@@ -2293,7 +2293,7 @@ namespace PUMAobj.ASN
                     detstr += "".TxtStrPush(18);
                     detstr += "".TxtStrPush(18);
                     detstr += "".TxtStrPush(18);
-                    detstr += "".TxtStrPush(18);sFTP.
+                    detstr += "".TxtStrPush(18);
                     detstr += "".TxtStrPush(18);
                     detstr += "".TxtStrPush(18);
                     detstr += "".TxtStrPush(18);

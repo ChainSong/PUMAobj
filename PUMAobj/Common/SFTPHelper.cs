@@ -127,7 +127,7 @@ namespace PUMAobj.Common
                     sftp.UploadFile(file, localfilename);
                     Disconnect();
                 }
-                LocalFileHelper.MoveToCover(localPath + localfilename, localPath + "/Success" + localfilename);
+                LocalFileHelper.MoveToCover(localPath+"\\" + localfilename, localPath + "\\Success\\" + localfilename);
                 return true;
             }
             catch (Exception ex)
@@ -135,7 +135,7 @@ namespace PUMAobj.Common
                 LogHelper.WriteLog(typeof(string), localPath + ":SFTP文件上传失败 原因：:" + ex.ToString(), LogHelper.LogLevel.Error);
                 //throw new Exception(string.Format("SFTP文件上传失败，原因：{0}", ex.Message));
             }
-            LocalFileHelper.MoveToCover(localPath + localfilename, localPath + "/Warning" + localfilename);
+            LocalFileHelper.MoveToCover(localPath + "\\" + localfilename, localPath + "\\Warning\\" + localfilename);
             return false;
         }
 
