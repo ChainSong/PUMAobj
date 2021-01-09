@@ -176,8 +176,11 @@ namespace PUMAobj.Common
                 var objList = new ArrayList();
                 foreach (var file in files)
                 {
-                    string name = file.Name;
-                    objList.Add(name);
+                    if (file.Name.Contains(fileSuffix))
+                    {
+                        string name = file.Name;
+                        objList.Add(name);
+                    }
                 }
                 return objList;
             }

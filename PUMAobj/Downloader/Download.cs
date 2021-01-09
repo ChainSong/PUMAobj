@@ -127,17 +127,23 @@ namespace PUMAobj.Downloader
                 //ConfigurationManager.AppSettings["SFTPPath"];
 
                 SFTPHelper fTPHelper = new SFTPHelper(SFTPIP, SFTPort, SFTPUser, SFTPPwd);
+
+
+                fTPHelper.Put("D://SFTP//PUMAReturn//Receive//DWMSASN_202101061734260000000033207040.txt", "DWMSASN_202101061734260000000033207040.txt", "/IN");
+
+
+
                 var fileNames = fTPHelper.GetFileList(SFTPPath, "txt");
                 foreach (var item in fileNames)
                 {
-                    bool results = fTPHelper.Get(SFTPPath, ReceiveFilePath);
+                    bool results = fTPHelper.Get(SFTPPath+"//"+ item, ReceiveFilePath + "//" + item);
                     if (results)
                     {
                         fTPHelper.Move(SFTPPath, sftpfilepath_successful);
                     }
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
 
                 //throw;
@@ -249,7 +255,7 @@ namespace PUMAobj.Downloader
                         }
                         else
                         {
-                            //FileCommon.MoveToCover(log.SourceFileName, log.ToFileName);
+                            LocalFileHelper.MoveToCover(log.SourceFileName, log.ToFileName);
                         }
                     }
                 }

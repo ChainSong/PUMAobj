@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace PUMAobj.Common
 {
-    public class LocalFileHelper
+    public  class LocalFileHelper
     {
 
         /// <summary>
