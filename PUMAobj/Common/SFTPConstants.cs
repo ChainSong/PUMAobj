@@ -42,8 +42,10 @@ namespace PUMAobj.Common
         public readonly static string sftpport = GetConfigValue("sftpport");//端口
         public readonly static string sftpuser = GetConfigValue("sftpuser");//用户名
         public readonly static string sftppwd = GetConfigValue("sftppwd");//密码
-        public readonly static string sftpfilepath = GetConfigValue("sftpfilepath");//lf接收文件地址
-        public readonly static string sftpfilepath_successful = GetConfigValue("sftpfilepath_successful");//lf接收文件地址
+        public readonly static string OUT_TRANSACTION = GetConfigValue("OUT_TRANSACTION");//lf接收文件地址
+        public readonly static string OUT_MASTER = GetConfigValue("OUT_MASTER");//lf接收文件地址
+        public readonly static string OUT_TRANSACTION_successful = GetConfigValue("OUT_TRANSACTION_successful");//lf接收文件地址
+        public readonly static string OUT_MASTER_successful = GetConfigValue("OUT_MASTER_successful");//lf接收文件地址
 
         public readonly static string IsParsingFile = GetConfigValue("IsParsingFile");//解析文件功能是否启用
         public readonly static string IsBuildFile = GetConfigValue("IsBuildFile");//生成文件功能是否启用

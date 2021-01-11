@@ -119,8 +119,10 @@ namespace PUMAobj.Downloader
                 //ConfigurationManager.AppSettings["SFTPUser"];
                 string SFTPPwd = SFTPConstants.sftppwd;
                 //ConfigurationManager.AppSettings["SFTPPwd"];
-                string SFTPPath = SFTPConstants.sftpfilepath;
-                string sftpfilepath_successful = SFTPConstants.sftpfilepath_successful;
+                string OUT_TRANSACTION = SFTPConstants.OUT_TRANSACTION;
+                string OUT_MASTER = SFTPConstants.OUT_MASTER;
+                string OUT_TRANSACTION_successful = SFTPConstants.OUT_TRANSACTION_successful;
+                string OUT_MASTER_successful = SFTPConstants.OUT_MASTER_successful;
 
 
                 string ReceiveFilePath = SFTPConstants.ReceiveFilePath;
@@ -128,13 +130,25 @@ namespace PUMAobj.Downloader
 
                 SFTPHelper fTPHelper = new SFTPHelper(SFTPIP, SFTPort, SFTPUser, SFTPPwd);
 
-                var fileNames = fTPHelper.GetFileList(SFTPPath, "txt");
+                //下载主档
+                var fileNames = fTPHelper.GetFileList(OUT_MASTER, "txt");
                 foreach (var item in fileNames)
                 {
-                    bool results = fTPHelper.Get(SFTPPath+"//"+ item, ReceiveFilePath + "//" + item);
+                    bool results = fTPHelper.Get(OUT_MASTER + "//"+ item, ReceiveFilePath + "//" + item);
                     if (results)
                     {
-                        fTPHelper.Move(SFTPPath, sftpfilepath_successful);
+                        fTPHelper.Move(OUT_MASTER + "//" + item, OUT_MASTER_successful + "//" + item);
+                    }
+                }
+
+                //下载订单
+                var fileNames_Order = fTPHelper.GetFileList(OUT_TRANSACTION, "txt");
+                foreach (var item in fileNames_Order)
+                {
+                    bool results = fTPHelper.Get(OUT_TRANSACTION + "//" + item, ReceiveFilePath + "//" + item);
+                    if (results)
+                    {
+                        fTPHelper.Move(OUT_TRANSACTION, OUT_TRANSACTION_successful);
                     }
                 }
             }
@@ -255,7 +269,7 @@ namespace PUMAobj.Downloader
                     }
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 //throw;
             }

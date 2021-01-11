@@ -29,9 +29,13 @@ namespace PUMAobj.Product
         public string CLASS { get; set; }
         public string ACTIVE { get; set; }
         public string SKUGROUP { get; set; }
+        public string Price { get; set; }
         
+
         public string Style { get; set; }
         public string Color { get; set; }
         public string Size { get; set; }
+        public string Gender { get; set; }
+        
     }
 }

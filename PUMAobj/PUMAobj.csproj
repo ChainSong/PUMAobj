@@ -107,6 +107,8 @@
     <Compile Include="Model\WMS\WMSPreOrderInfoToDb.cs" />
     <Compile Include="Product\ProductAccessor.cs" />
     <Compile Include="Product\ProductModel.cs" />
+    <Compile Include="Product\ProductStorerInfo.cs" />
+    <Compile Include="Product\ProductStorerInfoToDB.cs" />
     <Compile Include="SqlHelper\BaseAccessor.cs" />
     <Compile Include="DownloadInterface.cs" />
     <Compile Include="ModelBase.cs" />
