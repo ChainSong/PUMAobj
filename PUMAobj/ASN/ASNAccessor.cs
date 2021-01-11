@@ -18,12 +18,11 @@ namespace PUMAobj.ASN
 {
     public class ASNAccessor : BaseAccessor
     {
-        public string putpath = "";
         public readonly static string sftpip = GetConfigValue("sftpip");//ip
         public readonly static string sftpport = GetConfigValue("sftpport");//端口
         public readonly static string sftpuser = GetConfigValue("sftpuser");//用户名
         public readonly static string sftppwd = GetConfigValue("sftppwd");//密码
-        public readonly static string sftpfilepath = GetConfigValue("sftpfilepath");//lf接收文件地址
+        public readonly static string sftpIn = GetConfigValue("sftpIn");//lf接收文件地址
 
         public static string GetConfigValue(string key)
         {
@@ -1760,7 +1759,7 @@ namespace PUMAobj.ASN
 
                 writer.Close();
                 file.Close();
-                bool issuccess = sFTP.PUMAPut(filepath, filename, sftpfilepath);
+                bool issuccess = sFTP.PUMAPut(filepath, filename, sftpIn);
                 if (issuccess)
                 {
                     msg = "200";
@@ -2092,7 +2091,7 @@ namespace PUMAobj.ASN
 
                 writer.Close();
                 file.Close();
-                bool issuccess = sFTP.PUMAPut(filepath, filename, sftpfilepath);
+                bool issuccess = sFTP.PUMAPut(filepath, filename, sftpIn);
                 if (issuccess)
                 {
                     msg = "200";
@@ -2316,7 +2315,7 @@ namespace PUMAobj.ASN
 
                 writer.Close();
                 file.Close();
-                bool issuccess = sFTP.PUMAPut(filepath, filename, sftpfilepath);
+                bool issuccess = sFTP.PUMAPut(filepath, filename, sftpIn);
                 if (issuccess)
                 {
                     msg = "200";
@@ -2455,7 +2454,7 @@ namespace PUMAobj.ASN
 
                 writer.Close();
                 file.Close();
-                bool issuccess = sFTP.PUMAPut(filepath, filename, sftpfilepath);
+                bool issuccess = sFTP.PUMAPut(filepath, filename, sftpIn);
                 if (issuccess)
                 {
                     msg = "200";
@@ -2700,7 +2699,7 @@ namespace PUMAobj.ASN
 
                 writer.Close();
                 file.Close();
-                bool issuccess = sFTP.PUMAPut(filepath, filename, sftpfilepath);
+                bool issuccess = sFTP.PUMAPut(filepath, filename, sftpIn);
                 if (issuccess)
                 {
                     msg = "200";
