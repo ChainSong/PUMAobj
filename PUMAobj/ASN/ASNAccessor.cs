@@ -2407,11 +2407,11 @@ namespace PUMAobj.ASN
                     {
                         content += "D6001".TxtStrPush(5);
                     }
-                    else if (hd.Rows[i]["GoodsType"].ToString() == "B品")
+                    else if (hd.Rows[i]["GoodsType"].ToString() == "C品")
                     {
                         content += "D7001".TxtStrPush(5);
                     }
-                    else if (hd.Rows[i]["GoodsType"].ToString() == "C品")
+                    else if (hd.Rows[i]["GoodsType"].ToString() == "D品")
                     {
                         content += "D7001".TxtStrPush(5);
                     }
