@@ -34,7 +34,7 @@ namespace PUMAobj
             //DownloadInterface uploadInterface = new DownloadInterface();
 
 
-            //ASNAccessor aSN = new ASNAccessor();
+            ASNAccessor aSN = new ASNAccessor();
             //aSN.GetInbound_ASNHD();
             //Upload upload = new Upload(uploadInterface, defparams,
             //                           DateTime.Now.ToString("yyyyMMddHHmmss") + "Test");
@@ -50,7 +50,9 @@ namespace PUMAobj
             //string txtaddress = aSN.Create_RECHD_TXT1(null, null, out msg);
             //string txtaddress = aSN.Create_SHPTXT(null, null, out msg);
 
+            aSN.wms_receipt();
             //aSN.WMSAdjustment();
+
             //aSN.CreatIQC("210104002");
         }
     }
