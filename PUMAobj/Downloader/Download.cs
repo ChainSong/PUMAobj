@@ -206,7 +206,7 @@ namespace PUMAobj.Downloader
                                         break;
                                 }
 
-                                if (result == "")
+                                if (result == "200")
                                 {
                                     //解析成功，移动到success文件夹
                                     log.ToFileName = SFTPConstants.SuccessFilePath + @"\" + log.Type + @"\" + filename;
@@ -214,7 +214,6 @@ namespace PUMAobj.Downloader
                                     log.Externumber = externumber;
                                     log.Flag = "Y";
                                 }
-
                                 else
                                 {
                                     if (log.Type != "")

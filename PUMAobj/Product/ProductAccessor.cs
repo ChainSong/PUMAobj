@@ -15,6 +15,7 @@ namespace PUMAobj.Product
     {
         public string AddProduct(List<string> txtlists, out string externumber)
         {
+            string msg = string.Empty;
             externumber = "";
             try
             {
@@ -136,7 +137,7 @@ namespace PUMAobj.Product
                             conn.Close();
                             if (message != "有重复")
                             {
-
+                                msg = "有重复";
                             }
                             //return new ProductStorerInfo();
                         }
@@ -212,12 +213,13 @@ namespace PUMAobj.Product
             }
             catch (Exception ex)
             {
+                msg = ex.ToString();
                 //LogHelper.WriteLog(Type, ex);
                 LogHelper.WriteLog(typeof(string), "AddProduct:" + ex.ToString(), LogHelper.LogLevel.Error);
                 //throw;
             }
             //PreOrderDetail
-            return "";
+            return msg;
         }
     }
 }

@@ -1499,6 +1499,11 @@ namespace PUMAobj.ASN
                     sda.Fill(ds);
                     message = sda.SelectCommand.Parameters["@message"].Value.ToString();
                     conn.Close();
+                    if (message == "")
+                    {
+                        msg = 200;
+                        return message;
+                    }
                     if (message.IndexOf("添加成功") > -1)
                     {
                         msg = 200;
