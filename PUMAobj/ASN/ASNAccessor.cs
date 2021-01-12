@@ -1721,7 +1721,7 @@ namespace PUMAobj.ASN
                     dtstr += dt.Rows[i]["Sku"].ToString().TxtStrPush(20);
                     dtstr += "".TxtStrPush(18);
                     dtstr += "".TxtStrPush(10);
-                    dtstr += dt.Rows[i]["QtyReceived"].ToString().TxtStrPush(10);
+                    dtstr += dt.Rows[i]["QtyExpected"].ToString().TxtStrPush(10);
                     dtstr += "".TxtStrPush(10);
                     dtstr += "".TxtStrPush(18);
                     dtstr += "".TxtStrPush(18);
@@ -2570,7 +2570,7 @@ namespace PUMAobj.ASN
                 FileStream file = new FileStream(filepath+"/"+ filename, FileMode.Create, FileAccess.Write);//创建写入文件 
                 StreamWriter writer = new StreamWriter(file);
 
-                string AdjustmentTime = Convert.ToInt32(hd["AdjustmentTime"]).ToString("yyyyMMddhhmmss");
+                string AdjustmentTime = Convert.ToDateTime(hd["AdjustmentTime"]).ToString("yyyyMMddhhmmss");
                 writer.WriteLine("WMSITR    O " + DateTime.Now.ToString("yyyyMMddhhmmss") + "PUMA                CN   Inventory Transaction Outbound");
                 string header = "ITRHDA";
                 header += "".TxtStrPush(10);
