@@ -785,6 +785,7 @@ namespace PUMAobj.ASN
                                 CreateTime = DateTime.Now,
                                 str3 = "PUMA",
                                 str1 = header[i].UserDefine02,
+                                str2 = header[i].CarrierKey,
                             });
                             request.asn = aSNHs;
                             List<ASNDetail> aSNDetails = new List<ASNDetail>();

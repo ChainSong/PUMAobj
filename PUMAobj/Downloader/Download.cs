@@ -196,7 +196,7 @@ namespace PUMAobj.Downloader
                                         log.Type = "WMSASN";
                                         result = new ASNAccessor().GetInbound_ASNHD(txtlists, out externumber);
                                         break;
-                                    case "WMSORD"://PUMA推给我们的出库单
+                                    case "WMSORD"://PUMA推给我们的 出库单
                                         log.Type = "WMSORD";
                                         result = new ASNAccessor().GetInbound_ASNHD(txtlists, out externumber);
                                         break;
@@ -206,63 +206,47 @@ namespace PUMAobj.Downloader
                                         break;
                                 }
 
-                                if (result == "200")
-                                {
+                                if (result == "200"){
                                     //解析成功，移动到success文件夹
                                     log.ToFileName = SFTPConstants.SuccessFilePath + @"\" + log.Type + @"\" + filename;
                                     log.ResultDesc = "解析成功";
                                     log.Externumber = externumber;
                                     log.Flag = "Y";
-                                }
-                                else
-                                {
-                                    if (log.Type != "")
-                                    {
-                                        if (result.Contains("数据库插入失败"))
-                                        {
+                                }else{
+                                    if (log.Type != ""){
+                                        if (result.Contains("数据库插入失败")){
                                             log.ToFileName = "";// SFTPConstants.SuccessFilePath + @"\" + log.Type + @"\" + filename;
                                             log.ResultDesc = "解析失败：" + result;
                                             log.Externumber = externumber;
                                             log.Flag = "E";
-                                        }
-                                        else
-                                        {
+                                        }else{
                                             log.ToFileName = SFTPConstants.FaildFilePath + @"\" + log.Type + @"\" + filename;//移动到解析失败文件夹                                            
                                             log.ResultDesc = "解析失败：" + result;
                                             log.Externumber = externumber;
                                             log.Flag = "N";
                                         }
-                                    }
-                                    else
-                                    {
+                                    }else{
                                         log.ToFileName = SFTPConstants.ErrorFilePath + @"\" + filename;
                                         log.ResultDesc = "解析失败：" + result;
                                         log.Externumber = externumber;
                                         log.Flag = "N";
                                     }
                                 }
-                            }
-                            else
-                            {
+                            }else{
                                 log.ToFileName = SFTPConstants.ErrorFilePath + @"\" + filename;
                                 log.Flag = "N";
                                 log.ResultDesc = "解析失败：文档中无数据";
                             }
 
-                        }
-                        catch (Exception ex)
-                        {
+                        }catch (Exception ex){
                             //报错了放到error文件
                             log.ToFileName = SFTPConstants.ErrorFilePath + @"\" + filename;
                             log.Flag = "N";
                             log.ResultDesc = "解析报错：" + ex.Message.ToString();
                         }
-                        if (log.Flag == "E")//数据库失败再解析一次
-                        {
+                        if (log.Flag == "E"){//数据库失败再解析一次
 
-                        }
-                        else
-                        {
+                        }else{
                             LocalFileHelper.MoveToCover(log.SourceFileName, log.ToFileName);
                         }
                     }
