@@ -148,7 +148,7 @@ namespace PUMAobj.Downloader
                     bool results = fTPHelper.Get(OUT_TRANSACTION + "//" + item, ReceiveFilePath + "//" + item);
                     if (results)
                     {
-                        fTPHelper.Move(OUT_TRANSACTION, OUT_TRANSACTION_successful);
+                        fTPHelper.Move(OUT_TRANSACTION + "//" + item, OUT_TRANSACTION_successful + "//" + item);
                     }
                 }
             }
