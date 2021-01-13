@@ -465,18 +465,19 @@ namespace PUMAobj.ASN
             try
             {
                 ////读取文件
-                //List<string> thdata = new List<string>();
+                //List<string> thdata_test = new List<string>();
                 //string dir = AppDomain.CurrentDomain.BaseDirectory;
                 //dir = Path.GetFullPath("..");
                 //dir = Path.GetFullPath("../..");
-                //string filepath = dir + "/DownFile/WMSASN_202010090917430000000049490757.txt";     //文件路径
+                //string filepath = dir + "/DownFile/DWMSASN_202101121536420000000033207123.txt";     //文件路径
                 //if (System.IO.File.Exists(filepath))
                 //{
                 //    foreach (string str in System.IO.File.ReadAllLines(filepath, Encoding.Default))
                 //    {
-                //        thdata.Add(str);
+                //        thdata_test.Add(str);
                 //    }
                 //}
+                //thdata = thdata_test;
 
                 //实体赋值
                 List<Inbound_ASNHD> header = new List<Inbound_ASNHD>();//asn 主订单信息
@@ -802,7 +803,7 @@ namespace PUMAobj.ASN
                                     detail.QtyExpected = details[m].QtyExpected;
                                     detail.QtyReceived = 0.000;
                                     detail.QtyDiff = 0.000;
-                                    if (ASNType == "经销入库")
+                                    if (ASNType == "经销商入库")
                                     {
                                      detail.GoodsType = Grade(header[i].Facility.ToString());
                                     }
@@ -1601,7 +1602,7 @@ namespace PUMAobj.ASN
                             if (data1_hd.Rows.Count > 0 && data1_dt.Rows.Count > 0)
                             {
                                 string istrue = "";//是否创建成功
-                                string txtaddress = Create_RECHD_TXT1(data1_hd, data1_dt, out istrue);
+                                string txtaddress = Create_RECHD_TXT1(data1_hd, data1_dt, ReceiptCount.Rows[i]["ReceiptType"].ToString(), out istrue);
                                 if (istrue == "200")//创建成功 更新状态
                                 {
                                     string upstr = "UPDATE Inbound_ASNHD SET ISReturn=1,ReturnDate=GETDATE() WHERE ExternReceiptKey='" + ReceiptCount.Rows[i]["ExternReceiptNumber"].ToString() + "'";
@@ -1631,7 +1632,7 @@ namespace PUMAobj.ASN
         /// <param name="hd">订单头部</param>
         /// <param name="dt">订单详细</param>
         /// <returns></returns>
-        public string Create_RECHD_TXT1(DataTable hd, DataTable dt, out string msg)
+        public string Create_RECHD_TXT1(DataTable hd, DataTable dt,string ReceiptType, out string msg)
         {
             Thread.Sleep(1000);
             string txtaddress = string.Empty;
@@ -1773,7 +1774,10 @@ namespace PUMAobj.ASN
                 {
                     msg = "200";
                     //入库反馈成功之后 执行品级自动调整
-                    CreatIQC(hd.Rows[0]["ExternReceiptKey"].ToString());
+                    if (ReceiptType != "经销商入库")
+                    {
+                        CreatIQC(hd.Rows[0]["ExternReceiptKey"].ToString());
+                    }
                 }
                 else
                 {
@@ -1813,7 +1817,7 @@ namespace PUMAobj.ASN
                             if (CID == 0)
                             {
                                 CNumber = "ADJ" + DateTime.Now.ToString("yyyyMMddhhmmss") + "C";
-                                string hc = "INSERT INTO  WMS_Adjustment VALUES('" + CNumber + "',108,'PUMA_SH','PUMA上海仓',9,'库存品级调整单','入库完成系统根据WMS_ReceiptReceiving移库[ExternReceiptNumber]'";
+                                string hc = "INSERT INTO  WMS_Adjustment VALUES('" + CNumber + "',108,'PUMA_SH','PUMA上海仓',9,'库存品级调整单','入库完成系统根据WMS_ReceiptReceiving移库["+ ExternReceiptNumber + "]'";
                                 hc += ", GETDATE(),0,'API',GETDATE(),NULL,NULL,'D6001品级C品区分',NULL,NULL,'PUMA'";
                                 hc += ",NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL)SELECT @@IDENTITY AS WMS_Adjustment;";
                                 CID = this.ScanExecuteNonQueryRID(hc);
@@ -1829,7 +1833,7 @@ namespace PUMAobj.ASN
                             if (DID == 0)
                             {
                                 DNumber = "ADJ" + DateTime.Now.ToString("yyyyMMddhhmmss") + "D";
-                                string hc = "INSERT INTO  WMS_Adjustment VALUES('" + DNumber + "',108,'PUMA_SH','PUMA上海仓',9,'库存品级调整单','入库完成系统根据WMS_ReceiptReceiving移库[ExternReceiptNumber]'";
+                                string hc = "INSERT INTO  WMS_Adjustment VALUES('" + DNumber + "',108,'PUMA_SH','PUMA上海仓',9,'库存品级调整单','入库完成系统根据WMS_ReceiptReceiving移库[" + ExternReceiptNumber + "]'";
                                 hc += ", GETDATE(),0,'API',GETDATE(),NULL,NULL,'D6001品级D品区分',NULL,NULL,'PUMA'";
                                 hc += ",NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL)SELECT @@IDENTITY AS WMS_Adjustment;";
                                 DID = this.ScanExecuteNonQueryRID(hc);

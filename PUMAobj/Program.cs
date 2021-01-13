@@ -50,8 +50,11 @@ namespace PUMAobj
             //string txtaddress = aSN.Create_RECHD_TXT1(null, null, out msg);
             //string txtaddress = aSN.Create_SHPTXT(null, null, out msg);
 
-            //aSN.wms_receipt();
-            aSN.WMSAdjustment();
+            aSN.wms_receipt();
+            //aSN.WMSAdjustment();
+
+            //string txtaddress = aSN.GetInbound_ASNHD(null, out msg);
+
 
             //aSN.CreatIQC("210104002");
         }
