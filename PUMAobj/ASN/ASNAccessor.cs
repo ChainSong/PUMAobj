@@ -769,8 +769,15 @@ namespace PUMAobj.ASN
                             }
                             else
                             {
-                                ASNType = "经销商入库";
+                                if (header[i].Facility == "D6001")
+                                {
+                                    ASNType = "转仓入库";
+                                }
+                                else {
+                                    ASNType = "经销商入库";
+                                }
                             }
+                            //或者 34xxxxx -> return from retail stores/warehouse，38xxxx -> return from wholesales customers
                             List<ASNH> aSNHs = new List<ASNH>();
                             aSNHs.Add(new ASNH
                             {
@@ -926,7 +933,7 @@ namespace PUMAobj.ASN
             return msg;
         }
         /// <summary>
-        /// 入库订单
+        /// 出库订单
         /// </summary>
         /// <returns></returns>
         public string GetInbound_ORDHD(List<string> thdata, out string externumber)
@@ -1326,7 +1333,7 @@ namespace PUMAobj.ASN
                         preOrders.OrderType = type;//出库类型Type 销售订单 转仓订单
                         preOrders.Status = 1;//订单状态
                         preOrders.OrderTime = DateTime.Now;//订单时间
-                        preOrders.DetailCount = 0;//明细行数
+                        preOrders.DetailCount = details.Count();//明细行数
                         preOrders.Creator = "API";//创建人
                         preOrders.CreateTime = DateTime.Now;//创建时间
                         preOrders.str4 = "PUMA";//默认
@@ -1338,23 +1345,7 @@ namespace PUMAobj.ASN
                         List<PreOrderDetail> detaillist = new List<PreOrderDetail>();
                         for (int m = 0; m < details.Count(); m++)
                         {
-                            string goodtype = "";
-                            if (header[i].Facility == "D6001")
-                            {
-                                goodtype = "A品";
-                            }
-                            else if (header[i].Facility == "D7001")
-                            {
-                                goodtype = "C品";
-                            }
-                            else if (header[i].Facility == "D7002")
-                            {
-                                goodtype = "D品";
-                            }
-                            else
-                            {
-                                goodtype = header[i].Facility;
-                            }
+                            string goodtype = Grade(header[i].Facility);
                             if (header[i].ExternOrderKey == details[m].ExternOrderKey)
                             {
                                 #region wms明细订单赋值
@@ -1366,7 +1357,7 @@ namespace PUMAobj.ASN
                                 detail.WarehouseId = 3;//
                                 detail.Warehouse = "PUMA上海仓";
                                 detail.SKU = EANQuery(details[m].Sku);
-                                detail.GoodsName = detail.SKU;
+                                detail.GoodsName = EANQueryGoodsName(details[m].Sku);
                                 detail.GoodsType = goodtype;//Facility 6001 7001 7002
                                 detail.OriginalQty = details[m].OpenQty;//
                                 detail.Creator = "API";//
@@ -1593,7 +1584,7 @@ namespace PUMAobj.ASN
                     {
 
                         //经销商 门店入库 反馈查询
-                        if (ReceiptCount.Rows[i]["ReceiptType"].ToString() == "经销商入库" || ReceiptCount.Rows[i]["ReceiptType"].ToString() == "门店入库")
+                        if (ReceiptCount.Rows[i]["ReceiptType"].ToString() == "经销商入库" || ReceiptCount.Rows[i]["ReceiptType"].ToString() == "门店入库" || ReceiptCount.Rows[i]["ReceiptType"].ToString() == "转仓入库")
                         {
                             string sql1_hd = "SELECT Top 1 * FROM Inbound_ASNHD WHERE ExternReceiptKey='" + ReceiptCount.Rows[i]["ExternReceiptNumber"].ToString() + "' AND ISReturn='0'";
                             string sql1_dt = "SELECT * FROM Inbound_ASNDT WHERE ExternReceiptKey='" + ReceiptCount.Rows[i]["ExternReceiptNumber"].ToString() + "'";
@@ -2841,7 +2832,7 @@ namespace PUMAobj.ASN
         /// <returns></returns>
         public string Grade(string str)
         {
-            string value = "";
+            string value = str;
             switch (str)
             {
                 case "A品":
