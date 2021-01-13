@@ -1931,7 +1931,7 @@ namespace PUMAobj.ASN
                 {
                     Directory.CreateDirectory(filepath);
                 }
-                string filename= "WMSSHP_" + DateTime.Now.ToString("yyyyMMddhhmmss") + "_PICK.txt";
+                string filename= "DWMSSHP_" + DateTime.Now.ToString("yyyyMMddhhmmss") + "_PICK.txt";
 
                 txtaddress = filepath;
 
@@ -2139,7 +2139,7 @@ namespace PUMAobj.ASN
                 {
                     Directory.CreateDirectory(filepath);
                 }
-                string filename = "WMSSHP_" + DateTime.Now.ToString("yyyyMMddhhmmss") + "_SHP.txt";
+                string filename = "DWMSSHP_" + DateTime.Now.ToString("yyyyMMddhhmmss") + "_SHP.txt";
    
                 txtaddress = filepath;
 
@@ -2597,7 +2597,7 @@ namespace PUMAobj.ASN
                 }
                 header += AdjustmentTime.TxtStrPush(14);
                 header += "".TxtStrPush(10);
-                header += hd["ID"].ToString().PadLeft(10, '0').TxtStrPush(10);//wms单号直接ID补0
+                header += "".TxtStrPush(10);
                 if (type == "库存调整单")
                 {
                     header += "ADJ".TxtStrPush(3);
@@ -2641,7 +2641,7 @@ namespace PUMAobj.ASN
                     {
                         dtstr += "IQC".TxtStrPush(3);
                     }
-                    dtstr += dt.Rows[i]["ID"].ToString().PadLeft(10, '0').TxtStrPush(10);
+                    dtstr += hd["ID"].ToString().PadLeft(10, '0').TxtStrPush(10);//wms单号直接ID补0
                     dtstr += "".TxtStrPush(5);
                     dtstr += "PUMA".TxtStrPush(15);
                     dtstr += SKUQuery(dt.Rows[i]["SKU"].ToString()).TxtStrPush(20);
