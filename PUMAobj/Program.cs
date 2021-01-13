@@ -2,7 +2,6 @@
 using PUMAobj.Downloader;
 using PUMAobj.Log;
 using PUMAobj.MessageContracts;
-using PUMAobj.Uploader;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -32,27 +31,30 @@ namespace PUMAobj
             LogHelper.WriteLog(typeof(string), "--结束下载接口对接--", LogHelper.LogLevel.INFO);
 
 
-            DownloadInterface uploadInterface = new DownloadInterface();
+            //DownloadInterface uploadInterface = new DownloadInterface();
 
 
-          
+            ASNAccessor aSN = new ASNAccessor();
             //aSN.GetInbound_ASNHD();
-            Upload upload = new Upload(uploadInterface, defparams,
-                                       DateTime.Now.ToString("yyyyMMddHHmmss") + "Test");
+            //Upload upload = new Upload(uploadInterface, defparams,
+            //                           DateTime.Now.ToString("yyyyMMddHHmmss") + "Test");
 
-            LogHelper.WriteLog(typeof(string), "--开始上传接口对接--", LogHelper.LogLevel.INFO);
-            uploadInterface.StartDownload();
-            LogHelper.WriteLog(typeof(string), "--结束上传接口对接--", LogHelper.LogLevel.INFO);
+            //LogHelper.WriteLog(typeof(string), "--开始上传接口对接--", LogHelper.LogLevel.INFO);
+            //uploadInterface.StartDownload();
+            //LogHelper.WriteLog(typeof(string), "--结束上传接口对接--", LogHelper.LogLevel.INFO);
 
             //ASNAccessor aSN = new ASNAccessor();
             //aSN.GetInbound_ASNHD();
-            ASNAccessor aSN = new ASNAccessor();
+
             string msg = "";
             //string txtaddress = aSN.Create_RECHD_TXT1(null, null, out msg);
             //string txtaddress = aSN.Create_SHPTXT(null, null, out msg);
 
-            //aSN.wms_receipt();
+            aSN.wms_receipt();
             //aSN.WMSAdjustment();
+
+            //string txtaddress = aSN.GetInbound_ASNHD(null, out msg);
+
 
             //aSN.CreatIQC("210104002");
         }
