@@ -51,7 +51,8 @@ namespace PUMAobj
             //string txtaddress = aSN.Create_SHPTXT(null, null, out msg);
 
             //aSN.wms_receipt();
-            //aSN.WMSAdjustment();
+            //aSN.Create_SHPPK();
+            aSN.WMSAdjustment();
 
             //string txtaddress = aSN.GetInbound_ASNHD(null, out msg);
 
