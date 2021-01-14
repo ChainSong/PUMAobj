@@ -198,7 +198,7 @@ namespace PUMAobj.Downloader
                                         break;
                                     case "WMSORD"://PUMA推给我们的 出库单
                                         log.Type = "WMSORD";
-                                        result = new ASNAccessor().GetInbound_ASNHD(txtlists, out externumber);
+                                        result = new ASNAccessor().GetInbound_ORDHD(txtlists, out externumber);
                                         break;
                                     default:
                                         log.Type = "";

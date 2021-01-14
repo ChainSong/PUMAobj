@@ -763,14 +763,29 @@ namespace PUMAobj.ASN
                         {
                             //CarrierKey
                             string ASNType = "";
-                            if (header[i].CarrierKey != "")
-                            {
-                                ASNType = "门店入库";
-                            }
-                            else
+                            //if (header[i].CarrierKey != "")
+                            //{
+                            //    ASNType = "门店入库";
+                            //}
+                            //else
+                            //{
+                            //    if (header[i].Facility == "D6001")
+                            //    {
+                            //        ASNType = "转仓入库";
+                            //    }
+                            //    else {
+                            //        ASNType = "经销商入库";
+                            //    }
+                            //}
+                            if (header[i].ExternReceiptKey.ToString().Substring(0, 2) == "38")
                             {
                                 ASNType = "经销商入库";
                             }
+                            else
+                            {
+                                ASNType = "门店入库";
+                            }
+                            //或者 34xxxxx -> return from retail stores/warehouse，38xxxx -> return from wholesales customers
                             List<ASNH> aSNHs = new List<ASNH>();
                             aSNHs.Add(new ASNH
                             {
@@ -803,10 +818,12 @@ namespace PUMAobj.ASN
                                     detail.QtyExpected = details[m].QtyExpected;
                                     detail.QtyReceived = 0.000;
                                     detail.QtyDiff = 0.000;
-                                    if (ASNType == "经销商入库")
-                                    {
-                                     detail.GoodsType = Grade(header[i].Facility.ToString());
-                                    }
+                                    //if (ASNType == "经销商入库")
+                                    //{
+                                    // detail.GoodsType = Grade(header[i].Facility.ToString());
+                                    //}
+                                    detail.GoodsType = Grade(header[i].Facility.ToString());
+
                                     detail.GoodsName = EANQueryGoodsName(detail.SKU);
                                     detail.Creator = "API";
                                     detail.CreateTime = DateTime.Now;
@@ -925,8 +942,9 @@ namespace PUMAobj.ASN
 
             return msg;
         }
+
         /// <summary>
-        /// 入库订单
+        /// 出库订单
         /// </summary>
         /// <returns></returns>
         public string GetInbound_ORDHD(List<string> thdata, out string externumber)
@@ -1326,7 +1344,7 @@ namespace PUMAobj.ASN
                         preOrders.OrderType = type;//出库类型Type 销售订单 转仓订单
                         preOrders.Status = 1;//订单状态
                         preOrders.OrderTime = DateTime.Now;//订单时间
-                        preOrders.DetailCount = 0;//明细行数
+                        preOrders.DetailCount = details.Count();//明细行数
                         preOrders.Creator = "API";//创建人
                         preOrders.CreateTime = DateTime.Now;//创建时间
                         preOrders.str4 = "PUMA";//默认
@@ -1338,23 +1356,7 @@ namespace PUMAobj.ASN
                         List<PreOrderDetail> detaillist = new List<PreOrderDetail>();
                         for (int m = 0; m < details.Count(); m++)
                         {
-                            string goodtype = "";
-                            if (header[i].Facility == "D6001")
-                            {
-                                goodtype = "A品";
-                            }
-                            else if (header[i].Facility == "D7001")
-                            {
-                                goodtype = "C品";
-                            }
-                            else if (header[i].Facility == "D7002")
-                            {
-                                goodtype = "D品";
-                            }
-                            else
-                            {
-                                goodtype = header[i].Facility;
-                            }
+                            string goodtype = Grade(header[i].Facility);
                             if (header[i].ExternOrderKey == details[m].ExternOrderKey)
                             {
                                 #region wms明细订单赋值
@@ -1366,7 +1368,7 @@ namespace PUMAobj.ASN
                                 detail.WarehouseId = 3;//
                                 detail.Warehouse = "PUMA上海仓";
                                 detail.SKU = EANQuery(details[m].Sku);
-                                detail.GoodsName = detail.SKU;
+                                detail.GoodsName = EANQueryGoodsName(details[m].Sku);
                                 detail.GoodsType = goodtype;//Facility 6001 7001 7002
                                 detail.OriginalQty = details[m].OpenQty;//
                                 detail.Creator = "API";//
@@ -1593,7 +1595,7 @@ namespace PUMAobj.ASN
                     {
 
                         //经销商 门店入库 反馈查询
-                        if (ReceiptCount.Rows[i]["ReceiptType"].ToString() == "经销商入库" || ReceiptCount.Rows[i]["ReceiptType"].ToString() == "门店入库")
+                        if (ReceiptCount.Rows[i]["ReceiptType"].ToString() == "经销商入库" || ReceiptCount.Rows[i]["ReceiptType"].ToString() == "门店入库" || ReceiptCount.Rows[i]["ReceiptType"].ToString() == "转仓入库")
                         {
                             string sql1_hd = "SELECT Top 1 * FROM Inbound_ASNHD WHERE ExternReceiptKey='" + ReceiptCount.Rows[i]["ExternReceiptNumber"].ToString() + "' AND ISReturn='0'";
                             string sql1_dt = "SELECT * FROM Inbound_ASNDT WHERE ExternReceiptKey='" + ReceiptCount.Rows[i]["ExternReceiptNumber"].ToString() + "'";
@@ -1610,7 +1612,8 @@ namespace PUMAobj.ASN
                                     msg = "200";
                                     LogHelper.WriteLog(typeof(string), "wms_receipt反馈入库更新接口成功:" + upstr, LogHelper.LogLevel.Error);
                                 }
-                                else {
+                                else
+                                {
                                     msg = "400";
                                 }
                             }
@@ -1632,7 +1635,7 @@ namespace PUMAobj.ASN
         /// <param name="hd">订单头部</param>
         /// <param name="dt">订单详细</param>
         /// <returns></returns>
-        public string Create_RECHD_TXT1(DataTable hd, DataTable dt,string ReceiptType, out string msg)
+        public string Create_RECHD_TXT1(DataTable hd, DataTable dt, string ReceiptType, out string msg)
         {
             Thread.Sleep(1000);
             string txtaddress = string.Empty;
@@ -1794,7 +1797,7 @@ namespace PUMAobj.ASN
         }
 
         /// <summary>
-        /// 入库完成反馈之后根据 外部订单号查询 上架信息 自动生成品级调整单
+        /// 入库完成反馈之后根据 外部订单号查询 上架信息 自动生成品级调整单[需要商定逻辑之后调整]
         /// </summary>
         /// <returns></returns>
         public string CreatIQC(string ExternReceiptNumber)
@@ -1817,7 +1820,7 @@ namespace PUMAobj.ASN
                             if (CID == 0)
                             {
                                 CNumber = "ADJ" + DateTime.Now.ToString("yyyyMMddhhmmss") + "C";
-                                string hc = "INSERT INTO  WMS_Adjustment VALUES('" + CNumber + "',108,'PUMA_SH','PUMA上海仓',9,'库存品级调整单','入库完成系统根据WMS_ReceiptReceiving移库["+ ExternReceiptNumber + "]'";
+                                string hc = "INSERT INTO  WMS_Adjustment VALUES('" + CNumber + "',108,'PUMA_SH','PUMA上海仓',9,'库存品级调整单','入库完成系统根据WMS_ReceiptReceiving移库[" + ExternReceiptNumber + "]'";
                                 hc += ", GETDATE(),0,'API',GETDATE(),NULL,NULL,'D6001品级C品区分',NULL,NULL,'PUMA'";
                                 hc += ",NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL)SELECT @@IDENTITY AS WMS_Adjustment;";
                                 CID = this.ScanExecuteNonQueryRID(hc);
@@ -1883,16 +1886,19 @@ namespace PUMAobj.ASN
                         string sql1 = "SELECT * FROM Inbound_ORDHD WHERE ExternOrderKey='" + OrderCount.Rows[i]["ExternOrderNumber"] + "'";
                         string sql2 = "SELECT * FROM Inbound_ORDDT WHERE ExternOrderKey='" + OrderCount.Rows[i]["ExternOrderNumber"] + "'";
                         DataTable hd = this.ExecuteDataTableBySqlString(sql1);
-                        DataTable dt = this.ExecuteDataTableBySqlString(sql1);
+                        DataTable dt = this.ExecuteDataTableBySqlString(sql2);
                         string ispick = "";
                         string picktxt = Create_PICKTXT(OrderCount.Rows[i]["OrderNumber"].ToString(), hd, dt, out ispick);
                         if (ispick == "200")//拣货回传成功
                         {
                             string isshp = "";
-                            string shptxt = Create_SHPTXT(hd, dt, out isshp);
+                            string shptxt = Create_SHPTXT(OrderCount.Rows[i]["OrderNumber"].ToString(), hd, dt, out isshp);
                             if (isshp == "200")
                             {
-
+                                string upstr = "UPDATE Inbound_ORDHD SET ISReturn=1,ReturnDate=GETDATE() WHERE ExternOrderKey='" + OrderCount.Rows[i]["ExternOrderNumber"] + "'";
+                                int upid = this.ScanExecuteNonQueryRID(upstr);
+                                msg = "200";
+                                LogHelper.WriteLog(typeof(string), "Create_SHPPK出库反馈接口提交成功:" + upstr, LogHelper.LogLevel.Error);
                             }
                             else
                             {
@@ -1935,15 +1941,15 @@ namespace PUMAobj.ASN
                 {
                     Directory.CreateDirectory(filepath);
                 }
-                string filename= "DWMSSHP_" + DateTime.Now.ToString("yyyyMMddhhmmss") + "_PICK.txt";
+                string filename = "DWMSSHP_" + DateTime.Now.ToString("yyyyMMddhhmmss") + "_PICK.txt";
 
                 txtaddress = filepath;
 
-                FileStream file = new FileStream(filepath+"/"+filename, FileMode.Create, FileAccess.Write);//创建写入文件 
+                FileStream file = new FileStream(filepath + "/" + filename, FileMode.Create, FileAccess.Write);//创建写入文件 
                 StreamWriter writer = new StreamWriter(file);
                 writer.WriteLine("WMSSHP    O " + DateTime.Now.ToString("yyyyMMddhhmmss") + "PUMA                CN   Shipment Outbound                                 ");
                 string header = "SHPHDA";
-                header += hd.Rows[0]["StorerKey"].ToString().TxtStrPush(15);
+                header += "PUMA".TxtStrPush(15);
                 header += hd.Rows[0]["ExternOrderKey"].ToString().TxtStrPush(20);
                 header += "".ToString().TxtStrPush(10);
                 header += "".ToString().TxtStrPush(14);
@@ -1958,7 +1964,7 @@ namespace PUMAobj.ASN
                 header += "".ToString().TxtStrPush(30);
                 header += "".ToString().TxtStrPush(30);
                 header += "".ToString().TxtStrPush(30);
-                header += "".ToString().TxtStrPush(10);
+                header += "SH".ToString().TxtStrPush(10);
                 header += "".ToString().TxtStrPush(20);
                 header += "".ToString().TxtStrPush(10);
                 header += "".ToString().TxtStrPush(10);
@@ -1970,7 +1976,7 @@ namespace PUMAobj.ASN
                 header += "".ToString().TxtStrPush(30);
                 header += "".ToString().TxtStrPush(125);
                 header += "".ToString().TxtStrPush(10);
-                header += "".ToString().TxtStrPush(5);
+                header += hd.Rows[0]["Facility"].ToString().ToString().TxtStrPush(5);
                 header += "".ToString().TxtStrPush(14);
                 header += "".ToString().TxtStrPush(5);
                 header += "".ToString().TxtStrPush(20);
@@ -1984,9 +1990,9 @@ namespace PUMAobj.ASN
                 header += "".ToString().TxtStrPush(14);
                 header += "".ToString().TxtStrPush(10);
                 header += "".ToString().TxtStrPush(10);
+                header += "0000000001".ToString().TxtStrPush(10);
                 header += "".ToString().TxtStrPush(10);
-                header += "".ToString().TxtStrPush(10);
-                header += "".ToString().TxtStrPush(1);
+                header += "N".ToString().TxtStrPush(1);
                 header += DateTime.Now.ToString("yyyyMMddhhmmss").ToString().TxtStrPush(14);
                 header += "".ToString().TxtStrPush(30);
                 header += "".ToString().TxtStrPush(30);
@@ -2076,10 +2082,49 @@ namespace PUMAobj.ASN
                 header += "".ToString().TxtStrPush(18);
                 header += "".ToString().TxtStrPush(18);
                 writer.WriteLine(header);
+
+                for (int i = 0; i < dt.Rows.Count; i++)
+                {
+                    string detstr = "SHPDTA";
+                    detstr += dt.Rows[i]["ExternOrderKey"].ToString().TxtStrPush(20);
+                    detstr += dt.Rows[i]["ExternLineNo"].ToString().TxtStrPush(10);
+                    detstr += dt.Rows[i]["Sku"].ToString().TxtStrPush(20);
+                    detstr += "".TxtStrPush(20);
+                    detstr += "".TxtStrPush(20);
+                    detstr += "".TxtStrPush(20);
+                    detstr += dt.Rows[i]["OpenQty"].ToString().PadLeft(10, '0').TxtStrPush(10);
+                    detstr += "".TxtStrPush(10);
+                    detstr += "".TxtStrPush(18);
+                    detstr += "".TxtStrPush(18);
+                    detstr += "".TxtStrPush(18);
+                    detstr += "".TxtStrPush(14);
+                    detstr += "".TxtStrPush(14);
+                    detstr += "".TxtStrPush(18);
+                    detstr += "".TxtStrPush(18);
+                    detstr += "".TxtStrPush(18);
+                    detstr += "".TxtStrPush(18);
+                    detstr += "".TxtStrPush(18);
+                    detstr += "".TxtStrPush(18);
+                    detstr += "".TxtStrPush(18);
+                    detstr += "".TxtStrPush(18);
+                    detstr += "".TxtStrPush(18);
+                    detstr += "".TxtStrPush(20);
+                    detstr += "".TxtStrPush(10);
+                    detstr += "".TxtStrPush(10);
+                    detstr += "".TxtStrPush(30);
+                    detstr += "".TxtStrPush(10);
+                    detstr += "".TxtStrPush(10);
+                    detstr += "".TxtStrPush(20);
+                    detstr += "".TxtStrPush(10);
+                    detstr += "".TxtStrPush(5);
+                    detstr += "".TxtStrPush(5);
+                    detstr += "".TxtStrPush(10);
+                    writer.WriteLine(detstr);
+                }
                 for (int i = 0; i < dt.Rows.Count; i++)
                 {
                     string detstr = "SHPPKA";
-                    detstr += dt.Rows[i]["StorerKey"].ToString().TxtStrPush(20);
+                    detstr += "PUMA".ToString().TxtStrPush(20);
                     detstr += dt.Rows[i]["ExternOrderKey"].ToString().TxtStrPush(20);
                     detstr += "".TxtStrPush(10);
                     detstr += "".TxtStrPush(1);
@@ -2124,7 +2169,7 @@ namespace PUMAobj.ASN
         }
 
         //生成订单出库文件
-        public string Create_SHPTXT(DataTable hd, DataTable dt, out string msg)
+        public string Create_SHPTXT(string WmsNo, DataTable hd, DataTable dt, out string msg)
         {
             string txtaddress = string.Empty;
             try
@@ -2144,14 +2189,14 @@ namespace PUMAobj.ASN
                     Directory.CreateDirectory(filepath);
                 }
                 string filename = "DWMSSHP_" + DateTime.Now.ToString("yyyyMMddhhmmss") + "_SHP.txt";
-   
+
                 txtaddress = filepath;
 
-                FileStream file = new FileStream(filepath+"/"+ filename, FileMode.Create, FileAccess.Write);//创建写入文件 
+                FileStream file = new FileStream(filepath + "/" + filename, FileMode.Create, FileAccess.Write);//创建写入文件 
                 StreamWriter writer = new StreamWriter(file);
                 writer.WriteLine("WMSSHP    O " + DateTime.Now.ToString("yyyyMMddhhmmss") + "PUMA                CN   Shipment Outbound                                 ");
                 string header = "SHPHDA";
-                header += hd.Rows[0]["StorerKey"].ToString().TxtStrPush(15);
+                header += "PUMA".TxtStrPush(15);
                 header += hd.Rows[0]["ExternOrderKey"].ToString().TxtStrPush(20);
                 header += "".ToString().TxtStrPush(10);
                 header += "".ToString().TxtStrPush(14);
@@ -2166,7 +2211,7 @@ namespace PUMAobj.ASN
                 header += "".ToString().TxtStrPush(30);
                 header += "".ToString().TxtStrPush(30);
                 header += "".ToString().TxtStrPush(30);
-                header += "".ToString().TxtStrPush(10);
+                header += "SH".ToString().TxtStrPush(10);
                 header += "".ToString().TxtStrPush(20);
                 header += "".ToString().TxtStrPush(10);
                 header += "".ToString().TxtStrPush(10);
@@ -2178,7 +2223,7 @@ namespace PUMAobj.ASN
                 header += "".ToString().TxtStrPush(30);
                 header += "".ToString().TxtStrPush(125);
                 header += "".ToString().TxtStrPush(10);
-                header += "".ToString().TxtStrPush(5);
+                header += hd.Rows[0]["Facility"].ToString().ToString().TxtStrPush(5);
                 header += "".ToString().TxtStrPush(14);
                 header += "".ToString().TxtStrPush(5);
                 header += "".ToString().TxtStrPush(20);
@@ -2192,9 +2237,9 @@ namespace PUMAobj.ASN
                 header += "".ToString().TxtStrPush(14);
                 header += "".ToString().TxtStrPush(10);
                 header += "".ToString().TxtStrPush(10);
+                header += "0000000001".ToString().TxtStrPush(10);
                 header += "".ToString().TxtStrPush(10);
-                header += "".ToString().TxtStrPush(10);
-                header += "".ToString().TxtStrPush(1);
+                header += "N".ToString().TxtStrPush(1);
                 header += DateTime.Now.ToString("yyyyMMddhhmmss").ToString().TxtStrPush(14);
                 header += "".ToString().TxtStrPush(30);
                 header += "".ToString().TxtStrPush(30);
@@ -2293,7 +2338,7 @@ namespace PUMAobj.ASN
                     detstr += "".TxtStrPush(20);
                     detstr += "".TxtStrPush(20);
                     detstr += "".TxtStrPush(20);
-                    detstr += "".TxtStrPush(10);
+                    detstr += dt.Rows[i]["OpenQty"].ToString().PadLeft(10, '0').TxtStrPush(10);
                     detstr += "".TxtStrPush(10);
                     detstr += "".TxtStrPush(18);
                     detstr += "".TxtStrPush(18);
@@ -2322,6 +2367,30 @@ namespace PUMAobj.ASN
                     detstr += "".TxtStrPush(10);
                     writer.WriteLine(detstr);
                 }
+
+                for (int i = 0; i < dt.Rows.Count; i++)
+                {
+                    string detstr = "SHPPKA";
+                    detstr += "PUMA".ToString().TxtStrPush(20);
+                    detstr += dt.Rows[i]["ExternOrderKey"].ToString().TxtStrPush(20);
+                    detstr += "".TxtStrPush(10);
+                    detstr += "".TxtStrPush(1);
+                    detstr += "".TxtStrPush(10);
+                    detstr += "".TxtStrPush(20);
+                    detstr += "".TxtStrPush(5);
+                    detstr += "".TxtStrPush(10);
+                    detstr += "".TxtStrPush(10);
+                    detstr += "".TxtStrPush(10);
+                    detstr += dt.Rows[i]["SKU"].ToString().TxtStrPush(20);
+                    detstr += "".TxtStrPush(10);
+                    detstr += dt.Rows[i]["OpenQty"].ToString().TxtStrPush(10);
+                    detstr += WmsNo.TxtStrPush(20);
+                    detstr += "".TxtStrPush(18);
+                    detstr += DateTime.Now.ToString("yyyyMMddhhmmss").ToString().TxtStrPush(14);
+                    detstr += "".TxtStrPush(30);
+                    writer.WriteLine(detstr);
+                }
+
                 //结束标识
                 string fotstr = "SHPTR" + (dt.Rows.Count + 1).ToString().PadLeft(10, '0');
                 writer.WriteLine(fotstr);
@@ -2406,9 +2475,9 @@ namespace PUMAobj.ASN
                 {
                     Directory.CreateDirectory(filepath);
                 }
-                string filename= "DWMSSOH_" + DateTime.Now.ToString("yyyyMMddhhmmss") + ".txt";
+                string filename = "DWMSSOH_" + DateTime.Now.ToString("yyyyMMddhhmmss") + ".txt";
                 TxtAddress = filepath;
-                FileStream file = new FileStream(filepath+"/"+ filename, FileMode.Create, FileAccess.Write);//创建写入文件 
+                FileStream file = new FileStream(filepath + "/" + filename, FileMode.Create, FileAccess.Write);//创建写入文件 
                 StreamWriter writer = new StreamWriter(file);
                 writer.WriteLine("WMSSOHO " + DateTime.Now.ToString("yyyyMMddhhmmss") + "PUMA                CN   SOH Outbound");
                 for (int i = 0; i < hd.Rows.Count; i++)
@@ -2545,6 +2614,7 @@ namespace PUMAobj.ASN
             string type = hd["AdjustmentType"].ToString();//调整类型
             string from = Grade(dt.Rows[0]["FromGoodsType"].ToString()); //调整前 库区
             string to = Grade(dt.Rows[0]["ToGoodsType"].ToString());//调整后 库区
+            string ReasonCode = "";
             try
             {
                 string dir = AppDomain.CurrentDomain.BaseDirectory;
@@ -2558,10 +2628,12 @@ namespace PUMAobj.ASN
                 }
                 if (type == "库存调整单")
                 {
+                    ReasonCode = "3010";
                     filename = "DWMSITR_" + DateTime.Now.ToString("yyyyMMddhhmmss") + "_ADJ.txt";
                 }
                 else if (type == "库存品级调整单")
                 {
+                    ReasonCode = "01";
                     filename = "DWMSITR_" + DateTime.Now.ToString("yyyyMMddhhmmss") + "_IQC.txt";
                 }
                 else
@@ -2571,7 +2643,7 @@ namespace PUMAobj.ASN
                     return "";
                 }
                 TxtAddress = filepath;
-                FileStream file = new FileStream(filepath+"/"+ filename, FileMode.Create, FileAccess.Write);//创建写入文件 
+                FileStream file = new FileStream(filepath + "/" + filename, FileMode.Create, FileAccess.Write);//创建写入文件 
                 StreamWriter writer = new StreamWriter(file);
 
                 string AdjustmentTime = Convert.ToDateTime(hd["AdjustmentTime"]).ToString("yyyyMMddhhmmss");
@@ -2610,7 +2682,7 @@ namespace PUMAobj.ASN
                 {
                     header += "IQC".TxtStrPush(3);
                 }
-                header += "01".TxtStrPush(10);
+                header += ReasonCode.TxtStrPush(10);
                 header += "".TxtStrPush(200);
                 header += "".TxtStrPush(20);
                 header += "".TxtStrPush(20);
@@ -2632,8 +2704,10 @@ namespace PUMAobj.ASN
                         string upstr = "UPDATE [WMS_Adjustment] SET Int2=2 WHERE ID='" + hd["ID"] + "'";
                         int upid = this.ScanExecuteNonQueryRID(upstr);
                         msg = "500";
+                        LogHelper.WriteLog(typeof(string), "TxtAdjustment库存调整文件上传失败:同一个调整单明细 from-to应该和头部fron-to一样", LogHelper.LogLevel.Error);
                         return "";
                     }
+
                     string dtstr = "ITRDTA";
                     dtstr += "".TxtStrPush(10);
                     dtstr += "".TxtStrPush(3);
@@ -2685,7 +2759,7 @@ namespace PUMAobj.ASN
                     dtstr += "".ToString().TxtStrPush(14);
                     dtstr += "".ToString().TxtStrPush(14);
                     dtstr += AdjustmentTime.TxtStrPush(14);
-                    dtstr += "01".TxtStrPush(10);
+                    dtstr += ReasonCode.TxtStrPush(10);
                     dtstr += "".TxtStrPush(20);
                     dtstr += "".TxtStrPush(20);
                     dtstr += "".TxtStrPush(20);
@@ -2841,7 +2915,7 @@ namespace PUMAobj.ASN
         /// <returns></returns>
         public string Grade(string str)
         {
-            string value = "";
+            string value = str;
             switch (str)
             {
                 case "A品":
