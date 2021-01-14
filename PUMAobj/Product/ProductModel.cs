@@ -30,12 +30,16 @@ namespace PUMAobj.Product
         public string ACTIVE { get; set; }
         public string SKUGROUP { get; set; }
         public string Price { get; set; }
-        
+        public string itemclass { get; set; }
+        public string CaseCnt { get; set; }
 
+        
         public string Style { get; set; }
         public string Color { get; set; }
         public string Size { get; set; }
         public string Gender { get; set; }
+        public string RBU { get; set; }
+        public string ProductLine { get; set; }
         
     }
 }

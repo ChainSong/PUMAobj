@@ -60,10 +60,14 @@ namespace PUMAobj.Product
                                 ACTIVE = txtlists[i].TxtSubstring(336, 345),
                                 SKUGROUP = txtlists[i].TxtSubstring(346, 355),
                                 Price = txtlists[i].TxtSubstring(1073, 1088),
+                                itemclass = txtlists[i].TxtSubstring(1434, 1443),
+                                CaseCnt = txtlists[i].TxtSubstring(1714, 1443),
                                 Style = txtlists[i].TxtSubstring(3053, 3072),
                                 Color = txtlists[i].TxtSubstring(3073, 3082),
                                 Size = txtlists[i].TxtSubstring(3083, 3087),
                                 Gender = txtlists[i].TxtSubstring(3817, 3846),
+                                RBU = txtlists[i].TxtSubstring(3847, 3886),
+                                ProductLine = txtlists[i].TxtSubstring(3887, 3936),
                             });
                         }
                     }
@@ -94,13 +98,13 @@ namespace PUMAobj.Product
                             productStorerInfos.Add(new ProductStorerInfo()
                             {
                                 StorerID = 108,
-                                SKU = item.MANUFACTURERSKU,
+                                SKU = item.MANUFACTURERSKU.Trim(),
                                 Status = 1,
                                 GoodsName = item.DESCR,
                                 GoodsType = 1,
                                 SKUClassification = "类型1",
                                 SKUGroup = "组1",
-                                ManufacturerSKU = item.Sku,
+                                ManufacturerSKU = item.Sku.Trim(),
                                 //Creator = "API",
                                 //o.CreateTime = DateTime.Now,
                                 Str2 = item.Price,
@@ -111,10 +115,11 @@ namespace PUMAobj.Product
                                 Str11 = item.Gender,
                                 Str12 = item.SUSR1,
                                 Str13 = item.ACTIVE,
-                                
+                                Str14 = item.Size + item.Color,
+
                             });
                         }
-                        
+
                         using (SqlConnection conn = new SqlConnection(BaseAccessor._dataBase.ConnectionString))
                         {
                             string message = "";
@@ -141,73 +146,90 @@ namespace PUMAobj.Product
                             }
                             //return new ProductStorerInfo();
                         }
-                        //    StringBuilder sbBack = new StringBuilder();
-                        //    StringBuilder sbProduct = new StringBuilder();
-                        //    sbBack.Append(@" insert into WMS_Product ([StorerID]
-                        //,[SKU]
-                        //,[Status]
-                        //,[GoodsName]
-                        //,[GoodsType]
-                        //,[SKUClassification]
-                        //,[SKUGroup]
-                        //,[ManufacturerSKU]
-                        //,[Creator]
-                        //,[CreateTime]
-                        //,[Str5]
-                        //,[Str9]
-                        //,[Str10]
-                        //,[Str11]
-                        //,[Str12]
-                        //) values  ");
 
-                        //    int i = 0;
-                        //    foreach (var item in productModels)
-                        //    {
-                        //        i++;
-                        //        sbBack.Append("( 108," +
-                        //            "'" + item.MANUFACTURERSKU + "'," +
-                        //            "'1'," +
-                        //            "'" + item.DESCR + "'," +
-                        //            "'1'," +
-                        //            "'类型1'," +
-                        //            "'组1'," +
-                        //            "'" + item.Sku + "'," +
-                        //            "'dbo'," +
-                        //            "getdate()," +
-                        //            "'" + item.Size + "'," +
-                        //            "'" + item.Size + "'," +
-                        //            "'" + item.Size + "'," +
-                        //            "'" + item.Style + "'," +
-                        //            "'" + item.Color + "'" +
-                        //            "),");
-                        //        if (i > 500)
-                        //        {
-                        //            i = 0;
-                        //            //s.Substring(0, s.Length - 1)
-                        //            //this.ScanExecuteNonQuery(sbBack.ToString());
-                        //            this.ScanExecuteNonQuery(sbBack.ToString().Substring(0, sbBack.ToString().Length - 1));
+                        //记录到备份表
+                        StringBuilder sbBack = new StringBuilder();
+                        StringBuilder sbProduct = new StringBuilder();
+                        sbBack.Append(@" insert into [WMS_Product_PUMA] ( ,[HeaderFlag]
+                        ,[Sku]
+                        ,[DESCR]
+                        ,[SUSR1]
+                        ,[SUSR2]
+                        ,[MANUFACTURERSKU]
+                        ,[RETAILSKU]
+                        ,[STDGROSSWGT]
+                        ,[STDCUBE]
+                        ,[SKUGROUP]
+                        ,[Price]
+                        ,[itemclass]
+                        ,[CaseCnt]
+                        ,[Style]
+                        ,[Color]
+                        ,[Size]
+                        ,[Gender]
+                        ,[RBU]
+                        ,[ProductLine]
+                        ) values  ");
 
-                        //            sbBack = new StringBuilder();
-                        //            sbBack.Append(@" insert into WMS_Product ([StorerID]
-                        //        ,[SKU]
-                        //        ,[Status]
-                        //        ,[GoodsName]
-                        //        ,[GoodsType]
-                        //        ,[SKUClassification]
-                        //        ,[SKUGroup]
-                        //        ,[Creator]
-                        //        ,[CreateTime]
-                        //        ,[Str5]
-                        //        ,[Str9]
-                        //        ,[Str10]
-                        //        ,[Str11]
-                        //        ,[Str12]
-                        //        ) values  ");
-                        //            //sbBack=
-                        //        }
-                        //    }
+                        int i = 0;
+                        foreach (var item in productModels)
+                        {
+                            i++;
+                            sbBack.Append("(" +
+                                "'" + item.HeaderFlag + "'," +
+                                "'" + item.Sku.Trim() + "'," +
+                                "'" + item.DESCR.Trim('\'') + "'," +
+                                "'" + item.SUSR1 + "'," +
+                                "'" + item.SUSR2 + "'," +
+                                "'" + item.MANUFACTURERSKU + "'," +
+                                "'" + item.RETAILSKU + "'," +
+                                "'" + item.STDGROSSWGT + "'," +
+                                "'" + item.STDCUBE + "'," +
+                                "'" + item.SKUGROUP + "'," +
+                                "'" + item.Price + "'," +
+                                "'" + item.itemclass + "'," +
+                                "'" + item.CaseCnt + "'," +
+                                "'" + item.Style + "'," +
+                                "'" + item.Color + "'," +
+                                "'" + item.Size + "'," +
+                                "'" + item.Gender + "'," +
+                                "'" + item.RBU + "'," +
+                                "'" + item.ProductLine + "'," +
 
-                        //this.ScanExecuteNonQuery(sbBack.ToString().Substring(0, sbBack.ToString().Length - 1));
+                                "),");
+                            if (i > 500)
+                            {
+                                i = 0;
+                                //s.Substring(0, s.Length - 1)
+                                //this.ScanExecuteNonQuery(sbBack.ToString());
+                                this.ScanExecuteNonQuery(sbBack.ToString().Substring(0, sbBack.ToString().Length - 1));
+
+                                sbBack = new StringBuilder();
+                                sbBack.Append(@" insert into [WMS_Product_PUMA] ( ,[HeaderFlag]
+                                ,[Sku]
+                                ,[DESCR]
+                                ,[SUSR1]
+                                ,[SUSR2]
+                                ,[MANUFACTURERSKU]
+                                ,[RETAILSKU]
+                                ,[STDGROSSWGT]
+                                ,[STDCUBE]
+                                ,[SKUGROUP]
+                                ,[Price]
+                                ,[itemclass]
+                                ,[CaseCnt]
+                                ,[Style]
+                                ,[Color]
+                                ,[Size]
+                                ,[Gender]
+                                ,[RBU]
+                                ,[ProductLine]
+                                ) values  ");
+                                //sbBack=
+                            }
+                        }
+
+                        this.ScanExecuteNonQuery(sbBack.ToString().Substring(0, sbBack.ToString().Length - 1));
                     }
                 }
             }
