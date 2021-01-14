@@ -2614,6 +2614,7 @@ namespace PUMAobj.ASN
             string type = hd["AdjustmentType"].ToString();//调整类型
             string from = Grade(dt.Rows[0]["FromGoodsType"].ToString()); //调整前 库区
             string to = Grade(dt.Rows[0]["ToGoodsType"].ToString());//调整后 库区
+            string ReasonCode = "";
             try
             {
                 string dir = AppDomain.CurrentDomain.BaseDirectory;
@@ -2627,10 +2628,12 @@ namespace PUMAobj.ASN
                 }
                 if (type == "库存调整单")
                 {
+                    ReasonCode = "3010";
                     filename = "DWMSITR_" + DateTime.Now.ToString("yyyyMMddhhmmss") + "_ADJ.txt";
                 }
                 else if (type == "库存品级调整单")
                 {
+                    ReasonCode = "01";
                     filename = "DWMSITR_" + DateTime.Now.ToString("yyyyMMddhhmmss") + "_IQC.txt";
                 }
                 else
@@ -2679,7 +2682,7 @@ namespace PUMAobj.ASN
                 {
                     header += "IQC".TxtStrPush(3);
                 }
-                header += "01".TxtStrPush(10);
+                header += ReasonCode.TxtStrPush(10);
                 header += "".TxtStrPush(200);
                 header += "".TxtStrPush(20);
                 header += "".TxtStrPush(20);
@@ -2756,7 +2759,7 @@ namespace PUMAobj.ASN
                     dtstr += "".ToString().TxtStrPush(14);
                     dtstr += "".ToString().TxtStrPush(14);
                     dtstr += AdjustmentTime.TxtStrPush(14);
-                    dtstr += "01".TxtStrPush(10);
+                    dtstr += ReasonCode.TxtStrPush(10);
                     dtstr += "".TxtStrPush(20);
                     dtstr += "".TxtStrPush(20);
                     dtstr += "".TxtStrPush(20);
