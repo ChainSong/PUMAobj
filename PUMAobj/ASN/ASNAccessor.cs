@@ -777,13 +777,21 @@ namespace PUMAobj.ASN
                             //        ASNType = "经销商入库";
                             //    }
                             //}
-                            if (header[i].ExternReceiptKey.ToString().Substring(0, 2) == "38")
+                            //if (header[i].ExternReceiptKey.ToString().Substring(0, 2) == "38")
+                            //{
+                            //    ASNType = "经销商入库";
+                            //}
+                            //else
+                            //{
+                            //    ASNType = "门店入库";
+                            //}
+                            if (header[i].Facility == "D6001")
                             {
-                                ASNType = "经销商入库";
+                                ASNType = "门店入库";
                             }
                             else
                             {
-                                ASNType = "门店入库";
+                                ASNType = "经销商入库";
                             }
                             //或者 34xxxxx -> return from retail stores/warehouse，38xxxx -> return from wholesales customers
                             List<ASNH> aSNHs = new List<ASNH>();
@@ -1777,7 +1785,7 @@ namespace PUMAobj.ASN
                 {
                     msg = "200";
                     //入库反馈成功之后 执行品级自动调整
-                    if (ReceiptType != "经销商入库")
+                    if (ReceiptType == "门店入库")
                     {
                         CreatIQC(hd.Rows[0]["ExternReceiptKey"].ToString());
                     }
@@ -1797,7 +1805,7 @@ namespace PUMAobj.ASN
         }
 
         /// <summary>
-        /// 入库完成反馈之后根据 外部订单号查询 上架信息 自动生成品级调整单[需要商定逻辑之后调整]
+        /// 入库完成反馈之后根据 外部订单号查询 上架信息 自动生成品级调整单[需要商定逻辑之后调整][结论：只用调整来之6001的 门店入库订单]
         /// </summary>
         /// <returns></returns>
         public string CreatIQC(string ExternReceiptNumber)

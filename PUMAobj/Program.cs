@@ -52,7 +52,7 @@ namespace PUMAobj
 
             //aSN.wms_receipt();
             //aSN.Create_SHPPK();
-            aSN.WMSAdjustment();
+            //aSN.WMSAdjustment();
 
             //string txtaddress = aSN.GetInbound_ASNHD(null, out msg);
 
