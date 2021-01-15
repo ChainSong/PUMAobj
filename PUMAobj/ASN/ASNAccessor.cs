@@ -1876,6 +1876,35 @@ namespace PUMAobj.ASN
             return msg;
         }
 
+        //根据出库订单明细 和 原数据 对比得到 当前出库的库存
+        public string ExternTable(string ExternOrderNumber)
+        {
+            string Tabstr1 = "SELECT * FROM Inbound_ORDDT WHERE ExternOrderKey='" + ExternOrderNumber + "'";
+            string Tabstr2 = "SELECT * FROM [dbo].[WMS_OrderDetail] WHERE ExternOrderNumber='"+ ExternOrderNumber + "'";
+            DataTable T1= this.ExecuteDataTableBySqlString(Tabstr1);
+            DataTable T2= this.ExecuteDataTableBySqlString(Tabstr2);
+            for (int i = 0; i < T1.Rows.Count; i++)
+            {
+                string SKU =SKUQuery(T1.Rows[i]["Sku"].ToString());
+                int QtyExpected =Convert.ToInt32(T1.Rows[i]["QtyExpected"].ToString());
+                int QtyReceived = 0;
+                for (int m = 0; m < T2.Rows.Count; m++)
+                {
+                    if (SKU == T2.Rows[m]["SKU"])
+                    {
+                        //int thqty= T2.Rows[m]["QtyReceived"]
+                    }
+                }
+
+            }
+            for (int i = 0; i < T1.Rows.Count; i++)
+            {
+
+            }
+
+            return "";
+        }
+
         /// <summary>
         /// 订单出库  出库反馈
         /// </summary>
@@ -2473,6 +2502,7 @@ namespace PUMAobj.ASN
         public string TxtWMSInventory(DataTable hd, out string msg)
         {
             string TxtAddress = string.Empty;
+            string timestr = DateTime.Now.ToString("yyyyMMddhhmmss");
             try
             {
                 string dir = AppDomain.CurrentDomain.BaseDirectory;
@@ -2483,15 +2513,15 @@ namespace PUMAobj.ASN
                 {
                     Directory.CreateDirectory(filepath);
                 }
-                string filename = "DWMSSOH_" + DateTime.Now.ToString("yyyyMMddhhmmss") + ".txt";
+                string filename = "DWMSSOH_" + timestr + ".txt";
                 TxtAddress = filepath;
                 FileStream file = new FileStream(filepath + "/" + filename, FileMode.Create, FileAccess.Write);//创建写入文件 
                 StreamWriter writer = new StreamWriter(file);
-                writer.WriteLine("WMSSOHO " + DateTime.Now.ToString("yyyyMMddhhmmss") + "PUMA                CN   SOH Outbound");
+                writer.WriteLine("WMSSOHO " + timestr + "PUMA                CN   SOH Outbound");
                 for (int i = 0; i < hd.Rows.Count; i++)
                 {
                     string content = "SOHDTA";
-                    content += DateTime.Now.ToString("yyyyMMddhhmmss").TxtStrPush(14);
+                    content += timestr.TxtStrPush(14);
                     content += "PUMA".TxtStrPush(15);
                     if (hd.Rows[i]["GoodsType"].ToString() == "A品")
                     {
@@ -2516,8 +2546,8 @@ namespace PUMAobj.ASN
                     content += "".TxtStrPush(18);
                     content += "".TxtStrPush(18);
                     content += "".TxtStrPush(18);
-                    content += DateTime.Now.ToString("yyyyMMddhhmmss").TxtStrPush(14);
-                    content += DateTime.Now.ToString("yyyyMMddhhmmss").TxtStrPush(14);
+                    content += timestr.TxtStrPush(14);
+                    content += timestr.TxtStrPush(14);
                     content += "".TxtStrPush(10);
                     string qty = hd.Rows[i]["Qty"].ToString();
                     qty = qty.Substring(0, qty.Length - 3);
