@@ -1922,6 +1922,9 @@ namespace PUMAobj.ASN
                     }
                 }
                 T1.Rows[i]["ShippedQty"] = ShippedQty;
+                //更新原数据表 对应的ShippedQty
+                string upstr = "UPDATE Inbound_ORDDT SET ShippedQty='"+ ShippedQty + "' WHERE ExternOrderKey='"+ ExternOrderNumber + "'";
+                int upid = this.ScanExecuteNonQueryRID(upstr);
             }
             return T1;
         }
