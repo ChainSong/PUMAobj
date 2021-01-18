@@ -808,8 +808,8 @@ namespace PUMAobj.ASN
                                 Creator = "API",
                                 CreateTime = DateTime.Now,
                                 str3 = "PUMA",
-                                str1 = header[i].UserDefine02,
-                                str2 = header[i].CarrierKey,
+                                str1 = header[i].UserDefine02,//授权编码
+                                str2 = header[i].CarrierKey,//小票号
                             });
                             request.asn = aSNHs;
                             List<ASNDetail> aSNDetails = new List<ASNDetail>();
@@ -835,6 +835,8 @@ namespace PUMAobj.ASN
                                     detail.GoodsName = EANQueryGoodsName(detail.SKU);
                                     detail.Creator = "API";
                                     detail.CreateTime = DateTime.Now;
+                                    detail.str4 = details[m].UserDefine03;//3640051113
+                                    detail.str5 = details[m].UserDefine04;//'00010
                                     aSNDetails.Add(detail);
 
                                     //删除原数据  更新新数据
@@ -1877,7 +1879,7 @@ namespace PUMAobj.ASN
         }
 
         //根据出库订单明细 和 原数据 对比得到 当前出库的库存
-        public string ExternTable(string ExternOrderNumber)
+        public DataTable ExternTable(string ExternOrderNumber)
         {
             string Tabstr1 = "SELECT * FROM Inbound_ORDDT WHERE ExternOrderKey='" + ExternOrderNumber + "'";
             string Tabstr2 = "SELECT * FROM [dbo].[WMS_OrderDetail] WHERE ExternOrderNumber='"+ ExternOrderNumber + "'";
@@ -1885,24 +1887,43 @@ namespace PUMAobj.ASN
             DataTable T2= this.ExecuteDataTableBySqlString(Tabstr2);
             for (int i = 0; i < T1.Rows.Count; i++)
             {
-                string SKU =SKUQuery(T1.Rows[i]["Sku"].ToString());
-                int QtyExpected =Convert.ToInt32(T1.Rows[i]["QtyExpected"].ToString());
-                int QtyReceived = 0;
-                for (int m = 0; m < T2.Rows.Count; m++)
+                string SKU = EANQuery(T1.Rows[i]["Sku"].ToString());
+                int OpenQty = Convert.ToInt32(T1.Rows[i]["OpenQty"].ToString());
+                int ShippedQty = Convert.ToInt32(T1.Rows[i]["ShippedQty"].ToString());
+                for (int m = T2.Rows.Count - 1; m >= 0; m--)
                 {
-                    if (SKU == T2.Rows[m]["SKU"])
+                    if (SKU == T2.Rows[m]["SKU"].ToString())
                     {
-                        //int thqty= T2.Rows[m]["QtyReceived"]
+                        string qty = T2.Rows[m]["Qty"].ToString();
+                        qty = qty.Substring(0, qty.Length - 3);
+                        int thqty = Convert.ToInt32(qty);
+                        if (ShippedQty > OpenQty)//如果当前行sku出库数量满足，就跳出详细
+                        {
+                            break;
+                        }
+                        if (thqty == 0)//如果当前行sku数量0直接跳出当前循环，进入下一次循环
+                        {
+                            continue;
+                        }
+                        if ((ShippedQty + thqty) > OpenQty)//该sku可能存在多行,给予满足的sku之后，跳出当前循环
+                        {
+                            ShippedQty = OpenQty;
+                            T2.Rows[m]["Qty"] = ((ShippedQty + thqty) - OpenQty) + ".00";
+                        }
+                        else
+                        {
+                            ShippedQty = (ShippedQty + thqty);
+                            T2.Rows[m].Delete();
+                        }
+                        if (ShippedQty==OpenQty)//如果当前行sku出库数量满足，就跳出详细
+                        {
+                            break;
+                        }
                     }
                 }
-
+                T1.Rows[i]["ShippedQty"] = ShippedQty;
             }
-            for (int i = 0; i < T1.Rows.Count; i++)
-            {
-
-            }
-
-            return "";
+            return T1;
         }
 
         /// <summary>
@@ -1921,9 +1942,10 @@ namespace PUMAobj.ASN
                     for (int i = 0; i < OrderCount.Rows.Count; i++)
                     {
                         string sql1 = "SELECT * FROM Inbound_ORDHD WHERE ExternOrderKey='" + OrderCount.Rows[i]["ExternOrderNumber"] + "'";
-                        string sql2 = "SELECT * FROM Inbound_ORDDT WHERE ExternOrderKey='" + OrderCount.Rows[i]["ExternOrderNumber"] + "'";
+                        //string sql2 = "SELECT * FROM Inbound_ORDDT WHERE ExternOrderKey='" + OrderCount.Rows[i]["ExternOrderNumber"] + "'";
                         DataTable hd = this.ExecuteDataTableBySqlString(sql1);
-                        DataTable dt = this.ExecuteDataTableBySqlString(sql2);
+                        //DataTable dt = this.ExecuteDataTableBySqlString(sql2);
+                        DataTable dt = ExternTable(OrderCount.Rows[i]["ExternOrderNumber"].ToString());
                         string ispick = "";
                         string picktxt = Create_PICKTXT(OrderCount.Rows[i]["OrderNumber"].ToString(), hd, dt, out ispick);
                         if (ispick == "200")//拣货回传成功
@@ -2129,7 +2151,7 @@ namespace PUMAobj.ASN
                     detstr += "".TxtStrPush(20);
                     detstr += "".TxtStrPush(20);
                     detstr += "".TxtStrPush(20);
-                    detstr += dt.Rows[i]["OpenQty"].ToString().PadLeft(10, '0').TxtStrPush(10);
+                    detstr += dt.Rows[i]["ShippedQty"].ToString().PadLeft(10, '0').TxtStrPush(10);
                     detstr += "".TxtStrPush(10);
                     detstr += "".TxtStrPush(18);
                     detstr += "".TxtStrPush(18);
@@ -2173,7 +2195,7 @@ namespace PUMAobj.ASN
                     detstr += "".TxtStrPush(10);
                     detstr += dt.Rows[i]["SKU"].ToString().TxtStrPush(20);
                     detstr += "".TxtStrPush(10);
-                    detstr += dt.Rows[i]["OpenQty"].ToString().TxtStrPush(10);
+                    detstr += dt.Rows[i]["ShippedQty"].ToString().TxtStrPush(10);
                     detstr += WmsNo.TxtStrPush(20);
                     detstr += "".TxtStrPush(18);
                     detstr += DateTime.Now.ToString("yyyyMMddhhmmss").ToString().TxtStrPush(14);
@@ -2375,7 +2397,7 @@ namespace PUMAobj.ASN
                     detstr += "".TxtStrPush(20);
                     detstr += "".TxtStrPush(20);
                     detstr += "".TxtStrPush(20);
-                    detstr += dt.Rows[i]["OpenQty"].ToString().PadLeft(10, '0').TxtStrPush(10);
+                    detstr += dt.Rows[i]["ShippedQty"].ToString().PadLeft(10, '0').TxtStrPush(10);
                     detstr += "".TxtStrPush(10);
                     detstr += "".TxtStrPush(18);
                     detstr += "".TxtStrPush(18);
@@ -2420,7 +2442,7 @@ namespace PUMAobj.ASN
                     detstr += "".TxtStrPush(10);
                     detstr += dt.Rows[i]["SKU"].ToString().TxtStrPush(20);
                     detstr += "".TxtStrPush(10);
-                    detstr += dt.Rows[i]["OpenQty"].ToString().TxtStrPush(10);
+                    detstr += dt.Rows[i]["ShippedQty"].ToString().TxtStrPush(10);
                     detstr += WmsNo.TxtStrPush(20);
                     detstr += "".TxtStrPush(18);
                     detstr += DateTime.Now.ToString("yyyyMMddhhmmss").ToString().TxtStrPush(14);
@@ -2523,23 +2545,23 @@ namespace PUMAobj.ASN
                     string content = "SOHDTA";
                     content += timestr.TxtStrPush(14);
                     content += "PUMA".TxtStrPush(15);
-                    if (hd.Rows[i]["GoodsType"].ToString() == "A品")
-                    {
-                        content += "D6001".TxtStrPush(5);
-                    }
-                    else if (hd.Rows[i]["GoodsType"].ToString() == "C品")
-                    {
-                        content += "D7001".TxtStrPush(5);
-                    }
-                    else if (hd.Rows[i]["GoodsType"].ToString() == "D品")
-                    {
-                        content += "D7001".TxtStrPush(5);
-                    }
-                    else
-                    {
-                        content += "".TxtStrPush(5);
-                    }
-
+                    content += Grade(hd.Rows[i]["GoodsType"].ToString()).TxtStrPush(5);
+                    //if ( == "A品")
+                    //{
+                    //    content += "D6001".TxtStrPush(5);
+                    //}
+                    //else if (hd.Rows[i]["GoodsType"].ToString() == "C品")
+                    //{
+                    //    content += "D7001".TxtStrPush(5);
+                    //}
+                    //else if (hd.Rows[i]["GoodsType"].ToString() == "D品")
+                    //{
+                    //    content += "D7002".TxtStrPush(5);
+                    //}
+                    //else
+                    //{
+                    //    content += "".TxtStrPush(5);
+                    //}
                     content += "".TxtStrPush(10);
                     content += SKUQuery(hd.Rows[i]["SKU"].ToString()).TxtStrPush(20);
                     content += "".TxtStrPush(18);
