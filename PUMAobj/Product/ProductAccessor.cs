@@ -61,7 +61,7 @@ namespace PUMAobj.Product
                                 SKUGROUP = txtlists[i].TxtSubstring(346, 355),
                                 Price = txtlists[i].TxtSubstring(1073, 1088),
                                 itemclass = txtlists[i].TxtSubstring(1434, 1443),
-                                CaseCnt = txtlists[i].TxtSubstring(1714, 1443),
+                                CaseCnt = txtlists[i].TxtSubstring(1714, 1729),
                                 Style = txtlists[i].TxtSubstring(3053, 3072),
                                 Color = txtlists[i].TxtSubstring(3073, 3082),
                                 Size = txtlists[i].TxtSubstring(3083, 3087),
@@ -140,17 +140,17 @@ namespace PUMAobj.Product
                             sda.Fill(ds);
                             message = sda.SelectCommand.Parameters["@message"].Value.ToString();
                             conn.Close();
-                            if (message != "有重复")
-                            {
-                                msg = "有重复";
-                            }
+                            //if (message != "有重复")
+                            //{
+                            //    msg = "有重复";
+                            //}
                             //return new ProductStorerInfo();
                         }
 
                         //记录到备份表
                         StringBuilder sbBack = new StringBuilder();
                         StringBuilder sbProduct = new StringBuilder();
-                        sbBack.Append(@" insert into [WMS_Product_PUMA] ( ,[HeaderFlag]
+                        sbBack.Append(@" insert into [WMS_Product_PUMA] ( [HeaderFlag]
                         ,[Sku]
                         ,[DESCR]
                         ,[SUSR1]
@@ -194,7 +194,7 @@ namespace PUMAobj.Product
                                 "'" + item.Size + "'," +
                                 "'" + item.Gender + "'," +
                                 "'" + item.RBU + "'," +
-                                "'" + item.ProductLine + "'," +
+                                "'" + item.ProductLine + "'" +
 
                                 "),");
                             if (i > 500)
@@ -231,6 +231,7 @@ namespace PUMAobj.Product
 
                         this.ScanExecuteNonQuery(sbBack.ToString().Substring(0, sbBack.ToString().Length - 1));
                     }
+                    msg = "200";
                 }
             }
             catch (Exception ex)
@@ -241,6 +242,7 @@ namespace PUMAobj.Product
                 //throw;
             }
             //PreOrderDetail
+
             return msg;
         }
     }
