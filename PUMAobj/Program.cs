@@ -53,7 +53,7 @@ namespace PUMAobj
             //aSN.wms_receipt();
             //aSN.Create_SHPPK();
             //aSN.WMSAdjustment();
-            //aSN.WMSInventory();
+            aSN.WMSInventory();
 
             //aSN.ExternTable("3400344248");
 

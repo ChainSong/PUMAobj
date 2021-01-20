@@ -2691,7 +2691,8 @@ namespace PUMAobj.ASN
                 }
                 if (type == "库存调整单")
                 {
-                    ReasonCode = "3010";
+                    //ReasonCode =  "3010";
+                    ReasonCode = hd["AdjustmentReason"].ToString();
                     filename = "DWMSITR_" + DateTime.Now.ToString("yyyyMMddhhmmss") + "_ADJ.txt";
                 }
                 else if (type == "库存品级调整单")
