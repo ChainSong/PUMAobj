@@ -180,7 +180,7 @@ namespace PUMAobj.Common
             }
             catch (Exception ex)
             {
-                throw new Exception(string.Format("SFTP文件删除失败，原因：{0}", ex.Message));
+                //throw new Exception(string.Format("SFTP文件删除失败，原因：{0}", ex.Message));
             }
         }
         #endregion

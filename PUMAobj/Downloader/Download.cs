@@ -101,31 +101,31 @@ namespace PUMAobj.Downloader
         //        LogHelper.WriteLog(typeof(string), batchNumber + ">>结束读取商品", LogHelper.LogLevel.INFO);
         //    }
         //}
+        //连接FTP 将文件下载到本地
+        //FtpHelper ftpHelper = new FtpHelper("","","");
+        //先获取文件中的列表
+        //开始上传SFTP/
+        string SFTPIP = SFTPConstants.sftpip;
+        //ConfigurationManager.AppSettings["SFTPIP"];
+        string SFTPort = SFTPConstants.sftpport;
+        //= ConfigurationManager.AppSettings["SFTPort"];
+        string SFTPUser = SFTPConstants.sftpuser;
+        //ConfigurationManager.AppSettings["SFTPUser"];
+        string SFTPPwd = SFTPConstants.sftppwd;
+        //ConfigurationManager.AppSettings["SFTPPwd"];
+        string OUT_TRANSACTION = SFTPConstants.OUT_TRANSACTION;
+        string OUT_MASTER = SFTPConstants.OUT_MASTER;
+        string OUT_TRANSACTION_successful = SFTPConstants.OUT_TRANSACTION_successful;
+        string OUT_MASTER_successful = SFTPConstants.OUT_MASTER_successful;
 
+
+        string ReceiveFilePath = SFTPConstants.ReceiveFilePath;
         public override bool Get()
         {
             //return true;
             try
             {
-                //连接FTP 将文件下载到本地
-                //FtpHelper ftpHelper = new FtpHelper("","","");
-                //先获取文件中的列表
-                //开始上传SFTP/
-                string SFTPIP = SFTPConstants.sftpip;
-                //ConfigurationManager.AppSettings["SFTPIP"];
-                string SFTPort = SFTPConstants.sftpport;
-                //= ConfigurationManager.AppSettings["SFTPort"];
-                string SFTPUser = SFTPConstants.sftpuser;
-                //ConfigurationManager.AppSettings["SFTPUser"];
-                string SFTPPwd = SFTPConstants.sftppwd;
-                //ConfigurationManager.AppSettings["SFTPPwd"];
-                string OUT_TRANSACTION = SFTPConstants.OUT_TRANSACTION;
-                string OUT_MASTER = SFTPConstants.OUT_MASTER;
-                string OUT_TRANSACTION_successful = SFTPConstants.OUT_TRANSACTION_successful;
-                string OUT_MASTER_successful = SFTPConstants.OUT_MASTER_successful;
-
-
-                string ReceiveFilePath = SFTPConstants.ReceiveFilePath;
+                
                 //ConfigurationManager.AppSettings["SFTPPath"];
 
                 SFTPHelper fTPHelper = new SFTPHelper(SFTPIP, SFTPort, SFTPUser, SFTPPwd);
@@ -151,6 +151,8 @@ namespace PUMAobj.Downloader
                         fTPHelper.Move(OUT_TRANSACTION + "//" + item, OUT_TRANSACTION_successful + "//" + item);
                     }
                 }
+
+
             }
             catch (Exception ex)
             {
@@ -164,6 +166,7 @@ namespace PUMAobj.Downloader
         {
             try
             {
+                SFTPHelper fTPHelper = new SFTPHelper(SFTPIP, SFTPort, SFTPUser, SFTPPwd);
                 //读取文件列表
                 string[] receivefiles = Directory.GetFiles(SFTPConstants.ReceiveFilePath);
                 if (receivefiles.Length > 0)
@@ -207,12 +210,24 @@ namespace PUMAobj.Downloader
                                 }
 
                                 if (result == "200"){
+                                    
+
                                     //解析成功，移动到success文件夹
                                     log.ToFileName = SFTPConstants.SuccessFilePath + @"\" + log.Type + @"\" + filename;
                                     log.ResultDesc = "解析成功";
                                     log.Externumber = externumber;
                                     log.Flag = "Y";
-                                }else{
+                                   
+                                    if (log.Type == "WMSSKU")
+                                    {
+                                        fTPHelper.Delete(OUT_MASTER + "//" + filename);
+                                    }
+                                    else {
+                                        fTPHelper.Delete(OUT_TRANSACTION + "//" + filename);
+                                    }
+                                   
+                                }
+                                else{
                                     if (log.Type != ""){
                                         if (result.Contains("数据库插入失败")){
                                             log.ToFileName = "";// SFTPConstants.SuccessFilePath + @"\" + log.Type + @"\" + filename;

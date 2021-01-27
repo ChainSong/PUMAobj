@@ -558,8 +558,8 @@ namespace PUMAobj.SqlHelper
                 cmd.CommandType = CommandType.Text;
                 //cmd.CommandText = Sql;
                 cmd.CommandTimeout = 1800;
-                //i = cmd.ExecuteNonQuery();
-                i = Convert.ToInt32(cmd.ExecuteScalar());
+                i = cmd.ExecuteNonQuery();
+                //i = Convert.ToInt32(cmd.ExecuteScalar());
                 transaction.Commit();
                 return i;
             }

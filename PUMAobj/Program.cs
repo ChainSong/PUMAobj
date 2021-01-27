@@ -2,6 +2,7 @@
 using PUMAobj.Downloader;
 using PUMAobj.Log;
 using PUMAobj.MessageContracts;
+using PUMAobj.Uploader;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -13,7 +14,7 @@ using System.Web.Hosting;
 
 namespace PUMAobj
 {
-   public class Program
+    public class Program
     {
         static void Main(string[] args)
         {
@@ -31,29 +32,29 @@ namespace PUMAobj
             LogHelper.WriteLog(typeof(string), "--结束下载接口对接--", LogHelper.LogLevel.INFO);
 
 
-            //DownloadInterface uploadInterface = new DownloadInterface();
+            DownloadInterface uploadInterface = new DownloadInterface();
 
 
-            ASNAccessor aSN = new ASNAccessor();
+            //ASNAccessor aSN = new ASNAccessor();
             //aSN.GetInbound_ASNHD();
-            //Upload upload = new Upload(uploadInterface, defparams,
-            //                           DateTime.Now.ToString("yyyyMMddHHmmss") + "Test");
+            Upload upload = new Upload(uploadInterface, defparams,
+                                       DateTime.Now.ToString("yyyyMMddHHmmss") + "Test");
 
-            //LogHelper.WriteLog(typeof(string), "--开始上传接口对接--", LogHelper.LogLevel.INFO);
-            //uploadInterface.StartDownload();
-            //LogHelper.WriteLog(typeof(string), "--结束上传接口对接--", LogHelper.LogLevel.INFO);
+            LogHelper.WriteLog(typeof(string), "--开始上传接口对接--", LogHelper.LogLevel.INFO);
+            uploadInterface.StartDownload();
+            LogHelper.WriteLog(typeof(string), "--结束上传接口对接--", LogHelper.LogLevel.INFO);
 
             //ASNAccessor aSN = new ASNAccessor();
             //aSN.GetInbound_ASNHD();
 
-            string msg = "";
+            //string msg = "";
             //string txtaddress = aSN.Create_RECHD_TXT1(null, null, out msg);
             //string txtaddress = aSN.Create_SHPTXT(null, null, out msg);
 
             //aSN.wms_receipt();
             //aSN.Create_SHPPK();
             //aSN.WMSAdjustment();
-            aSN.WMSInventory();
+            //aSN.WMSInventory();
 
             //aSN.ExternTable("3400344248");
 

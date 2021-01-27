@@ -830,7 +830,7 @@ namespace PUMAobj.ASN
                                     //{
                                     // detail.GoodsType = Grade(header[i].Facility.ToString());
                                     //}
-                                    detail.GoodsType = Grade(header[i].Facility.ToString());
+                                    detail.GoodsType = header[i].Facility.ToString() == "D6001" ? "" : Grade(header[i].Facility.ToString());
 
                                     detail.GoodsName = EANQueryGoodsName(detail.SKU);
                                     detail.Creator = "API";
@@ -1882,9 +1882,9 @@ namespace PUMAobj.ASN
         public DataTable ExternTable(string ExternOrderNumber)
         {
             string Tabstr1 = "SELECT * FROM Inbound_ORDDT WHERE ExternOrderKey='" + ExternOrderNumber + "'";
-            string Tabstr2 = "SELECT * FROM [dbo].[WMS_OrderDetail] WHERE ExternOrderNumber='"+ ExternOrderNumber + "'";
-            DataTable T1= this.ExecuteDataTableBySqlString(Tabstr1);
-            DataTable T2= this.ExecuteDataTableBySqlString(Tabstr2);
+            string Tabstr2 = "SELECT * FROM [dbo].[WMS_OrderDetail] WHERE ExternOrderNumber='" + ExternOrderNumber + "'";
+            DataTable T1 = this.ExecuteDataTableBySqlString(Tabstr1);
+            DataTable T2 = this.ExecuteDataTableBySqlString(Tabstr2);
             for (int i = 0; i < T1.Rows.Count; i++)
             {
                 string SKU = EANQuery(T1.Rows[i]["Sku"].ToString());
@@ -1915,7 +1915,7 @@ namespace PUMAobj.ASN
                             ShippedQty = (ShippedQty + thqty);
                             T2.Rows[m].Delete();
                         }
-                        if (ShippedQty==OpenQty)//如果当前行sku出库数量满足，就跳出详细
+                        if (ShippedQty == OpenQty)//如果当前行sku出库数量满足，就跳出详细
                         {
                             break;
                         }
@@ -1923,7 +1923,7 @@ namespace PUMAobj.ASN
                 }
                 T1.Rows[i]["ShippedQty"] = ShippedQty;
                 //更新原数据表 对应的ShippedQty
-                string upstr = "UPDATE Inbound_ORDDT SET ShippedQty='"+ ShippedQty + "' WHERE ExternOrderKey='"+ ExternOrderNumber + "'";
+                string upstr = "UPDATE Inbound_ORDDT SET ShippedQty='" + ShippedQty + "' WHERE ExternOrderKey='" + ExternOrderNumber + "'";
                 int upid = this.ScanExecuteNonQueryRID(upstr);
             }
             return T1;
@@ -2938,7 +2938,7 @@ namespace PUMAobj.ASN
         public string EANQueryGoodsName(string SKU)
         {
             string GoodsName = "";
-            string questr = "SELECT * FROM WMS_Product WHERE ManufacturerSKU='" + SKU + "'";
+            string questr = "SELECT top 1 * FROM WMS_Product WHERE SKU='" + SKU + "'";
             DataTable SuccessCount = this.ExecuteDataTableBySqlString(questr);
             if (SuccessCount.Rows.Count > 0)
             {
