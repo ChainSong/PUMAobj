@@ -111,11 +111,11 @@ namespace PUMAobj.Product
                                 Str5 = item.Size,
                                 Str8 = "01",
                                 Str9 = item.Size,
-                                Str10 = item.Style,
+                                Str10 = item.Style + "-" + item.Color,
                                 Str11 = item.Gender,
                                 Str12 = item.SUSR1,
                                 Str13 = item.ACTIVE,
-                                Str14 = item.Size + item.Color,
+                                Str14 = item.Style,
 
                             });
                         }

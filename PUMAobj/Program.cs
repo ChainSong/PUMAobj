@@ -19,6 +19,7 @@ namespace PUMAobj
         static void Main(string[] args)
         {
 
+
             var defparams =
                (Dictionary<string, DefConfigurationSectionRequest>)ConfigurationManager.GetSection("RunningParam");
             //RunCLS.RunAbutment(defparams);

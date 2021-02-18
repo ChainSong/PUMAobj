@@ -63,6 +63,7 @@ namespace PUMAobj.Uploader
                             Accessor.wms_receipt();//上传入库反馈
                             Accessor.Create_SHPPK();//上传出库反馈
                             Accessor.WMSAdjustment();//上传调整反馈
+                            //Accessor.WMSInventory();//上传库存快照反馈
                             return true;
                         default:
                             LogHelper.WriteLog(typeof(string), batchNumber + ":上传的模式不存在", LogHelper.LogLevel.Error);
