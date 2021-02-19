@@ -59,8 +59,11 @@ namespace PUMAobj.Common
             }
             catch (Exception ex)
             {
-                throw new Exception(string.Format("连接SFTP失败，原因：{0}", ex.Message));
+                LogHelper.WriteLog(typeof(string), ":连接SFTP失败，原因：" + ex.ToString(), LogHelper.LogLevel.Error);
+
+                //throw new Exception(string.Format("连接SFTP失败，原因：{0}", ex.Message));
             }
+            return false;
         }
         #endregion
 
@@ -127,7 +130,7 @@ namespace PUMAobj.Common
                     sftp.UploadFile(file, localfilename);
                     Disconnect();
                 }
-                LocalFileHelper.MoveToCover(localPath+"\\" + localfilename, localPath + "\\Success\\" + localfilename);
+                LocalFileHelper.MoveToCover(localPath + "\\" + localfilename, localPath + "\\Success\\" + localfilename);
                 return true;
             }
             catch (Exception ex)
