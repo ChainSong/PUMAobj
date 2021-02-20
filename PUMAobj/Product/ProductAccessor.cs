@@ -65,6 +65,7 @@ namespace PUMAobj.Product
                                 Style = txtlists[i].TxtSubstring(3053, 3072),
                                 Color = txtlists[i].TxtSubstring(3073, 3082),
                                 Size = txtlists[i].TxtSubstring(3083, 3087),
+                                LongSize = txtlists[i].TxtSubstring(3807, 3816),
                                 Gender = txtlists[i].TxtSubstring(3817, 3846),
                                 RBU = txtlists[i].TxtSubstring(3847, 3886),
                                 ProductLine = txtlists[i].TxtSubstring(3887, 3936),
@@ -108,9 +109,9 @@ namespace PUMAobj.Product
                                 //Creator = "API",
                                 //o.CreateTime = DateTime.Now,
                                 Str2 = item.Price,
-                                Str5 = item.Size,
+                                Str5 = string.IsNullOrEmpty(item.Size) ? item.LongSize : item.Size,
                                 Str8 = "01",
-                                Str9 = item.Size,
+                                Str9 = string.IsNullOrEmpty(item.Size) ? item.LongSize : item.Size,
                                 Str10 = item.Style + "-" + item.Color,
                                 Str11 = item.Gender,
                                 Str12 = item.SUSR1,
@@ -191,7 +192,7 @@ namespace PUMAobj.Product
                                 "'" + item.CaseCnt + "'," +
                                 "'" + item.Style + "'," +
                                 "'" + item.Color + "'," +
-                                "'" + item.Size + "'," +
+                                "'" + item.Size + item.LongSize + "'," +
                                 "'" + item.Gender + "'," +
                                 "'" + item.RBU + "'," +
                                 "'" + item.ProductLine + "'" +
