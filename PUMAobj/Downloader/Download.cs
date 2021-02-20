@@ -125,7 +125,20 @@ namespace PUMAobj.Downloader
             //return true;
             try
             {
-                
+
+                string[] receivefiles = Directory.GetFiles(SFTPConstants.ReceiveFilePath);
+                LogHelper.WriteLog(typeof(string), SFTPConstants.ReceiveFilePath, LogHelper.LogLevel.INFO);
+
+                LogHelper.WriteLog(typeof(string), receivefiles.Length.ToString(), LogHelper.LogLevel.INFO);
+
+                if (receivefiles.Length > 0)
+                {
+                    LogHelper.WriteLog(typeof(string), "Receive有文件就先处理文件", LogHelper.LogLevel.INFO);
+
+                    //Receive有文件就先处理文件
+                    Business();
+                }
+
                 //ConfigurationManager.AppSettings["SFTPPath"];
 
                 SFTPHelper fTPHelper = new SFTPHelper(SFTPIP, SFTPort, SFTPUser, SFTPPwd);
@@ -134,7 +147,7 @@ namespace PUMAobj.Downloader
                 var fileNames = fTPHelper.GetFileList(OUT_MASTER, "txt");
                 foreach (var item in fileNames)
                 {
-                    bool results = fTPHelper.Get(OUT_MASTER + "//"+ item, ReceiveFilePath + "//" + item);
+                    bool results = fTPHelper.Get(OUT_MASTER + "//" + item, ReceiveFilePath + "//" + item);
                     if (results)
                     {
                         fTPHelper.Move(OUT_MASTER + "//" + item, OUT_MASTER_successful + "//" + item);
@@ -169,6 +182,8 @@ namespace PUMAobj.Downloader
                 SFTPHelper fTPHelper = new SFTPHelper(SFTPIP, SFTPort, SFTPUser, SFTPPwd);
                 //读取文件列表
                 string[] receivefiles = Directory.GetFiles(SFTPConstants.ReceiveFilePath);
+                LogHelper.WriteLog(typeof(string), "开始处理文件", LogHelper.LogLevel.INFO);
+
                 if (receivefiles.Length > 0)
                 {
                     //TextHelper txthelper = new TextHelper();
@@ -209,59 +224,75 @@ namespace PUMAobj.Downloader
                                         break;
                                 }
 
-                                if (result == "200"){
-                                    
+                                if (result == "200")
+                                {
+
 
                                     //解析成功，移动到success文件夹
                                     log.ToFileName = SFTPConstants.SuccessFilePath + @"\" + log.Type + @"\" + filename;
                                     log.ResultDesc = "解析成功";
                                     log.Externumber = externumber;
                                     log.Flag = "Y";
-                                   
+
                                     if (log.Type == "WMSSKU")
                                     {
                                         fTPHelper.Delete(OUT_MASTER + "//" + filename);
                                     }
-                                    else {
+                                    else
+                                    {
                                         fTPHelper.Delete(OUT_TRANSACTION + "//" + filename);
                                     }
-                                   
+
                                 }
-                                else{
-                                    if (log.Type != ""){
-                                        if (result.Contains("数据库插入失败")){
+                                else
+                                {
+                                    if (log.Type != "")
+                                    {
+                                        if (result.Contains("数据库插入失败"))
+                                        {
                                             log.ToFileName = "";// SFTPConstants.SuccessFilePath + @"\" + log.Type + @"\" + filename;
                                             log.ResultDesc = "解析失败：" + result;
                                             log.Externumber = externumber;
                                             log.Flag = "E";
-                                        }else{
+                                        }
+                                        else
+                                        {
                                             log.ToFileName = SFTPConstants.FaildFilePath + @"\" + log.Type + @"\" + filename;//移动到解析失败文件夹                                            
                                             log.ResultDesc = "解析失败：" + result;
                                             log.Externumber = externumber;
                                             log.Flag = "N";
                                         }
-                                    }else{
+                                    }
+                                    else
+                                    {
                                         log.ToFileName = SFTPConstants.ErrorFilePath + @"\" + filename;
                                         log.ResultDesc = "解析失败：" + result;
                                         log.Externumber = externumber;
                                         log.Flag = "N";
                                     }
                                 }
-                            }else{
+                            }
+                            else
+                            {
                                 log.ToFileName = SFTPConstants.ErrorFilePath + @"\" + filename;
                                 log.Flag = "N";
                                 log.ResultDesc = "解析失败：文档中无数据";
                             }
 
-                        }catch (Exception ex){
+                        }
+                        catch (Exception ex)
+                        {
                             //报错了放到error文件
                             log.ToFileName = SFTPConstants.ErrorFilePath + @"\" + filename;
                             log.Flag = "N";
                             log.ResultDesc = "解析报错：" + ex.Message.ToString();
                         }
-                        if (log.Flag == "E"){//数据库失败再解析一次
+                        if (log.Flag == "E")
+                        {//数据库失败再解析一次
 
-                        }else{
+                        }
+                        else
+                        {
                             LocalFileHelper.MoveToCover(log.SourceFileName, log.ToFileName);
                         }
                     }
@@ -269,6 +300,8 @@ namespace PUMAobj.Downloader
             }
             catch (Exception ex)
             {
+                LogHelper.WriteLog(typeof(string), "处理文件错误" + ex.ToString(), LogHelper.LogLevel.INFO);
+
                 //throw;
             }
             return true;

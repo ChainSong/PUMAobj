@@ -55,6 +55,8 @@ namespace PUMAobj.Common
                 {
                     sftp.Connect();
                 }
+                //LogHelper.WriteLog(typeof(string), ":FTP连接成功", LogHelper.LogLevel.INFO);
+
                 return true;
             }
             catch (Exception ex)
