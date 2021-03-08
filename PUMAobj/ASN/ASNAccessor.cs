@@ -1597,7 +1597,8 @@ namespace PUMAobj.ASN
             try
             {
                 //查询所有入库完成的单号  查询条件 STATUS=0，ExternReceiptNumber未反馈
-                string sqllist = " SELECT * FROM wms_receipt WHERE STATUS=9 AND ExternReceiptNumber IN(SELECT ExternReceiptKey FROM Inbound_ASNHD WHERE ISReturn='0')";
+                string sqllist = "SELECT * FROM wms_receipt WHERE STATUS=9 AND ExternReceiptNumber IN(SELECT ExternReceiptKey FROM Inbound_ASNHD WHERE ISReturn='0')";
+
                 DataTable ReceiptCount = this.ExecuteDataTableBySqlString(sqllist);
                 if (ReceiptCount.Rows.Count > 0)//有需要反馈的 入库订单
                 {
