@@ -62,6 +62,7 @@ namespace PUMAobj.Uploader
                             ASNAccessor Accessor = new ASNAccessor();
                             Accessor.wms_receipt();//上传入库反馈
                             Accessor.Create_SHPPK();//上传出库反馈
+                            Accessor.QueryIQCManual();//生成手工单移库
                             Accessor.WMSAdjustment();//上传调整反馈
                             //Accessor.WMSInventory();//上传库存快照反馈
                             return true;

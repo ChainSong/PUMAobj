@@ -1596,9 +1596,9 @@ namespace PUMAobj.ASN
             string msg = string.Empty;
             try
             {
-                //查询所有入库完成的单号  查询条件 STATUS=0，ExternReceiptNumber未反馈
+                //第一种情况
+                //查询所有入库完成的单号 查询条件 STATUS = 0，ExternReceiptNumber未反馈
                 string sqllist = "SELECT * FROM wms_receipt WHERE STATUS=9 AND ExternReceiptNumber IN(SELECT ExternReceiptKey FROM Inbound_ASNHD WHERE ISReturn='0')";
-
                 DataTable ReceiptCount = this.ExecuteDataTableBySqlString(sqllist);
                 if (ReceiptCount.Rows.Count > 0)//有需要反馈的 入库订单
                 {
@@ -1631,6 +1631,43 @@ namespace PUMAobj.ASN
                         }
                     }
                 }
+
+
+                //第二种情况
+                //查询所有入库完成的单号  查询条件 STATUS=0，ExternReceiptNumber未反馈
+                string sqllist2 = "SELECT * FROM WMS_ASN WHERE STATUS=9 AND ExternReceiptNumber IN(SELECT ExternReceiptKey FROM Inbound_ASNHD WHERE ISReturn='0')";
+                DataTable ReceiptCount2 = this.ExecuteDataTableBySqlString(sqllist2);
+                if (ReceiptCount2.Rows.Count > 0)//有需要反馈的 入库订单
+                {
+                    for (int i = 0; i < ReceiptCount2.Rows.Count; i++)
+                    {
+
+                        //经销商 门店入库 反馈查询
+                        if (ReceiptCount2.Rows[i]["ASNType"].ToString() == "经销商入库" || ReceiptCount2.Rows[i]["ASNType"].ToString() == "门店入库" || ReceiptCount2.Rows[i]["ASNType"].ToString() == "转仓入库")
+                        {
+                            string sql1_hd = "SELECT Top 1 * FROM Inbound_ASNHD WHERE ExternReceiptKey='" + ReceiptCount2.Rows[i]["ExternReceiptNumber"].ToString() + "' AND ISReturn='0'";
+                            string sql1_dt = "SELECT * FROM Inbound_ASNDT WHERE ExternReceiptKey='" + ReceiptCount2.Rows[i]["ExternReceiptNumber"].ToString() + "'";
+                            DataTable data1_hd = this.ExecuteDataTableBySqlString(sql1_hd);
+                            DataTable data1_dt = this.ExecuteDataTableBySqlString(sql1_dt);
+                            if (data1_hd.Rows.Count > 0 && data1_dt.Rows.Count > 0)
+                            {
+                                string istrue = "";//是否创建成功
+                                string txtaddress = Create_RECHD_TXT1(data1_hd, data1_dt, ReceiptCount2.Rows[i]["ASNType"].ToString(), out istrue);
+                                if (istrue == "200")//创建成功 更新状态
+                                {
+                                    string upstr = "UPDATE Inbound_ASNHD SET ISReturn=1,ReturnDate=GETDATE() WHERE ExternReceiptKey='" + ReceiptCount2.Rows[i]["ExternReceiptNumber"].ToString() + "'";
+                                    int upid = this.ScanExecuteNonQueryRID(upstr);
+                                    msg = "200";
+                                    LogHelper.WriteLog(typeof(string), "wms_receipt反馈入库更新接口成功:" + upstr, LogHelper.LogLevel.Error);
+                                }
+                                else
+                                {
+                                    msg = "400";
+                                }
+                            }
+                        }
+                    }
+                }
             }
             catch (Exception ex)
             {
@@ -1639,6 +1676,8 @@ namespace PUMAobj.ASN
             }
             return msg;
         }
+
+
 
         /// <summary>
         /// 生成入库反馈文件   门店经销商
@@ -1805,6 +1844,41 @@ namespace PUMAobj.ASN
                 LogHelper.WriteLog(typeof(string), "Create_RECHD_TXT1生成入库文件失败[" + hd.Rows[0]["ExternReceiptKey"].ToString() + "]:" + msg, LogHelper.LogLevel.Error);
             }
             return txtaddress;
+        }
+
+
+        /// <summary>
+        /// 手工单 生成移库数据
+        /// </summary>
+        /// <returns></returns>
+        public string QueryIQCManual()
+        {
+            string msg = string.Empty;
+            try
+            {
+                string sqllist = "SELECT DISTINCT A.ExternReceiptNumber FROM wms_receipt AS A LEFT JOIN WMS_ASN AS B ON A.ExternReceiptNumber = B.str16 WHERE A.ReceiptType = '门店入库-手工单' AND  A.STATUS=9 AND B.ASNType = '门店入库' AND(A.int2 IS NULL OR A.int2 != 6)";
+                DataTable ReceiptCount = this.ExecuteDataTableBySqlString(sqllist);
+                if (ReceiptCount.Rows.Count > 0)//有需要反馈的 入库订单
+                {
+                    for (int i = 0; i < ReceiptCount.Rows.Count; i++)
+                    {
+                        string istrue = CreatIQC(ReceiptCount.Rows[i]["ExternReceiptNumber"].ToString());
+                        if (istrue == "200")
+                        {
+                            string upstr = "UPDATE wms_receipt SET int2 = 6 WHERE ExternReceiptNumber = '"+ ReceiptCount.Rows[i]["ExternReceiptNumber"].ToString() + "'";
+                            int upid = this.ScanExecuteNonQueryRID(upstr);
+                            msg = "200";
+                            LogHelper.WriteLog(typeof(string), "QueryIQCManual手工单生成移库数据接口成功:" + upstr, LogHelper.LogLevel.Error);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                msg = ex.Message;
+                LogHelper.WriteLog(typeof(string), "QueryIQCManual手工单生成移库数据接口错误:" + msg, LogHelper.LogLevel.Error);
+            }
+            return msg;
         }
 
         /// <summary>
