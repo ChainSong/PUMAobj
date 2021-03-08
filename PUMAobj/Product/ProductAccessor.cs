@@ -70,6 +70,8 @@ namespace PUMAobj.Product
                                 RBU = txtlists[i].TxtSubstring(3847, 3886),
                                 ProductLine = txtlists[i].TxtSubstring(3887, 3936),
                             });
+
+
                         }
                     }
                 }
@@ -119,6 +121,7 @@ namespace PUMAobj.Product
                                 Str14 = item.Style,
 
                             });
+                            //LogHelper.WriteLog(typeof(string), "SKU:" + item.MANUFACTURERSKU.Trim() + "Str5:" + item.LongSize, LogHelper.LogLevel.INFO);
                         }
 
                         using (SqlConnection conn = new SqlConnection(BaseAccessor._dataBase.ConnectionString))
