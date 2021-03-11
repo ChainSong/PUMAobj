@@ -1691,6 +1691,7 @@ namespace PUMAobj.ASN
             string txtaddress = string.Empty;
             try
             {
+                LogHelper.WriteLog(typeof(string), "Create_RECHD_TXT1开始执行ExternReceiptKey=[" + hd.Rows[0]["ExternReceiptKey"].ToString() + "]" , LogHelper.LogLevel.Error);
                 //string sql1_hd = "SELECT Top 1 * FROM Inbound_ASNHD WHERE ExternReceiptKey='3400559973' AND ISReturn='0'";
                 //string sql1_dt = "SELECT * FROM Inbound_ASNDT WHERE ExternReceiptKey='3400559973'";
                 //hd = this.ExecuteDataTableBySqlString(sql1_hd);
@@ -1823,6 +1824,7 @@ namespace PUMAobj.ASN
                 writer.Close();
                 file.Close();
                 bool issuccess = sFTP.PUMAPut(filepath, filename, sftpIn);
+                LogHelper.WriteLog(typeof(string), "Create_RECHD_TXT1上传结果:issuccess=[" + issuccess + "]filename:" + filename, LogHelper.LogLevel.Error);
                 if (issuccess)
                 {
                     msg = "200";
@@ -1890,6 +1892,7 @@ namespace PUMAobj.ASN
             string msg = string.Empty;
             try
             {
+                LogHelper.WriteLog(typeof(string), "CreatIQC接口开始执行：ExternReceiptNumber=[" + ExternReceiptNumber + "]" , LogHelper.LogLevel.Error);
                 string querstr = "SELECT * FROM [dbo].[WMS_ReceiptReceiving] WHERE CustomerID='108' AND ExternReceiptNumber='" + ExternReceiptNumber + "' AND GoodsType IN('C品','D品') AND (Int2 IS NULL OR Int2!=6)";
                 DataTable ReceiptReceiving = this.ExecuteDataTableBySqlString(querstr);
                 if (ReceiptReceiving.Rows.Count > 0)
@@ -1935,10 +1938,10 @@ namespace PUMAobj.ASN
                     }
 
 
-
                     string upstr = "UPDATE [WMS_ReceiptReceiving] SET Int2='6' WHERE ExternReceiptNumber='" + ExternReceiptNumber + "'";
                     this.ScanExecuteNonQueryRID(upstr);
                     msg = "200";
+                    LogHelper.WriteLog(typeof(string), "CreatIQC接口执行结果：msg=[" + msg + "]", LogHelper.LogLevel.Error);
                 }
                 else
                 {
