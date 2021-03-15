@@ -2733,9 +2733,7 @@ namespace PUMAobj.ASN
                             {
                                 update_Adjustment(AdjustmentCount.Rows[i]["ID"].ToString(), "6", txtaddress);
                             }
-                        }
-                        else
-                        {
+                        }else{
                             LogHelper.WriteLog(typeof(string), "WMSAdjustment没有查询到明细信息:" + sql_d, LogHelper.LogLevel.Error);
                         }
                     }
@@ -2962,7 +2960,7 @@ namespace PUMAobj.ASN
         public string update_Adjustment(string ID, string Int2,string FileName)
         {
             string upstr = "UPDATE [WMS_Adjustment] SET Int2=" + Int2 + ",str20='"+ FileName + "' WHERE ID='" + ID + "'";
-            //int upid = this.ScanExecuteNonQueryRID(upstr);
+            int upid = this.ScanExecuteNonQueryRID(upstr);
             //if (upid > 0)
             //{
 
