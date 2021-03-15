@@ -124,7 +124,7 @@ namespace PUMAobj.Common
         {
             try
             {
-                using (var file = File.OpenRead(localPath + "/" + localfilename))
+                using (var file = File.OpenRead(localPath + "\\" + localfilename))
                 {
                     Connect();
                     //sftp.ChangeDirectory(@"\NIKEReturn\Receive");

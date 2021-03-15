@@ -24,6 +24,10 @@ namespace PUMAobj.ASN
         public readonly static string sftppwd = GetConfigValue("sftppwd");//密码
         public readonly static string sftpIn = GetConfigValue("sftpIn");//lf接收文件地址
 
+        public readonly static string CreatFilePath = GetConfigValue("CreatFilePath");//创建文件地址
+
+        
+
         public static string GetConfigValue(string key)
         {
             return string.IsNullOrEmpty(key) ? string.Empty : ConfigurationManager.AppSettings[key].ToString();
@@ -1697,10 +1701,11 @@ namespace PUMAobj.ASN
                 //hd = this.ExecuteDataTableBySqlString(sql1_hd);
                 //dt = this.ExecuteDataTableBySqlString(sql1_dt);
 
-                string dir = AppDomain.CurrentDomain.BaseDirectory;
-                dir = Path.GetFullPath("..");
-                dir = Path.GetFullPath("../..");
-                string filepath = dir + "/UploadFile";     //文件路径
+                //string dir = AppDomain.CurrentDomain.BaseDirectory;
+                //dir = Path.GetFullPath("..");
+                //dir = Path.GetFullPath("../..");
+                //string filepath = dir + "/UploadFile";     //文件路径
+                string filepath = CreatFilePath;
                 if (Directory.Exists(filepath) == false)//如果不存在就创建file文件夹
                 {
                     Directory.CreateDirectory(filepath);
@@ -1711,7 +1716,7 @@ namespace PUMAobj.ASN
                 FileStream file = new FileStream(filepath + "/" + filename, FileMode.Create, FileAccess.Write);//创建写入文件 
                 StreamWriter writer = new StreamWriter(file);
 
-                string CompleteDate = WMS_ReceiptReceivingTime(hd.Rows[0]["ExternReceiptKey"].ToString());
+                string CompleteDate = WMS_ReceiptReceivingTime_Shou(hd.Rows[0]["ExternReceiptKey"].ToString());
                 writer.WriteLine("WMSREC    O " + DateTime.Now.ToString("yyyyMMddhhmmss") + "PUMA                CN   Receipt Outbound                                  ");
                 string header = "RECHD";
                 header += "A";
@@ -2073,10 +2078,11 @@ namespace PUMAobj.ASN
                 //hd = this.ExecuteDataTableBySqlString(sql1_hd);
                 //dt = this.ExecuteDataTableBySqlString(sql1_dt);
 
-                string dir = AppDomain.CurrentDomain.BaseDirectory;
-                dir = Path.GetFullPath("..");
-                dir = Path.GetFullPath("../..");
-                string filepath = dir + "/UploadFile";     //文件路径
+                //string dir = AppDomain.CurrentDomain.BaseDirectory;
+                //dir = Path.GetFullPath("..");
+                //dir = Path.GetFullPath("../..");
+                //string filepath = dir + "/UploadFile";     //文件路径
+                string filepath = CreatFilePath;
                 if (Directory.Exists(filepath) == false)//如果不存在就创建file文件夹
                 {
                     Directory.CreateDirectory(filepath);
@@ -2320,10 +2326,11 @@ namespace PUMAobj.ASN
                 //hd = this.ExecuteDataTableBySqlString(sql1_hd);
                 //dt = this.ExecuteDataTableBySqlString(sql1_dt);
 
-                string dir = AppDomain.CurrentDomain.BaseDirectory;
-                dir = Path.GetFullPath("..");
-                dir = Path.GetFullPath("../..");
-                string filepath = dir + "/UploadFile";     //文件路径
+                //string dir = AppDomain.CurrentDomain.BaseDirectory;
+                //dir = Path.GetFullPath("..");
+                //dir = Path.GetFullPath("../..");
+                //string filepath = dir + "/UploadFile";     //文件路径
+                string filepath = CreatFilePath;
                 if (Directory.Exists(filepath) == false)//如果不存在就创建file文件夹
                 {
                     Directory.CreateDirectory(filepath);
@@ -2608,10 +2615,11 @@ namespace PUMAobj.ASN
             string timestr = DateTime.Now.ToString("yyyyMMddhhmmss");
             try
             {
-                string dir = AppDomain.CurrentDomain.BaseDirectory;
-                dir = Path.GetFullPath("..");
-                dir = Path.GetFullPath("../..");
-                string filepath = dir + "/UploadFile";     //文件路径
+                //string dir = AppDomain.CurrentDomain.BaseDirectory;
+                //dir = Path.GetFullPath("..");
+                //dir = Path.GetFullPath("../..");
+                //string filepath = dir + "/UploadFile";     //文件路径
+                string filepath = CreatFilePath;
                 if (Directory.Exists(filepath) == false)//如果不存在就创建file文件夹
                 {
                     Directory.CreateDirectory(filepath);
@@ -2758,10 +2766,11 @@ namespace PUMAobj.ASN
             string ReasonCode = "";
             try
             {
-                string dir = AppDomain.CurrentDomain.BaseDirectory;
-                dir = Path.GetFullPath("..");
-                dir = Path.GetFullPath("../..");
-                string filepath = dir + "/UploadFile";     //文件路径
+                //string dir = AppDomain.CurrentDomain.BaseDirectory;
+                //dir = Path.GetFullPath("..");
+                //dir = Path.GetFullPath("../..");
+                //string filepath = dir + "/UploadFile";     //文件路径
+                string filepath = CreatFilePath;
                 string filename = "";
                 if (Directory.Exists(filepath) == false)//如果不存在就创建file文件夹
                 {
@@ -2983,6 +2992,27 @@ namespace PUMAobj.ASN
             else
             {
                 LogHelper.WriteLog(typeof(string), "WMS_ReceiptReceivingTime没有查询到对应CompleteDate,查询条件ExternReceiptNumber等于" + ExternReceiptNumber + "]", LogHelper.LogLevel.Error);
+            }
+            return time;
+        }
+
+        /// <summary>
+        /// 根据外部单号查询订单收货时间
+        /// </summary>
+        /// <param name="SKU"></param>
+        /// <returns></returns>
+        public string WMS_ReceiptReceivingTime_Shou(string ExternReceiptNumber)
+        {
+            string time = "";
+            string questr = "SELECT * FROM [WMS_ReceiptReceiving]  WHERE ExternReceiptNumber='" + ExternReceiptNumber + "'";
+            DataTable SuccessCount = this.ExecuteDataTableBySqlString(questr);
+            if (SuccessCount.Rows.Count > 0)
+            {
+                time = Convert.ToDateTime(SuccessCount.Rows[0]["CreateTime"]).ToString("yyyyMMddhhmmss");
+            }
+            else
+            {
+                LogHelper.WriteLog(typeof(string), "WMS_ReceiptReceivingTime_Shou没有查询到对应CreateTime,查询条件ExternReceiptNumber等于" + ExternReceiptNumber + "]", LogHelper.LogLevel.Error);
             }
             return time;
         }
