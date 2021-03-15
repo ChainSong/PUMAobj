@@ -1622,7 +1622,7 @@ namespace PUMAobj.ASN
                                 string txtaddress = Create_RECHD_TXT1(data1_hd, data1_dt, ReceiptCount.Rows[i]["ReceiptType"].ToString(), out istrue);
                                 if (istrue == "200")//创建成功 更新状态
                                 {
-                                    string upstr = "UPDATE Inbound_ASNHD SET ISReturn=1,ReturnDate=GETDATE() WHERE ExternReceiptKey='" + ReceiptCount.Rows[i]["ExternReceiptNumber"].ToString() + "'";
+                                    string upstr = "UPDATE Inbound_ASNHD SET ISReturn=1,ReturnDate=GETDATE(),FileName='" + txtaddress + "' WHERE ExternReceiptKey='" + ReceiptCount.Rows[i]["ExternReceiptNumber"].ToString() + "'";
                                     int upid = this.ScanExecuteNonQueryRID(upstr);
                                     msg = "200";
                                     LogHelper.WriteLog(typeof(string), "wms_receipt反馈入库更新接口成功:" + upstr, LogHelper.LogLevel.Error);
@@ -1659,7 +1659,7 @@ namespace PUMAobj.ASN
                                 string txtaddress = Create_RECHD_TXT1(data1_hd, data1_dt, ReceiptCount2.Rows[i]["ASNType"].ToString(), out istrue);
                                 if (istrue == "200")//创建成功 更新状态
                                 {
-                                    string upstr = "UPDATE Inbound_ASNHD SET ISReturn=1,ReturnDate=GETDATE() WHERE ExternReceiptKey='" + ReceiptCount2.Rows[i]["ExternReceiptNumber"].ToString() + "'";
+                                    string upstr = "UPDATE Inbound_ASNHD SET ISReturn=1,ReturnDate=GETDATE(),FileName='"+ txtaddress + "' WHERE ExternReceiptKey='" + ReceiptCount2.Rows[i]["ExternReceiptNumber"].ToString() + "'";
                                     int upid = this.ScanExecuteNonQueryRID(upstr);
                                     msg = "200";
                                     LogHelper.WriteLog(typeof(string), "wms_receipt反馈入库更新接口成功:" + upstr, LogHelper.LogLevel.Error);
@@ -1711,7 +1711,7 @@ namespace PUMAobj.ASN
                     Directory.CreateDirectory(filepath);
                 }
                 string filename = "DWMSREC_" + DateTime.Now.ToString("yyyyMMddhhmmss") + ".txt";
-                txtaddress = filepath;
+                txtaddress = filename;
 
                 FileStream file = new FileStream(filepath + "/" + filename, FileMode.Create, FileAccess.Write);//创建写入文件 
                 StreamWriter writer = new StreamWriter(file);
@@ -2040,7 +2040,7 @@ namespace PUMAobj.ASN
                             string shptxt = Create_SHPTXT(OrderCount.Rows[i]["OrderNumber"].ToString(), hd, dt, out isshp);
                             if (isshp == "200")
                             {
-                                string upstr = "UPDATE Inbound_ORDHD SET ISReturn=1,ReturnDate=GETDATE() WHERE ExternOrderKey='" + OrderCount.Rows[i]["ExternOrderNumber"] + "'";
+                                string upstr = "UPDATE Inbound_ORDHD SET ISReturn=1,ReturnDate=GETDATE(),FileName='"+ shptxt + "' WHERE ExternOrderKey='" + OrderCount.Rows[i]["ExternOrderNumber"] + "'";
                                 int upid = this.ScanExecuteNonQueryRID(upstr);
                                 msg = "200";
                                 LogHelper.WriteLog(typeof(string), "Create_SHPPK出库反馈接口提交成功:" + upstr, LogHelper.LogLevel.Error);
@@ -2089,7 +2089,7 @@ namespace PUMAobj.ASN
                 }
                 string filename = "DWMSSHP_" + DateTime.Now.ToString("yyyyMMddhhmmss") + "_PICK.txt";
 
-                txtaddress = filepath;
+                txtaddress = filename;
 
                 FileStream file = new FileStream(filepath + "/" + filename, FileMode.Create, FileAccess.Write);//创建写入文件 
                 StreamWriter writer = new StreamWriter(file);
@@ -2337,7 +2337,7 @@ namespace PUMAobj.ASN
                 }
                 string filename = "DWMSSHP_" + DateTime.Now.ToString("yyyyMMddhhmmss") + "_SHP.txt";
 
-                txtaddress = filepath;
+                txtaddress = filename;
 
                 FileStream file = new FileStream(filepath + "/" + filename, FileMode.Create, FileAccess.Write);//创建写入文件 
                 StreamWriter writer = new StreamWriter(file);
@@ -2731,7 +2731,7 @@ namespace PUMAobj.ASN
 
                             if (isresult == "200")//生成文件 回传成功  更新状态
                             {
-                                update_Adjustment(AdjustmentCount.Rows[i]["ID"].ToString(), "6");
+                                update_Adjustment(AdjustmentCount.Rows[i]["ID"].ToString(), "6", txtaddress);
                             }
                         }
                         else
@@ -2793,7 +2793,7 @@ namespace PUMAobj.ASN
                     LogHelper.WriteLog(typeof(string), "TxtAdjustment执行错误:调整单类型错误[AdjustmentType]", LogHelper.LogLevel.Error);
                     return "";
                 }
-                TxtAddress = filepath;
+                TxtAddress = filename;
                 FileStream file = new FileStream(filepath + "/" + filename, FileMode.Create, FileAccess.Write);//创建写入文件 
                 StreamWriter writer = new StreamWriter(file);
 
@@ -2959,18 +2959,18 @@ namespace PUMAobj.ASN
         }
 
         //更新库存调整状态  6成功 2失败
-        public string update_Adjustment(string ID, string Int2)
+        public string update_Adjustment(string ID, string Int2,string FileName)
         {
-            string upstr = "UPDATE [WMS_Adjustment] SET Int2=" + Int2 + " WHERE ID='" + ID + "'";
-            int upid = this.ScanExecuteNonQueryRID(upstr);
-            if (upid > 0)
-            {
+            string upstr = "UPDATE [WMS_Adjustment] SET Int2=" + Int2 + ",str20='"+ FileName + "' WHERE ID='" + ID + "'";
+            //int upid = this.ScanExecuteNonQueryRID(upstr);
+            //if (upid > 0)
+            //{
 
-            }
-            else
-            {
-                LogHelper.WriteLog(typeof(string), "update_Adjustment执行错误更新库存调整状态失败:" + upstr, LogHelper.LogLevel.Error);
-            }
+            //}
+            //else
+            //{
+            //    LogHelper.WriteLog(typeof(string), "update_Adjustment执行错误更新库存调整状态失败:" + upstr, LogHelper.LogLevel.Error);
+            //}
             return "";
         }
 
