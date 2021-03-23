@@ -26,7 +26,7 @@ namespace PUMAobj.ASN
 
         public readonly static string CreatFilePath = GetConfigValue("CreatFilePath");//创建文件地址
 
-        
+
 
         public static string GetConfigValue(string key)
         {
@@ -760,6 +760,7 @@ namespace PUMAobj.ASN
                         sql_1 += ",Null";
                         sql_1 += ",'" + DateTime.Now + "'";
                         sql_1 += ",Null";
+                        sql_1 += ",Null";
                         sql_1 += ") SELECT @@IDENTITY AS Inbound_ASNHD;";
 
                         int id_1 = this.ScanExecuteNonQueryRID(sql_1);
@@ -1336,6 +1337,7 @@ namespace PUMAobj.ASN
                     sql_1 += ",Null";
                     sql_1 += ",'" + DateTime.Now + "'";
                     sql_1 += ",Null";
+                    sql_1 += ",Null";
                     sql_1 += ") SELECT @@IDENTITY AS Inbound_ORDHD;";
                     int id_1 = this.ScanExecuteNonQueryRID(sql_1);
                     if (id_1 > 0)
@@ -1659,7 +1661,7 @@ namespace PUMAobj.ASN
                                 string txtaddress = Create_RECHD_TXT1(data1_hd, data1_dt, ReceiptCount2.Rows[i]["ASNType"].ToString(), out istrue);
                                 if (istrue == "200")//创建成功 更新状态
                                 {
-                                    string upstr = "UPDATE Inbound_ASNHD SET ISReturn=1,ReturnDate=GETDATE(),FileName='"+ txtaddress + "' WHERE ExternReceiptKey='" + ReceiptCount2.Rows[i]["ExternReceiptNumber"].ToString() + "'";
+                                    string upstr = "UPDATE Inbound_ASNHD SET ISReturn=1,ReturnDate=GETDATE(),FileName='" + txtaddress + "' WHERE ExternReceiptKey='" + ReceiptCount2.Rows[i]["ExternReceiptNumber"].ToString() + "'";
                                     int upid = this.ScanExecuteNonQueryRID(upstr);
                                     msg = "200";
                                     LogHelper.WriteLog(typeof(string), "wms_receipt反馈入库更新接口成功:" + upstr, LogHelper.LogLevel.Error);
@@ -1695,7 +1697,7 @@ namespace PUMAobj.ASN
             string txtaddress = string.Empty;
             try
             {
-                LogHelper.WriteLog(typeof(string), "Create_RECHD_TXT1开始执行ExternReceiptKey=[" + hd.Rows[0]["ExternReceiptKey"].ToString() + "]" , LogHelper.LogLevel.Error);
+                LogHelper.WriteLog(typeof(string), "Create_RECHD_TXT1开始执行ExternReceiptKey=[" + hd.Rows[0]["ExternReceiptKey"].ToString() + "]", LogHelper.LogLevel.Error);
                 //string sql1_hd = "SELECT Top 1 * FROM Inbound_ASNHD WHERE ExternReceiptKey='3400559973' AND ISReturn='0'";
                 //string sql1_dt = "SELECT * FROM Inbound_ASNDT WHERE ExternReceiptKey='3400559973'";
                 //hd = this.ExecuteDataTableBySqlString(sql1_hd);
@@ -1872,7 +1874,7 @@ namespace PUMAobj.ASN
                         string istrue = CreatIQC(ReceiptCount.Rows[i]["ExternReceiptNumber"].ToString());
                         if (istrue == "200")
                         {
-                            string upstr = "UPDATE wms_receipt SET int2 = 6 WHERE ExternReceiptNumber = '"+ ReceiptCount.Rows[i]["ExternReceiptNumber"].ToString() + "'";
+                            string upstr = "UPDATE wms_receipt SET int2 = 6 WHERE ExternReceiptNumber = '" + ReceiptCount.Rows[i]["ExternReceiptNumber"].ToString() + "'";
                             int upid = this.ScanExecuteNonQueryRID(upstr);
                             msg = "200";
                             LogHelper.WriteLog(typeof(string), "QueryIQCManual手工单生成移库数据接口成功:" + upstr, LogHelper.LogLevel.Error);
@@ -1897,7 +1899,7 @@ namespace PUMAobj.ASN
             string msg = string.Empty;
             try
             {
-                LogHelper.WriteLog(typeof(string), "CreatIQC接口开始执行：ExternReceiptNumber=[" + ExternReceiptNumber + "]" , LogHelper.LogLevel.Error);
+                LogHelper.WriteLog(typeof(string), "CreatIQC接口开始执行：ExternReceiptNumber=[" + ExternReceiptNumber + "]", LogHelper.LogLevel.Error);
                 string querstr = "SELECT * FROM [dbo].[WMS_ReceiptReceiving] WHERE CustomerID='108' AND ExternReceiptNumber='" + ExternReceiptNumber + "' AND GoodsType IN('C品','D品') AND (Int2 IS NULL OR Int2!=6)";
                 DataTable ReceiptReceiving = this.ExecuteDataTableBySqlString(querstr);
                 if (ReceiptReceiving.Rows.Count > 0)
@@ -2040,7 +2042,7 @@ namespace PUMAobj.ASN
                             string shptxt = Create_SHPTXT(OrderCount.Rows[i]["OrderNumber"].ToString(), hd, dt, out isshp);
                             if (isshp == "200")
                             {
-                                string upstr = "UPDATE Inbound_ORDHD SET ISReturn=1,ReturnDate=GETDATE(),FileName='"+ shptxt + "' WHERE ExternOrderKey='" + OrderCount.Rows[i]["ExternOrderNumber"] + "'";
+                                string upstr = "UPDATE Inbound_ORDHD SET ISReturn=1,ReturnDate=GETDATE(),FileName='" + shptxt + "' WHERE ExternOrderKey='" + OrderCount.Rows[i]["ExternOrderNumber"] + "'";
                                 int upid = this.ScanExecuteNonQueryRID(upstr);
                                 msg = "200";
                                 LogHelper.WriteLog(typeof(string), "Create_SHPPK出库反馈接口提交成功:" + upstr, LogHelper.LogLevel.Error);
@@ -2733,7 +2735,9 @@ namespace PUMAobj.ASN
                             {
                                 update_Adjustment(AdjustmentCount.Rows[i]["ID"].ToString(), "6", txtaddress);
                             }
-                        }else{
+                        }
+                        else
+                        {
                             LogHelper.WriteLog(typeof(string), "WMSAdjustment没有查询到明细信息:" + sql_d, LogHelper.LogLevel.Error);
                         }
                     }
@@ -2957,9 +2961,9 @@ namespace PUMAobj.ASN
         }
 
         //更新库存调整状态  6成功 2失败
-        public string update_Adjustment(string ID, string Int2,string FileName)
+        public string update_Adjustment(string ID, string Int2, string FileName)
         {
-            string upstr = "UPDATE [WMS_Adjustment] SET Int2=" + Int2 + ",str20='"+ FileName + "' WHERE ID='" + ID + "'";
+            string upstr = "UPDATE [WMS_Adjustment] SET Int2=" + Int2 + ",str20='" + FileName + "' WHERE ID='" + ID + "'";
             int upid = this.ScanExecuteNonQueryRID(upstr);
             //if (upid > 0)
             //{
